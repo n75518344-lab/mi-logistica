@@ -4,7 +4,7 @@ import pandas as pd
 # 1. CONFIGURACIÓN DE PÁGINA
 st.set_page_config(page_title="Alfa Cargo Express", page_icon="🚚", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. ESTILOS CSS - ALINEACIÓN Y BOTÓN ANCHO COMPLETO
+# 2. ESTILOS CSS - ALINEACIÓN EXACTA DE MARCOS A LA MISMA ALTURA
 st.markdown("""
     <style>
     /* Ocultar barra lateral */
@@ -20,8 +20,8 @@ st.markdown("""
     /* CONTENEDOR PRINCIPAL */
     .block-container {
         max-width: 88% !important;
-        padding-top: 3rem !important;
-        padding-bottom: 2.5rem !important;
+        padding-top: 2.5rem !important;
+        padding-bottom: 2rem !important;
         margin: 0 auto !important;
     }
 
@@ -30,13 +30,13 @@ st.markdown("""
         color: #0F172A;
         font-size: 32px;
         font-weight: 800;
-        margin-bottom: 20px;
+        margin-bottom: 18px;
     }
     .value-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 14px;
-        margin-bottom: 22px;
+        gap: 12px;
+        margin-bottom: 20px;
     }
     .value-item {
         color: #1E293B;
@@ -53,31 +53,42 @@ st.markdown("""
         font-size: 18px;
     }
 
-    /* IMAGEN CON ALTURA AJUSTADA PARA NIVELAR CON EL BOTTOM DE LA TARJETA DERECHA */
+    /* MARCO DE LA IMAGEN (IZQUIERDA) */
+    .image-card-frame {
+        background-color: #E2ECF9;
+        border-radius: 20px;
+        padding: 16px;
+        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.03);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    /* IMAGEN LIGERAMENTE MÁS PEQUEÑA DENTRO DEL MARCO */
     .hero-image {
         width: 100%;
-        height: 390px !important;
+        height: 275px;
         object-fit: cover;
-        border-radius: 16px;
-        box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.08);
+        border-radius: 12px;
     }
 
-    /* TARJETA BLANCA DE LOGIN */
+    /* TARJETA BLANCA DE LOGIN (DERECHA) - PADDING AJUSTADO PARA ALINEACIÓN PERFECTA */
     [data-testid="stForm"] {
         background-color: #FFFFFF !important;
         border-radius: 20px !important;
         border: 1px solid #E2E8F0 !important;
-        box-shadow: 0px 12px 30px rgba(0, 0, 0, 0.06) !important;
-        padding: 45px 38px !important;
+        box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.05) !important;
+        padding: 48px 38px 42px 38px !important; /* Ajustado para calzar exactamente la altura */
+        margin-top: 0px !important;
     }
 
     /* TÍTULO BIENVENIDO CENTRADO */
     .card-title {
         text-align: center;
         color: #0F172A;
-        font-size: 28px;
+        font-size: 27px;
         font-weight: 800;
-        margin-bottom: 30px;
+        margin-bottom: 28px;
     }
 
     /* INPUTS DE TEXTO */
@@ -102,7 +113,7 @@ st.markdown("""
         font-size: 14px !important;
     }
 
-    /* REFORZAR CSS PARA BOTÓN 100% ANCHO (DEL MISMO TAMAÑO QUE LAS CREDANCIALES) */
+    /* BOTÓN 100% ANCHO IGUAL A LAS CREDENCIALES */
     div[data-testid="stFormSubmitButton"] {
         width: 100% !important;
     }
@@ -112,7 +123,7 @@ st.markdown("""
         color: #FFFFFF !important;
         border-radius: 10px !important;
         border: none !important;
-        padding: 12px 0px !important;
+        padding: 13px 0px !important;
         font-size: 16px !important;
         font-weight: 700 !important;
         margin-top: 15px !important;
@@ -126,7 +137,7 @@ st.markdown("""
         text-align: center;
         color: #94A3B8;
         font-size: 13px;
-        margin-top: 30px;
+        margin-top: 28px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -153,7 +164,7 @@ if st.session_state.usuario_actual is None:
     
     # Encabezado superior
     st.markdown("""
-        <div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;'>
+        <div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;'>
             <div style='font-size: 26px; font-weight: 900; color: #0F172A; letter-spacing: -0.5px;'>
                 🔷 ALFA CARGO <span style='color: #2563EB;'>EXPRESS</span>
             </div>
@@ -180,9 +191,11 @@ if st.session_state.usuario_actual is None:
             </div>
         """, unsafe_allow_html=True)
         
-        # Imagen con altura alineada exactamente con la tarjeta de la derecha
+        # Marco contenedor + imagen reducida internamente
         st.markdown("""
-            <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80" class="hero-image" />
+            <div class="image-card-frame">
+                <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80" class="hero-image" />
+            </div>
         """, unsafe_allow_html=True)
 
     # --- COLUMNA DERECHA (TARJETA LOGIN) ---
@@ -199,7 +212,6 @@ if st.session_state.usuario_actual is None:
             with col_opt2:
                 st.markdown('<div style="text-align: right; padding-top: 3px;"><a href="#" style="color: #2563EB; font-size: 13px; font-weight: 600; text-decoration: none;">¿Olvidaste tu contraseña?</a></div>', unsafe_allow_html=True)
             
-            # Botón configurado para tomar todo el ancho del contenedor
             submit_btn = st.form_submit_button("Iniciar Sesión", use_container_width=True)
             
             if submit_btn:
