@@ -4,7 +4,7 @@ import pandas as pd
 # 1. CONFIGURACIÓN DE PÁGINA
 st.set_page_config(page_title="Alfa Cargo Express", page_icon="🚚", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. ESTILOS CSS - UN POQUITÍN MÁS DE ESPACIO INFERIOR
+# 2. ESTILOS CSS - SIN MARCO EN LA IMAGEN Y TARJETA PERFECTA
 st.markdown("""
     <style>
     /* Ocultar barra lateral */
@@ -53,27 +53,22 @@ st.markdown("""
         font-size: 18px;
     }
 
-    /* MARCO DE IMAGEN IZQUIERDA */
-    .image-card-frame {
-        background-color: #E2ECF9;
-        border-radius: 18px;
-        padding: 14px;
-        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.03);
-    }
+    /* IMAGEN DE ALMACÉN SIN MARCO Y SIN BORDES REDONDEADOS */
     .hero-image {
         width: 100%;
-        height: 325px;
+        height: 330px;
         object-fit: cover;
-        border-radius: 12px;
+        border-radius: 0px !important; /* Bordes totalmente rectos sin marco */
+        display: block;
     }
 
-    /* TARJETA BLANCA DE LOGIN - UN POQUITÍN MÁS ALTA */
+    /* TARJETA BLANCA DE LOGIN */
     [data-testid="stForm"] {
         background-color: #FFFFFF !important;
         border-radius: 20px !important;
         border: 1px solid #E2E8F0 !important;
         box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.06) !important;
-        padding: 50px 40px 68px 40px !important; /* Un poquitín más alto (68px) */
+        padding: 50px 40px 68px 40px !important;
         margin-top: 0px !important;
     }
 
@@ -132,7 +127,7 @@ st.markdown("""
         background-color: #1D4ED8 !important;
     }
 
-    /* FOOTER CON MARGEN AJUSTADO LIGERAMENTE */
+    /* FOOTER CON MARGEN */
     .login-footer {
         text-align: center;
         color: #94A3B8;
@@ -191,13 +186,12 @@ if st.session_state.usuario_actual is None:
             </div>
         """, unsafe_allow_html=True)
         
+        # Imagen directa sin div contenedor contenedor/marco
         st.markdown("""
-            <div class="image-card-frame">
-                <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80" class="hero-image" />
-            </div>
+            <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80" class="hero-image" />
         """, unsafe_allow_html=True)
 
-    # --- COLUMNA DERECHA (TARJETA LOGIN AJUSTADA) ---
+    # --- COLUMNA DERECHA (TARJETA LOGIN) ---
     with col_right:
         with st.form("login_form"):
             st.markdown('<div class="card-title">Bienvenido a Alfa Cargo</div>', unsafe_allow_html=True)
