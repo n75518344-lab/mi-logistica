@@ -4,7 +4,7 @@ import pandas as pd
 # 1. CONFIGURACIÓN DE PÁGINA
 st.set_page_config(page_title="Alfa Cargo Express", page_icon="🚚", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. ESTILOS CSS - TARJETA CON EL AUMENTO JUSTO
+# 2. ESTILOS CSS - UN POQUITÍN MÁS DE ESPACIO INFERIOR
 st.markdown("""
     <style>
     /* Ocultar barra lateral */
@@ -62,18 +62,18 @@ st.markdown("""
     }
     .hero-image {
         width: 100%;
-        height: 310px;
+        height: 325px;
         object-fit: cover;
         border-radius: 12px;
     }
 
-    /* TARJETA BLANCA DE LOGIN - ESPACIO INFERIOR AUMENTADO EN SU JUSTA MEDIDA */
+    /* TARJETA BLANCA DE LOGIN - UN POQUITÍN MÁS ALTA */
     [data-testid="stForm"] {
         background-color: #FFFFFF !important;
         border-radius: 20px !important;
         border: 1px solid #E2E8F0 !important;
         box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.06) !important;
-        padding: 48px 40px 58px 40px !important; /* Aumentado exactamente el toque necesario */
+        padding: 50px 40px 68px 40px !important; /* Un poquitín más alto (68px) */
         margin-top: 0px !important;
     }
 
@@ -115,7 +115,7 @@ st.markdown("""
     /* BOTÓN 100% ANCHO */
     div[data-testid="stFormSubmitButton"] {
         width: 100% !important;
-        margin-top: 22px !important;
+        margin-top: 24px !important;
     }
     div[data-testid="stFormSubmitButton"] > button {
         width: 100% !important;
@@ -132,12 +132,12 @@ st.markdown("""
         background-color: #1D4ED8 !important;
     }
 
-    /* FOOTER CON MARGEN AUMENTADO UN POCO MÁS */
+    /* FOOTER CON MARGEN AJUSTADO LIGERAMENTE */
     .login-footer {
         text-align: center;
         color: #94A3B8;
         font-size: 13px;
-        margin-top: 50px;
+        margin-top: 58px;
     }
     </style>
 """, unsafe_allow_html=True)
