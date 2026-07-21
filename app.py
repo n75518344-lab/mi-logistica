@@ -4,7 +4,7 @@ import pandas as pd
 # 1. CONFIGURACIÓN DE PÁGINA
 st.set_page_config(page_title="Alfa Cargo Express", page_icon="🚚", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. ESTILOS CSS - TARJETA ALARGADA Y AMPLIADA HACIA ABAJO
+# 2. ESTILOS CSS - TARJETA MAXIMIZADA VERTICALMENTE
 st.markdown("""
     <style>
     /* Ocultar barra lateral */
@@ -21,7 +21,7 @@ st.markdown("""
     .block-container {
         max-width: 88% !important;
         padding-top: 2.5rem !important;
-        padding-bottom: 2.5rem !important;
+        padding-bottom: 3rem !important;
         margin: 0 auto !important;
     }
 
@@ -30,13 +30,13 @@ st.markdown("""
         color: #0F172A;
         font-size: 32px;
         font-weight: 800;
-        margin-bottom: 20px;
+        margin-bottom: 22px;
     }
     .value-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 14px;
-        margin-bottom: 22px;
+        margin-bottom: 24px;
     }
     .value-item {
         color: #1E293B;
@@ -53,56 +53,56 @@ st.markdown("""
         font-size: 18px;
     }
 
-    /* MARCO DE IMAGEN IZQUIERDA */
+    /* MARCO DE IMAGEN IZQUIERDA (Aumentado para acompañar a la derecha) */
     .image-card-frame {
         background-color: #E2ECF9;
         border-radius: 18px;
-        padding: 14px;
+        padding: 16px;
         box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.03);
     }
     .hero-image {
         width: 100%;
-        height: 320px;
+        height: 360px;
         object-fit: cover;
         border-radius: 12px;
     }
 
-    /* TARJETA BLANCA DE LOGIN - AMPLIADA VERTICALMENTE */
+    /* TARJETA BLANCA DE LOGIN - MÁXIMO ESPACIO INFERIOR */
     [data-testid="stForm"] {
         background-color: #FFFFFF !important;
-        border-radius: 20px !important;
+        border-radius: 22px !important;
         border: 1px solid #E2E8F0 !important;
-        box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.06) !important;
-        padding: 50px 40px 65px 40px !important; /* Más altura arriba y abajo */
+        box-shadow: 0px 12px 35px rgba(0, 0, 0, 0.06) !important;
+        padding: 60px 42px 90px 42px !important; /* Espaciado extra amplio abajo */
         margin-top: 0px !important;
     }
 
-    /* TÍTULO AMPLIO */
+    /* TÍTULO AMPLIO CON MÁS SEPARACIÓN */
     .card-title {
         text-align: center;
         color: #0F172A;
         font-size: 28px;
         font-weight: 800;
-        margin-bottom: 30px;
+        margin-bottom: 35px;
     }
 
-    /* INPUTS DE TEXTO CON ESPACIO AMPLIO */
+    /* INPUTS CON MÁS MARGEN VERTICAL */
     .stTextInput {
-        margin-bottom: 12px !important;
+        margin-bottom: 16px !important;
     }
     .stTextInput input {
         background-color: #FFFFFF !important;
         color: #0F172A !important;
         border: 1px solid #CBD5E1 !important;
         border-radius: 10px !important;
-        padding: 12px 16px !important;
+        padding: 13px 16px !important;
         font-size: 15px !important;
     }
     .stTextInput label {
         color: #1E293B !important;
         font-weight: 700 !important;
         font-size: 15px !important;
-        margin-bottom: 4px !important;
+        margin-bottom: 6px !important;
     }
 
     /* CHECKBOX Y ENLACE */
@@ -112,10 +112,10 @@ st.markdown("""
         font-size: 14px !important;
     }
 
-    /* BOTÓN 100% ANCHO CON SEPARACIÓN AMPLIA */
+    /* BOTÓN DE INICIO DE SESIÓN */
     div[data-testid="stFormSubmitButton"] {
         width: 100% !important;
-        margin-top: 25px !important;
+        margin-top: 30px !important;
     }
     div[data-testid="stFormSubmitButton"] > button {
         width: 100% !important;
@@ -123,7 +123,7 @@ st.markdown("""
         color: #FFFFFF !important;
         border-radius: 10px !important;
         border: none !important;
-        padding: 13px 0px !important;
+        padding: 14px 0px !important;
         font-size: 16px !important;
         font-weight: 700 !important;
         transition: all 0.2s ease;
@@ -132,12 +132,12 @@ st.markdown("""
         background-color: #1D4ED8 !important;
     }
 
-    /* FOOTER SEPARADO HASTA EL FONDO DE LA TARJETA */
+    /* FOOTER CON GRAN SEPARACIÓN HACIA ABAJO */
     .login-footer {
         text-align: center;
         color: #94A3B8;
         font-size: 13px;
-        margin-top: 45px;
+        margin-top: 70px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -197,7 +197,7 @@ if st.session_state.usuario_actual is None:
             </div>
         """, unsafe_allow_html=True)
 
-    # --- COLUMNA DERECHA (TARJETA LOGIN AMPLIADA) ---
+    # --- COLUMNA DERECHA (TARJETA LOGIN EXTRA MÁS ALTA) ---
     with col_right:
         with st.form("login_form"):
             st.markdown('<div class="card-title">Bienvenido a Alfa Cargo</div>', unsafe_allow_html=True)
