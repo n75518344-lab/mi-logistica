@@ -4,7 +4,7 @@ import pandas as pd
 # 1. CONFIGURACIÓN DE PÁGINA
 st.set_page_config(page_title="Alfa Cargo Express", page_icon="🚚", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. ESTILOS CSS - ALINEACIÓN EXACTA DE MARCOS A LA MISMA ALTURA
+# 2. ESTILOS CSS - TARJETA ALARGADA Y AMPLIADA HACIA ABAJO
 st.markdown("""
     <style>
     /* Ocultar barra lateral */
@@ -21,7 +21,7 @@ st.markdown("""
     .block-container {
         max-width: 88% !important;
         padding-top: 2.5rem !important;
-        padding-bottom: 2rem !important;
+        padding-bottom: 2.5rem !important;
         margin: 0 auto !important;
     }
 
@@ -30,13 +30,13 @@ st.markdown("""
         color: #0F172A;
         font-size: 32px;
         font-weight: 800;
-        margin-bottom: 18px;
+        margin-bottom: 20px;
     }
     .value-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        margin-bottom: 20px;
+        gap: 14px;
+        margin-bottom: 22px;
     }
     .value-item {
         color: #1E293B;
@@ -53,45 +53,43 @@ st.markdown("""
         font-size: 18px;
     }
 
-    /* MARCO DE LA IMAGEN (IZQUIERDA) */
+    /* MARCO DE IMAGEN IZQUIERDA */
     .image-card-frame {
         background-color: #E2ECF9;
-        border-radius: 20px;
-        padding: 16px;
+        border-radius: 18px;
+        padding: 14px;
         box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.03);
-        display: flex;
-        justify-content: center;
-        align-items: center;
     }
-    
-    /* IMAGEN LIGERAMENTE MÁS PEQUEÑA DENTRO DEL MARCO */
     .hero-image {
         width: 100%;
-        height: 275px;
+        height: 320px;
         object-fit: cover;
         border-radius: 12px;
     }
 
-    /* TARJETA BLANCA DE LOGIN (DERECHA) - PADDING AJUSTADO PARA ALINEACIÓN PERFECTA */
+    /* TARJETA BLANCA DE LOGIN - AMPLIADA VERTICALMENTE */
     [data-testid="stForm"] {
         background-color: #FFFFFF !important;
         border-radius: 20px !important;
         border: 1px solid #E2E8F0 !important;
-        box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.05) !important;
-        padding: 48px 38px 42px 38px !important; /* Ajustado para calzar exactamente la altura */
+        box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.06) !important;
+        padding: 50px 40px 65px 40px !important; /* Más altura arriba y abajo */
         margin-top: 0px !important;
     }
 
-    /* TÍTULO BIENVENIDO CENTRADO */
+    /* TÍTULO AMPLIO */
     .card-title {
         text-align: center;
         color: #0F172A;
-        font-size: 27px;
+        font-size: 28px;
         font-weight: 800;
-        margin-bottom: 28px;
+        margin-bottom: 30px;
     }
 
-    /* INPUTS DE TEXTO */
+    /* INPUTS DE TEXTO CON ESPACIO AMPLIO */
+    .stTextInput {
+        margin-bottom: 12px !important;
+    }
     .stTextInput input {
         background-color: #FFFFFF !important;
         color: #0F172A !important;
@@ -104,6 +102,7 @@ st.markdown("""
         color: #1E293B !important;
         font-weight: 700 !important;
         font-size: 15px !important;
+        margin-bottom: 4px !important;
     }
 
     /* CHECKBOX Y ENLACE */
@@ -113,9 +112,10 @@ st.markdown("""
         font-size: 14px !important;
     }
 
-    /* BOTÓN 100% ANCHO IGUAL A LAS CREDENCIALES */
+    /* BOTÓN 100% ANCHO CON SEPARACIÓN AMPLIA */
     div[data-testid="stFormSubmitButton"] {
         width: 100% !important;
+        margin-top: 25px !important;
     }
     div[data-testid="stFormSubmitButton"] > button {
         width: 100% !important;
@@ -126,18 +126,18 @@ st.markdown("""
         padding: 13px 0px !important;
         font-size: 16px !important;
         font-weight: 700 !important;
-        margin-top: 15px !important;
         transition: all 0.2s ease;
     }
     div[data-testid="stFormSubmitButton"] > button:hover {
         background-color: #1D4ED8 !important;
     }
 
+    /* FOOTER SEPARADO HASTA EL FONDO DE LA TARJETA */
     .login-footer {
         text-align: center;
         color: #94A3B8;
         font-size: 13px;
-        margin-top: 28px;
+        margin-top: 45px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -191,14 +191,13 @@ if st.session_state.usuario_actual is None:
             </div>
         """, unsafe_allow_html=True)
         
-        # Marco contenedor + imagen reducida internamente
         st.markdown("""
             <div class="image-card-frame">
                 <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80" class="hero-image" />
             </div>
         """, unsafe_allow_html=True)
 
-    # --- COLUMNA DERECHA (TARJETA LOGIN) ---
+    # --- COLUMNA DERECHA (TARJETA LOGIN AMPLIADA) ---
     with col_right:
         with st.form("login_form"):
             st.markdown('<div class="card-title">Bienvenido a Alfa Cargo</div>', unsafe_allow_html=True)
