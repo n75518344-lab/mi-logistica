@@ -4,7 +4,7 @@ import pandas as pd
 # 1. CONFIGURACIÓN DE PÁGINA
 st.set_page_config(page_title="Alfa Cargo Express", page_icon="🚚", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. ESTILOS CSS - AJUSTE DE COLORES, TIPOGRAFÍAS Y BOTÓN COMPACTO
+# 2. ESTILOS CSS - TARJETA BLANCA FLOTANTE CON BORDES REDONDEADOS
 st.markdown("""
     <style>
     /* Ocultar la barra lateral completamente */
@@ -17,7 +17,7 @@ st.markdown("""
         background-color: #F8FAFC;
     }
     
-    /* Títulos y textos de la sección izquierda */
+    /* Títulos y lista de la izquierda */
     .hero-title {
         color: #0F172A;
         font-size: 32px;
@@ -46,17 +46,27 @@ st.markdown("""
         font-size: 18px;
     }
 
-    /* FORZAR TEXTOS Y PLACEHOLDERS OSCUROS Y LEGIBLES */
+    /* TARJETA BLANCA CONTENEDORA (MARCO REDONDEADO CON SOMBRA) */
+    .login-card {
+        background-color: #FFFFFF;
+        padding: 40px 32px;
+        border-radius: 24px;
+        border: 1px solid #E2E8F0;
+        box-shadow: 0px 15px 35px rgba(0, 0, 0, 0.05);
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    /* FORZAR TEXTOS Y CAMPOS A COLOR OSCURO (SOLUCIÓN TEXTO INVISIBLE) */
     .stTextInput input {
         background-color: #FFFFFF !important;
         color: #0F172A !important;
         border: 1px solid #CBD5E1 !important;
-        border-radius: 8px !important;
+        border-radius: 10px !important;
         padding: 12px 14px !important;
         font-size: 15px !important;
     }
     
-    /* Color para el texto sugerido (placeholder) */
     .stTextInput input::placeholder {
         color: #64748B !important;
         opacity: 1 !important;
@@ -68,18 +78,18 @@ st.markdown("""
         font-size: 14px !important;
     }
 
-    /* COLOR DE TEXTO PARA CHECKBOX (RECORDAR) */
+    /* CHECKBOX Y TEXTO "RECORDAR" EN OSCURO */
     .stCheckbox label p {
         color: #0F172A !important;
         font-weight: 600 !important;
         font-size: 14px !important;
     }
 
-    /* BOTÓN AZUL COMPACTO AL 100% DEL ANCHO DEL CONTENEDOR */
+    /* BOTÓN AZUL QUE ABARCA TODO EL ANCHO DE LA TARJETA */
     .stButton>button {
         background-color: #2563EB !important;
         color: #FFFFFF !important;
-        border-radius: 8px !important;
+        border-radius: 10px !important;
         border: none !important;
         padding: 12px !important;
         font-size: 16px !important;
@@ -96,7 +106,7 @@ st.markdown("""
         text-align: center;
         color: #64748B;
         font-size: 12px;
-        margin-top: 30px;
+        margin-top: 25px;
         line-height: 1.5;
     }
     </style>
@@ -122,7 +132,7 @@ if 'rol_actual' not in st.session_state:
 # 4. PANTALLA PRINCIPAL DE LOGIN
 if st.session_state.usuario_actual is None:
     
-    # Header Superior
+    # Encabezado superior
     st.markdown("""
         <div style='display: flex; justify-content: space-between; align-items: center; padding: 10px 40px 25px 40px;'>
             <div style='font-size: 24px; font-weight: 900; color: #0F172A; letter-spacing: -0.5px;'>
@@ -136,7 +146,7 @@ if st.session_state.usuario_actual is None:
     
     col_left, col_space, col_right = st.columns([1.4, 0.1, 1.0])
     
-    # --- COLUMNA IZQUIERDA (MARCA & ILUSTRACIÓN LOGÍSTICA ESTILO IMILE) ---
+    # --- COLUMNA IZQUIERDA (ILUSTRACIÓN 3D TIPO IMILE) ---
     with col_left:
         st.markdown('<div class="hero-title">Excelencia Logística y Control Operativo</div>', unsafe_allow_html=True)
         
@@ -151,20 +161,17 @@ if st.session_state.usuario_actual is None:
             </div>
         """, unsafe_allow_html=True)
         
-        # Imagen Isométrica 3D estable de Logística/Transporte
-        st.image("https://raw.githubusercontent.com/streamlit/demo-self-driving/master/streamlit_app.png", use_container_width=True) # Reemplazo seguro por ilustración 3D
+        # Imagen de almacén 3D limpio al estilo iMile
         st.markdown("""
-            <div style='text-align: center; margin-top: 10px;'>
-                <img src='https://illustrations.popsy.co/blue/delivery-truck.svg' style='max-width: 380px; width: 100%; height: auto;' />
+            <div style='text-align: center; margin-top: 15px;'>
+                <img src='https://illustrations.popsy.co/blue/delivery-truck.svg' style='max-width: 420px; width: 100%; height: auto;' />
             </div>
         """, unsafe_allow_html=True)
 
-    # --- COLUMNA DERECHA (TARJETA COMPACTA DE LOGIN) ---
+    # --- COLUMNA DERECHA (TARJETA BLANCA REDONDEADA) ---
     with col_right:
-        st.markdown("""
-            <div style='background-color: #FFFFFF; padding: 35px 30px; border-radius: 16px; border: 1px solid #E2E8F0; box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.04); max-width: 380px; margin: 0 auto;'>
-                <h3 style='text-align: center; color: #0F172A; font-size: 24px; font-weight: 800; margin-bottom: 25px;'>Iniciar Sesión</h3>
-        """, unsafe_allow_html=True)
+        st.markdown('<div class="login-card">', unsafe_allow_html=True)
+        st.markdown("<h3 style='text-align: center; color: #0F172A; font-size: 26px; font-weight: 800; margin-bottom: 25px;'>Iniciar Sesión</h3>", unsafe_allow_html=True)
         
         input_user = st.text_input("Usuario", placeholder="Ingresa tu usuario", key="u_login")
         input_pass = st.text_input("Contraseña", type="password", placeholder="Ingresa tu contraseña", key="p_login")
@@ -185,11 +192,11 @@ if st.session_state.usuario_actual is None:
                 st.error("❌ Credenciales incorrectas.")
         
         st.markdown("""
-                <div class="login-footer">
-                    © 2026 Alfa Cargo Express.<br>Todos los derechos reservados.
-                </div>
+            <div class="login-footer">
+                © 2026 Alfa Cargo Express.<br>Todos los derechos reservados.
             </div>
         """, unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
 # 5. SESIÓN INICIADA (SISTEMA CENTRAL)
 else:
