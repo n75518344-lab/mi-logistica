@@ -41,12 +41,10 @@ if 'db_logistica' not in st.session_state:
         {"ID ENVÍO": "ALFA-122", "CLIENTE": "Pedro Castillo", "ORIGEN": "Chorrillos", "DESTINO": "San Miguel", "ESTADO": "POR RECOGER", "CONDUCTOR": "Por Asignar", "EVIDENCIA": "Ninguna"}
     ])
 
-# Base de datos de usuarios registrados (Usuario: {Contraseña, Rol})
+# Base de datos de usuarios (Solo el Administrador Maestro existe al inicio)
 if 'usuarios_registrados' not in st.session_state:
     st.session_state.usuarios_registrados = {
-        "admin": {"pass": "admin123", "rol": "👨‍💼 Portal Administrador"},
-        "repartidor1": {"pass": "driver123", "rol": "🛵 Portal Repartidor"},
-        "cliente1": {"pass": "cliente123", "rol": "📦 Portal Cliente"}
+        "admin": {"pass": "admin123", "rol": "👨‍💼 Portal Administrador", "nombre": "Administrador Principal"}
     }
 
 # Control de sesión activa
@@ -59,62 +57,46 @@ if 'rol_actual' not in st.session_state:
 # BARRA LATERAL (ALFA CARGO EXPRESS)
 # =====================================================================
 st.sidebar.markdown("<h2 style='text-align: center; color: #3B82F6;'>🚚 ALFA CARGO<br>EXPRESS</h2>", unsafe_allow_html=True)
-st.sidebar.markdown("<p style='text-align: center; color: #94A3B8; font-size: 12px;'>Logistics Management v1.1</p>", unsafe_allow_html=True)
+st.sidebar.markdown("<p style='text-align: center; color: #94A3B8; font-size: 12px;'>Logistics Management v1.2</p>", unsafe_allow_html=True)
 st.sidebar.markdown("---")
 
 # =====================================================================
-# SISTEMA DE LOGEO Y REGISTRO (PANTALLA DE ACCESO DE USUARIOS)
+# SISTEMA DE LOGEO SEGURO (SOLO INICIO DE SESIÓN)
 # =====================================================================
 if st.session_state.usuario_actual is None:
     st.markdown("<h1 style='text-align: center; color: #1E3A8A;'>🔒 Control de Acceso - Alfa Cargo Express</h1>", unsafe_allow_html=True)
-    
-    opcion_acceso = st.radio("¿Qué deseas hacer?", ["Iniciar Sesión", "Registrar Nuevo Usuario"], horizontal=True)
+    st.markdown("<p style='text-align: center; color: #64748B;'>Ingresa con las credenciales otorgadas por el Administrador.</p>", unsafe_allow_html=True)
     
     col_form, _ = st.columns([1.5, 2])
     
     with col_form:
-        if opcion_acceso == "Iniciar Sesión":
-            st.subheader("Ingresa tus credenciales")
-            input_user = st.text_input("Usuario:")
-            input_pass = st.text_input("Contraseña:", type="password")
-            
-            if st.button("🔓 Entrar al Sistema"):
-                if input_user in st.session_state.usuarios_registrados and st.session_state.usuarios_registrados[input_user]["pass"] == input_pass:
-                    st.session_state.usuario_actual = input_user
-                    st.session_state.rol_actual = st.session_state.usuarios_registrados[input_user]["rol"]
-                    st.success(f"Bienvenido {input_user}")
-                    st.rerun()
-                else:
-                    st.error("❌ Usuario o contraseña incorrectos.")
-                    
-        else:
-            st.subheader("Formulario de Registro")
-            nuevo_user = st.text_input("Crea un Nombre de Usuario:")
-            nuevo_pass = st.text_input("Crea una Contraseña:", type="password")
-            selec_rol = st.selectbox("Selecciona tu función en la empresa:", ["👨‍💼 Portal Administrador", "🛵 Portal Repartidor", "📦 Portal Cliente"])
-            
-            if st.button("📝 Completar Registro"):
-                if nuevo_user.strip() == "" or nuevo_pass.strip() == "":
-                    st.warning("⚠️ El usuario y la contraseña no pueden estar vacíos.")
-                elif nuevo_user in st.session_state.usuarios_registrados:
-                    st.error("❌ Este usuario ya existe. Elige otro nombre.")
-                else:
-                    st.session_state.usuarios_registrados[nuevo_user] = {"pass": nuevo_pass, "rol": selec_rol}
-                    st.success("🎉 ¡Registro exitoso! Ahora puedes cambiar a 'Iniciar Sesión' con tus nuevos datos.")
+        st.subheader("Iniciar Sesión")
+        input_user = st.text_input("Usuario:")
+        input_pass = st.text_input("Contraseña:", type="password")
+        
+        if st.button("🔓 Entrar al Sistema"):
+            if input_user in st.session_state.usuarios_registrados and st.session_state.usuarios_registrados[input_user]["pass"] == input_pass:
+                st.session_state.usuario_actual = input_user
+                st.session_state.rol_actual = st.session_state.usuarios_registrados[input_user]["rol"]
+                st.success(f"Bienvenido {input_user}")
+                st.rerun()
+            else:
+                st.error("❌ Usuario o contraseña incorrectos.")
 
 # =====================================================================
 # INTERFAZ UNA VEZ INICIADA LA SESIÓN
 # =====================================================================
 else:
     # Botón de Cerrar Sesión en la barra lateral
-    st.sidebar.markdown(f"**Sesión:** {st.session_state.usuario_actual} ({st.session_state.rol_actual})")
+    st.sidebar.markdown(f"**Sesión activa:** {st.session_state.usuario_actual}")
+    st.sidebar.markdown(f"**Rol:** {st.session_state.rol_actual}")
     if st.sidebar.button("🚪 Cerrar Sesión"):
         st.session_state.usuario_actual = None
         st.session_state.rol_actual = None
         st.rerun()
 
     # -----------------------------------------------------------------
-    # MODULO A: INTERFAZ ADMINISTRADOR
+    # MODULO A: INTERFAZ ADMINISTRADOR (CON GESTIÓN DE USUARIOS)
     # -----------------------------------------------------------------
     if st.session_state.rol_actual == "👨‍💼 Portal Administrador":
         st.markdown("<h1 style='color: #1E3A8A;'>PANEL DE CONTROL ADMINISTRATIVO</h1>", unsafe_allow_html=True)
@@ -128,7 +110,9 @@ else:
             st.markdown('<div class="card-metrica"><div class="numero-metrica">150</div><div class="label-metrica">Entregados</div></div>', unsafe_allow_html=True)
             
         st.markdown("<br>", unsafe_allow_html=True)
-        tab_lista, tab_carga = st.tabs(["📋 Monitoreo de Envíos", "📥 Carga Masiva (Excel/CSV)"])
+        
+        # Pestañas del Administrador (Se incluye Gestión de Usuarios)
+        tab_lista, tab_carga, tab_usuarios = st.tabs(["📋 Monitoreo de Envíos", "📥 Carga Masiva (Excel/CSV)", "👥 Creación de Usuarios"])
         
         with tab_lista:
             st.dataframe(st.session_state.db_logistica, use_container_width=True)
@@ -147,6 +131,37 @@ else:
                 st.session_state.db_logistica = pd.concat([st.session_state.db_logistica, nuevos_datos], ignore_index=True)
                 st.success("✔️ Pedidos cargados correctamente al sistema central.")
                 st.dataframe(nuevos_datos, use_container_width=True)
+
+        with tab_usuarios:
+            st.markdown("### 👤 Registrar Nuevo Usuario en el Sistema")
+            st.write("Solo tú como Administrador puedes otorgar accesos a nuevos trabajadores o clientes.")
+            
+            col_u1, col_u2 = st.columns(2)
+            with col_u1:
+                nuevo_user = st.text_input("Nombre de Usuario (Para Iniciar Sesión):")
+                nuevo_pass = st.text_input("Contraseña Temporal:", type="password")
+                selec_rol = st.selectbox("Asignar Rol/Portal:", ["🛵 Portal Repartidor", "📦 Portal Cliente", "👨‍💼 Portal Administrador"])
+                
+                if st.button("➕ Crear y Guardar Usuario"):
+                    if nuevo_user.strip() == "" or nuevo_pass.strip() == "":
+                        st.warning("⚠️ Todos los campos son obligatorios.")
+                    elif nuevo_user in st.session_state.usuarios_registrados:
+                        st.error("❌ El nombre de usuario ya existe en el sistema.")
+                    else:
+                        st.session_state.usuarios_registrados[nuevo_user] = {
+                            "pass": nuevo_pass, 
+                            "rol": selec_rol
+                        }
+                        st.success(f"🎉 ¡Usuario '{nuevo_user}' creado exitosamente con el rol {selec_rol}!")
+
+            with col_u2:
+                st.markdown("### Usuarios Activos en Alfa Cargo Express")
+                # Mostrar lista limpia de usuarios registrados
+                df_usuarios = pd.DataFrame([
+                    {"Usuario": user, "Rol / Permisos": datos["rol"]} 
+                    for user, datos in st.session_state.usuarios_registrados.items()
+                ])
+                st.dataframe(df_usuarios, use_container_width=True)
 
     # -----------------------------------------------------------------
     # MODULO B: INTERFAZ REPARTIDOR (MÓVIL + ESCANER)
@@ -171,7 +186,6 @@ else:
             """, unsafe_allow_html=True)
             st.markdown("<br>", unsafe_allow_html=True)
             
-            # Opción Obligatoria de Escaneo solicitada
             st.subheader("📷 1. Escaneo de Código de Barras")
             scan_code = st.camera_input("Enfoca el código de barras del producto físico:")
             
