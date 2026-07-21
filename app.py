@@ -4,7 +4,7 @@ import pandas as pd
 # 1. CONFIGURACIÓN DE PÁGINA
 st.set_page_config(page_title="Alfa Cargo Express", page_icon="🚚", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. ESTILOS CSS - JERARQUÍA DE TIPOGRAFÍA CORREGIDA
+# 2. ESTILOS CSS - PANTALLA GENERAL Y PANEL DE CONTROL
 st.markdown("""
     <style>
     /* Ocultar barra lateral */
@@ -20,12 +20,12 @@ st.markdown("""
     /* CONTENEDOR PRINCIPAL */
     .block-container {
         max-width: 88% !important;
-        padding-top: 3.8rem !important;
+        padding-top: 3.5rem !important;
         padding-bottom: 2.5rem !important;
         margin: 0 auto !important;
     }
 
-    /* ENCABEZADO SUPERIOR CON LOGO PRINCIPAL MÁS GRANDE */
+    /* ENCABEZADO SUPERIOR CON LOGO PRINCIPAL */
     .header-container {
         display: flex;
         justify-content: space-between;
@@ -35,16 +35,16 @@ st.markdown("""
     }
     
     .brand-logo {
-        font-size: 32px !important; /* Subió de 26px a 32px para resaltar la marca */
+        font-size: 32px !important;
         font-weight: 900;
         color: #0F172A;
         letter-spacing: -0.5px;
     }
 
-    /* COLUMNA IZQUIERDA - TITULAR MÁS SUAVE Y SECUNDARIO */
+    /* COLUMNA IZQUIERDA LOGIN */
     .hero-title {
         color: #1E293B;
-        font-size: 24px !important; /* Bajó de 32px a 24px para no competir con la marca */
+        font-size: 24px !important;
         font-weight: 700;
         margin-bottom: 22px;
         letter-spacing: -0.2px;
@@ -71,7 +71,6 @@ st.markdown("""
         font-size: 18px;
     }
 
-    /* IMAGEN DE ALMACÉN SIN MARCO */
     .hero-image {
         width: 100%;
         height: 330px;
@@ -90,7 +89,6 @@ st.markdown("""
         margin-top: 0px !important;
     }
 
-    /* TÍTULO BIENVENIDO */
     .card-title {
         text-align: center;
         color: #0F172A;
@@ -99,7 +97,6 @@ st.markdown("""
         margin-bottom: 28px;
     }
 
-    /* INPUTS DE TEXTO */
     .stTextInput {
         margin-bottom: 12px !important;
     }
@@ -118,14 +115,12 @@ st.markdown("""
         margin-bottom: 4px !important;
     }
 
-    /* CHECKBOX Y ENLACE */
     .stCheckbox label p {
         color: #334155 !important;
         font-weight: 600 !important;
         font-size: 14px !important;
     }
 
-    /* BOTÓN 100% ANCHO */
     div[data-testid="stFormSubmitButton"] {
         width: 100% !important;
         margin-top: 24px !important;
@@ -145,12 +140,47 @@ st.markdown("""
         background-color: #1D4ED8 !important;
     }
 
-    /* FOOTER CON MARGEN */
     .login-footer {
         text-align: center;
         color: #94A3B8;
         font-size: 13px;
         margin-top: 58px;
+    }
+
+    /* ESTILOS PARA EL PANEL DE CONTROL POST-LOGIN */
+    .dashboard-title {
+        color: #0F172A !important;
+        font-size: 26px !important;
+        font-weight: 900 !important;
+        margin-bottom: 2px !important;
+    }
+    .dashboard-sub {
+        color: #475569 !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+    }
+
+    /* BOTÓN CERRAR SESIÓN ELEGANTE */
+    div[data-testid="stButton"] > button {
+        background-color: #EF4444 !important;
+        color: #FFFFFF !important;
+        border: none !important;
+        border-radius: 8px !important;
+        font-weight: 700 !important;
+        padding: 8px 16px !important;
+        transition: all 0.2s ease !important;
+    }
+    div[data-testid="stButton"] > button:hover {
+        background-color: #DC2626 !important;
+    }
+
+    /* CORRECCIÓN DE LA TABLA (DATAFRAME) EN MODO CLARO */
+    [data-testid="stDataFrame"] {
+        background-color: #FFFFFF !important;
+        border-radius: 12px !important;
+        padding: 10px !important;
+        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.04) !important;
+        border: 1px solid #E2E8F0 !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -175,7 +205,6 @@ if 'rol_actual' not in st.session_state:
 # 4. PANTALLA PRINCIPAL DE LOGIN
 if st.session_state.usuario_actual is None:
     
-    # Encabezado superior con la marca bien resaltada
     st.markdown("""
         <div class="header-container">
             <div class="brand-logo">
@@ -189,7 +218,6 @@ if st.session_state.usuario_actual is None:
     
     col_left, col_right = st.columns([1.3, 1.0], gap="large")
     
-    # --- COLUMNA IZQUIERDA ---
     with col_left:
         st.markdown('<div class="hero-title">Excelencia Logística y Control Operativo</div>', unsafe_allow_html=True)
         
@@ -204,15 +232,14 @@ if st.session_state.usuario_actual is None:
             </div>
         """, unsafe_allow_html=True)
         
-        # Imagen directa limpia sin marco
         st.markdown("""
             <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80" class="hero-image" />
         """, unsafe_allow_html=True)
 
-    # --- COLUMNA DERECHA (TARJETA LOGIN) ---
     with col_right:
         with st.form("login_form"):
-            st.markdown('<div class="card-title">Bienvenido a Alfa Cargo</div>', unsafe_allow_html=True)
+            # AHORA SOLO DICE BIENVENIDO
+            st.markdown('<div class="card-title">Bienvenido</div>', unsafe_allow_html=True)
             
             input_user = st.text_input("Usuario", placeholder="Ingresa tu usuario", key="u_login")
             input_pass = st.text_input("Contraseña", type="password", placeholder="Ingresa tu contraseña", key="p_login")
@@ -243,13 +270,20 @@ if st.session_state.usuario_actual is None:
 else:
     col_nav1, col_nav2 = st.columns([5, 1])
     with col_nav1:
-        st.markdown(f"### 🔷 ALFA CARGO EXPRESS — {st.session_state.rol_actual}")
-        st.caption(f"Usuario activo: {st.session_state.usuario_actual}")
+        st.markdown(f"""
+            <div class="dashboard-title">
+                🔷 ALFA CARGO <span style='color: #2563EB;'>EXPRESS</span> — {st.session_state.rol_actual}
+            </div>
+            <div class="dashboard-sub">
+                Usuario activo: <strong>{st.session_state.usuario_actual}</strong> | Estado: Conectado
+            </div>
+        """, unsafe_allow_html=True)
     with col_nav2:
-        if st.button("🚪 Cerrar Sesión"):
+        st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
+        if st.button("🚪 Cerrar Sesión", key="logout_btn"):
             st.session_state.usuario_actual = None
             st.session_state.rol_actual = None
             st.rerun()
             
-    st.markdown("---")
+    st.markdown("<br>", unsafe_allow_html=True)
     st.dataframe(st.session_state.db_logistica, use_container_width=True)
