@@ -4,7 +4,7 @@ import pandas as pd
 # 1. CONFIGURACIÓN DE PÁGINA
 st.set_page_config(page_title="Alfa Cargo Express", page_icon="🚚", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. ESTILOS CSS - TARJETA BLANCA FLOTANTE CON BORDES REDONDEADOS
+# 2. ESTILOS CSS - CORRECCIÓN DE BORDES Y TEXTOS OSCUROS
 st.markdown("""
     <style>
     /* Ocultar la barra lateral completamente */
@@ -17,14 +17,13 @@ st.markdown("""
         background-color: #F8FAFC;
     }
     
-    /* Títulos y lista de la izquierda */
+    /* Títulos e información de la izquierda */
     .hero-title {
         color: #0F172A;
-        font-size: 32px;
+        font-size: 30px;
         font-weight: 800;
         margin-bottom: 20px;
     }
-    
     .value-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -46,46 +45,42 @@ st.markdown("""
         font-size: 18px;
     }
 
-    /* TARJETA BLANCA CONTENEDORA (MARCO REDONDEADO CON SOMBRA) */
-    .login-card {
-        background-color: #FFFFFF;
-        padding: 40px 32px;
-        border-radius: 24px;
-        border: 1px solid #E2E8F0;
-        box-shadow: 0px 15px 35px rgba(0, 0, 0, 0.05);
-        max-width: 400px;
-        margin: 0 auto;
+    /* ESTILO DE LA TARJETA BLANCA DE LOGIN (CONTENEDOR NATIVO) */
+    div[data-testid="stVerticalBlockBorderWrapper"] {
+        background-color: #FFFFFF !important;
+        border-radius: 24px !important;
+        border: 1px solid #E2E8F0 !important;
+        box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.05) !important;
+        padding: 25px 20px !important;
     }
 
-    /* FORZAR TEXTOS Y CAMPOS A COLOR OSCURO (SOLUCIÓN TEXTO INVISIBLE) */
+    /* INPUTS CON TEXTO Y PLACEHOLDER OSCUROS Y LEGIBLES */
     .stTextInput input {
         background-color: #FFFFFF !important;
         color: #0F172A !important;
         border: 1px solid #CBD5E1 !important;
         border-radius: 10px !important;
-        padding: 12px 14px !important;
+        padding: 10px 14px !important;
         font-size: 15px !important;
     }
-    
     .stTextInput input::placeholder {
         color: #64748B !important;
         opacity: 1 !important;
     }
-    
     .stTextInput label {
         color: #0F172A !important;
         font-weight: 700 !important;
         font-size: 14px !important;
     }
 
-    /* CHECKBOX Y TEXTO "RECORDAR" EN OSCURO */
+    /* CHECKBOX Y TEXTO RECORDAR */
     .stCheckbox label p {
         color: #0F172A !important;
         font-weight: 600 !important;
         font-size: 14px !important;
     }
 
-    /* BOTÓN AZUL QUE ABARCA TODO EL ANCHO DE LA TARJETA */
+    /* BOTÓN AZUL */
     .stButton>button {
         background-color: #2563EB !important;
         color: #FFFFFF !important;
@@ -95,8 +90,7 @@ st.markdown("""
         font-size: 16px !important;
         font-weight: 700 !important;
         width: 100% !important;
-        margin-top: 15px;
-        margin-bottom: 10px;
+        margin-top: 10px;
     }
     .stButton>button:hover {
         background-color: #1D4ED8 !important;
@@ -106,7 +100,7 @@ st.markdown("""
         text-align: center;
         color: #64748B;
         font-size: 12px;
-        margin-top: 25px;
+        margin-top: 20px;
         line-height: 1.5;
     }
     </style>
@@ -146,7 +140,7 @@ if st.session_state.usuario_actual is None:
     
     col_left, col_space, col_right = st.columns([1.4, 0.1, 1.0])
     
-    # --- COLUMNA IZQUIERDA (ILUSTRACIÓN 3D TIPO IMILE) ---
+    # --- COLUMNA IZQUIERDA (ILUSTRACIÓN LOGÍSTICA ESTILO IMILE) ---
     with col_left:
         st.markdown('<div class="hero-title">Excelencia Logística y Control Operativo</div>', unsafe_allow_html=True)
         
@@ -161,42 +155,41 @@ if st.session_state.usuario_actual is None:
             </div>
         """, unsafe_allow_html=True)
         
-        # Imagen de almacén 3D limpio al estilo iMile
+        # Imagen vectorial limpia estilo iMile
         st.markdown("""
-            <div style='text-align: center; margin-top: 15px;'>
+            <div style='text-align: center; margin-top: 10px;'>
                 <img src='https://illustrations.popsy.co/blue/delivery-truck.svg' style='max-width: 420px; width: 100%; height: auto;' />
             </div>
         """, unsafe_allow_html=True)
 
-    # --- COLUMNA DERECHA (TARJETA BLANCA REDONDEADA) ---
+    # --- COLUMNA DERECHA (TARJETA CONTENEDORA REAL DE STREAMLIT) ---
     with col_right:
-        st.markdown('<div class="login-card">', unsafe_allow_html=True)
-        st.markdown("<h3 style='text-align: center; color: #0F172A; font-size: 26px; font-weight: 800; margin-bottom: 25px;'>Iniciar Sesión</h3>", unsafe_allow_html=True)
-        
-        input_user = st.text_input("Usuario", placeholder="Ingresa tu usuario", key="u_login")
-        input_pass = st.text_input("Contraseña", type="password", placeholder="Ingresa tu contraseña", key="p_login")
-        
-        # Fila de Recordar y Olvidaste tu contraseña
-        col_opt1, col_opt2 = st.columns([1, 1.2])
-        with col_opt1:
-            remember = st.checkbox("Recordar", value=True)
-        with col_opt2:
-            st.markdown('<div style="text-align: right; padding-top: 3px;"><a href="#" style="color: #2563EB; font-size: 13px; font-weight: 600; text-decoration: none;">¿Olvidaste tu contraseña?</a></div>', unsafe_allow_html=True)
-        
-        if st.button("Iniciar Sesión"):
-            if input_user in st.session_state.usuarios_registrados and st.session_state.usuarios_registrados[input_user]["pass"] == input_pass:
-                st.session_state.usuario_actual = input_user
-                st.session_state.rol_actual = st.session_state.usuarios_registrados[input_user]["rol"]
-                st.rerun()
-            else:
-                st.error("❌ Credenciales incorrectas.")
-        
-        st.markdown("""
-            <div class="login-footer">
-                © 2026 Alfa Cargo Express.<br>Todos los derechos reservados.
-            </div>
-        """, unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+        with st.container(border=True):
+            st.markdown("<h3 style='text-align: center; color: #0F172A; font-size: 24px; font-weight: 800; margin-bottom: 20px;'>Iniciar Sesión</h3>", unsafe_allow_html=True)
+            
+            input_user = st.text_input("Usuario", placeholder="Ingresa tu usuario", key="u_login")
+            input_pass = st.text_input("Contraseña", type="password", placeholder="Ingresa tu contraseña", key="p_login")
+            
+            # Fila de Recordar y Olvidaste tu contraseña
+            col_opt1, col_opt2 = st.columns([1, 1.2])
+            with col_opt1:
+                remember = st.checkbox("Recordar", value=True)
+            with col_opt2:
+                st.markdown('<div style="text-align: right; padding-top: 3px;"><a href="#" style="color: #2563EB; font-size: 13px; font-weight: 600; text-decoration: none;">¿Olvidaste tu contraseña?</a></div>', unsafe_allow_html=True)
+            
+            if st.button("Iniciar Sesión"):
+                if input_user in st.session_state.usuarios_registrados and st.session_state.usuarios_registrados[input_user]["pass"] == input_pass:
+                    st.session_state.usuario_actual = input_user
+                    st.session_state.rol_actual = st.session_state.usuarios_registrados[input_user]["rol"]
+                    st.rerun()
+                else:
+                    st.error("❌ Credenciales incorrectas.")
+            
+            st.markdown("""
+                <div class="login-footer">
+                    © 2026 Alfa Cargo Express.<br>Todos los derechos reservados.
+                </div>
+            """, unsafe_allow_html=True)
 
 # 5. SESIÓN INICIADA (SISTEMA CENTRAL)
 else:
