@@ -4,7 +4,7 @@ import pandas as pd
 # 1. CONFIGURACIÓN DE PÁGINA
 st.set_page_config(page_title="Alfa Cargo Express", page_icon="🚚", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. ESTILOS CSS - TARJETA CON ALTURA Y ESPACIADO EQUILIBRADO
+# 2. ESTILOS CSS - TARJETA CON EL AUMENTO JUSTO
 st.markdown("""
     <style>
     /* Ocultar barra lateral */
@@ -62,18 +62,18 @@ st.markdown("""
     }
     .hero-image {
         width: 100%;
-        height: 290px;
+        height: 310px;
         object-fit: cover;
         border-radius: 12px;
     }
 
-    /* TARJETA BLANCA DE LOGIN - PROPORCIÓN PERFECTA */
+    /* TARJETA BLANCA DE LOGIN - ESPACIO INFERIOR AUMENTADO EN SU JUSTA MEDIDA */
     [data-testid="stForm"] {
         background-color: #FFFFFF !important;
         border-radius: 20px !important;
         border: 1px solid #E2E8F0 !important;
         box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.06) !important;
-        padding: 42px 38px 40px 38px !important; /* Equilibrio ideal */
+        padding: 48px 40px 58px 40px !important; /* Aumentado exactamente el toque necesario */
         margin-top: 0px !important;
     }
 
@@ -81,14 +81,14 @@ st.markdown("""
     .card-title {
         text-align: center;
         color: #0F172A;
-        font-size: 27px;
+        font-size: 28px;
         font-weight: 800;
-        margin-bottom: 25px;
+        margin-bottom: 28px;
     }
 
     /* INPUTS DE TEXTO */
     .stTextInput {
-        margin-bottom: 10px !important;
+        margin-bottom: 12px !important;
     }
     .stTextInput input {
         background-color: #FFFFFF !important;
@@ -115,7 +115,7 @@ st.markdown("""
     /* BOTÓN 100% ANCHO */
     div[data-testid="stFormSubmitButton"] {
         width: 100% !important;
-        margin-top: 20px !important;
+        margin-top: 22px !important;
     }
     div[data-testid="stFormSubmitButton"] > button {
         width: 100% !important;
@@ -132,12 +132,12 @@ st.markdown("""
         background-color: #1D4ED8 !important;
     }
 
-    /* FOOTER CON DISTANCIA MODERADA */
+    /* FOOTER CON MARGEN AUMENTADO UN POCO MÁS */
     .login-footer {
         text-align: center;
         color: #94A3B8;
         font-size: 13px;
-        margin-top: 35px;
+        margin-top: 50px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -197,7 +197,7 @@ if st.session_state.usuario_actual is None:
             </div>
         """, unsafe_allow_html=True)
 
-    # --- COLUMNA DERECHA (TARJETA LOGIN EQUILIBRADA) ---
+    # --- COLUMNA DERECHA (TARJETA LOGIN AJUSTADA) ---
     with col_right:
         with st.form("login_form"):
             st.markdown('<div class="card-title">Bienvenido a Alfa Cargo</div>', unsafe_allow_html=True)
