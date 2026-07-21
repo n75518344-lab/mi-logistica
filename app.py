@@ -1,31 +1,30 @@
 import streamlit as st
 import pandas as pd
 
-# 1. CONFIGURACIÓN DE PÁGINA (Sin barra lateral)
+# 1. CONFIGURACIÓN DE PÁGINA
 st.set_page_config(page_title="Alfa Cargo Express", page_icon="🚚", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. ESTILOS CSS (Diseño compacto tipo iMile/Instagram + Ocultar Sidebar)
+# 2. ESTILOS CSS - ESTILO IMILE / INSTAGRAM (Campos blancos y tarjeta compacta)
 st.markdown("""
     <style>
-    /* Ocultar la barra lateral por completo */
+    /* Ocultar la barra lateral completamente */
     [data-testid="stSidebar"], [data-testid="collapsedControl"] {
         display: none !important;
     }
     
-    /* Fondo limpio gris tenue */
+    /* Fondo general gris tenue */
     .stApp {
         background-color: #F8FAFC;
     }
     
-    /* Encabezado y títulos */
+    /* Títulos de la sección izquierda */
     .hero-title {
         color: #0F172A;
-        font-size: 30px;
+        font-size: 28px;
         font-weight: 800;
         margin-bottom: 16px;
     }
     
-    /* Cuadrícula de valores */
     .value-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -45,46 +44,46 @@ st.markdown("""
         font-weight: bold;
         margin-right: 8px;
     }
-    
-    /* Tarjeta de Login compacta (Estilo Instagram / iMile) */
-    div[data-testid="column"]:nth-child(3) {
-        max-width: 360px !important;
-        margin: 0 auto;
+
+    /* FORZAR CAMPOS DE TEXTO BLANCOS (Arreglo del fondo negro) */
+    .stTextInput input {
+        background-color: #FFFFFF !important;
+        color: #0F172A !important;
+        border: 1px solid #CBD5E1 !important;
+        border-radius: 8px !important;
+        padding: 10px 14px !important;
     }
-    
-    /* Ajustes para textos y campos dentro de las columnas */
+    .stTextInput input:focus {
+        border-color: #2563EB !important;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
+    }
     .stTextInput label {
-        color: #1E293B !important;
+        color: #334155 !important;
         font-weight: 600 !important;
         font-size: 13px !important;
     }
-    .stTextInput input {
-        border-radius: 6px !important;
-        border: 1px solid #CBD5E1 !important;
-        padding: 8px 12px !important;
-    }
     
-    /* Botón compacto corporativo */
+    /* Botón ancho estilo iMile/Instagram */
     .stButton>button {
         background-color: #2563EB !important;
         color: #FFFFFF !important;
-        border-radius: 6px !important;
+        border-radius: 8px !important;
         border: none !important;
         padding: 10px !important;
         font-size: 15px !important;
         font-weight: 700 !important;
-        width: 100%;
-        margin-top: 10px;
+        width: 100% !important;
+        margin-top: 15px;
     }
     .stButton>button:hover {
         background-color: #1D4ED8 !important;
     }
-    
+
     .login-footer {
         text-align: center;
         color: #94A3B8;
         font-size: 11px;
-        margin-top: 20px;
+        margin-top: 25px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -109,9 +108,9 @@ if 'rol_actual' not in st.session_state:
 # 4. PANTALLA PRINCIPAL DE LOGIN
 if st.session_state.usuario_actual is None:
     
-    # Barra superior limpia
+    # Encabezado superior
     st.markdown("""
-        <div style='display: flex; justify-content: space-between; align-items: center; padding: 15px 40px 25px 40px;'>
+        <div style='display: flex; justify-content: space-between; align-items: center; padding: 10px 30px 20px 30px;'>
             <div style='font-size: 22px; font-weight: 900; color: #0F172A; letter-spacing: -0.5px;'>
                 🔷 ALFA CARGO <span style='color: #2563EB;'>EXPRESS</span>
             </div>
@@ -121,10 +120,9 @@ if st.session_state.usuario_actual is None:
         </div>
     """, unsafe_allow_html=True)
     
-    # Distribución de 2 columnas principales
-    col_left, col_space, col_right = st.columns([1.4, 0.1, 1.0])
+    col_left, col_space, col_right = st.columns([1.5, 0.1, 1.0])
     
-    # --- COLUMNA IZQUIERDA (MARCA & FOTO LOGÍSTICA REAL) ---
+    # --- IZQUIERDA (MARCA & FOTO LOGÍSTICA REAL) ---
     with col_left:
         st.markdown('<div class="hero-title">Excelencia Logística y Control Operativo</div>', unsafe_allow_html=True)
         
@@ -139,14 +137,15 @@ if st.session_state.usuario_actual is None:
             </div>
         """, unsafe_allow_html=True)
         
-        # Imagen de logística profesional / almacén neutral (sin marcas de terceros)
         st.image("https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1000&q=80", use_container_width=True)
 
-    # --- COLUMNA DERECHA (TARJETA COMPACTA DE LOGIN) ---
+    # --- DERECHA (FORMULARIO COMPACTO TIPO IMILE/INSTAGRAM) ---
     with col_right:
-        # Formulario compacto
-        st.markdown("<h2 style='text-align: center; color: #0F172A; font-size: 22px; font-weight: 700; margin-bottom: 2px;'>Bienvenido</h2>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center; color: #64748B; font-size: 13px; margin-bottom: 20px;'>Ingresa tus credenciales</p>", unsafe_allow_html=True)
+        # Envoltorio visual simulación tarjeta limpia
+        st.markdown("""
+            <div style='background-color: #FFFFFF; padding: 30px 25px; border-radius: 12px; border: 1px solid #E2E8F0; box-shadow: 0px 4px 12px rgba(0,0,0,0.03); max-width: 360px; margin: 0 auto;'>
+                <h3 style='text-align: center; color: #0F172A; font-size: 20px; font-weight: 700; margin-bottom: 20px;'>Bienvenido</h3>
+        """, unsafe_allow_html=True)
         
         input_user = st.text_input("Usuario", placeholder="Ingresa tu usuario", key="u_login")
         input_pass = st.text_input("Contraseña", type="password", placeholder="Ingresa tu contraseña", key="p_login")
@@ -160,12 +159,13 @@ if st.session_state.usuario_actual is None:
                 st.error("❌ Credenciales incorrectas.")
         
         st.markdown("""
-            <div class="login-footer">
-                © 2026 Alfa Cargo Express S.A.C.<br>Todos los derechos reservados.
+                <div class="login-footer">
+                    © 2026 Alfa Cargo Express S.A.C.<br>Todos los derechos reservados.
+                </div>
             </div>
         """, unsafe_allow_html=True)
 
-# 5. SESIÓN INICIADA (DASHBOARD)
+# 5. SESIÓN INICIADA (SISTEMA CENTRAL)
 else:
     col_nav1, col_nav2 = st.columns([5, 1])
     with col_nav1:
