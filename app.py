@@ -24,7 +24,7 @@ if "usuario_actual" not in st.session_state:
     st.session_state.usuario_actual = None
     st.session_state.rol_actual = None
 
-# 2. ESTILOS CSS CORREGIDOS (VISIBILIDAD TOTAL)
+# 2. ESTILOS CSS CORREGIDOS (VISIBILIDAD GARANTIZADA)
 st.markdown(
     """
     <style>
@@ -74,6 +74,13 @@ st.markdown(
         font-weight: 700 !important;
     }
 
+    /* CORRECCIÓN ESPECÍFICA PARA EL CHECKBOX "RECORDAR" */
+    [data-testid="stCheckbox"] label p, [data-testid="stCheckbox"] span {
+        color: #0F172A !important;
+        font-weight: 700 !important;
+        font-size: 14px !important;
+    }
+
     div[data-testid="stFormSubmitButton"] > button {
         background-color: #2563EB !important;
         color: #FFFFFF !important;
@@ -98,7 +105,7 @@ st.markdown(
         font-weight: 700 !important;
     }
 
-    /* CORRECCIÓN DE VISIBILIDAD EN LAS PESTAÑAS (TABS) */
+    /* PESTAÑAS (TABS) */
     .stTabs [data-baseweb="tab-list"] { gap: 8px; }
     .stTabs [data-baseweb="tab"] {
         background-color: #E2E8F0 !important;
@@ -116,7 +123,7 @@ st.markdown(
         color: #FFFFFF !important;
     }
 
-    /* FORZAR TEXTO NEGRO Y FONDO BLANCO EN TABLAS Y TARJETAS */
+    /* TABLAS Y TARJETAS */
     [data-testid="stDataFrame"] {
         background-color: #FFFFFF !important;
         border-radius: 12px !important;
@@ -124,7 +131,6 @@ st.markdown(
         border: 1px solid #CBD5E1 !important;
     }
 
-    /* TITULOS H3 DENTRO DEL PANEL */
     h3 {
         color: #0F172A !important;
         font-weight: 800 !important;
