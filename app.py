@@ -4,7 +4,7 @@ import pandas as pd
 # 1. CONFIGURACIÓN DE PÁGINA
 st.set_page_config(page_title="Alfa Cargo Express", page_icon="🚚", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. ESTILOS CSS - TARJETA ALARGADA Y BOTÓN 100% ANCHO
+# 2. ESTILOS CSS - ALINEACIÓN Y BOTÓN ANCHO COMPLETO
 st.markdown("""
     <style>
     /* Ocultar barra lateral */
@@ -53,22 +53,22 @@ st.markdown("""
         font-size: 18px;
     }
 
-    /* IMAGEN DE TAMAÑO BALANCEADO */
+    /* IMAGEN CON ALTURA AJUSTADA PARA NIVELAR CON EL BOTTOM DE LA TARJETA DERECHA */
     .hero-image {
         width: 100%;
-        max-height: 330px;
+        height: 390px !important;
         object-fit: cover;
         border-radius: 16px;
         box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.08);
     }
 
-    /* TARJETA BLANCA DE LOGIN - ALARGADA PROPORCIONALMENTE */
+    /* TARJETA BLANCA DE LOGIN */
     [data-testid="stForm"] {
         background-color: #FFFFFF !important;
         border-radius: 20px !important;
         border: 1px solid #E2E8F0 !important;
         box-shadow: 0px 12px 30px rgba(0, 0, 0, 0.06) !important;
-        padding: 55px 40px !important; /* Más alto y cómodo */
+        padding: 45px 38px !important;
     }
 
     /* TÍTULO BIENVENIDO CENTRADO */
@@ -77,13 +77,10 @@ st.markdown("""
         color: #0F172A;
         font-size: 28px;
         font-weight: 800;
-        margin-bottom: 35px;
+        margin-bottom: 30px;
     }
 
     /* INPUTS DE TEXTO */
-    .stTextInput {
-        margin-bottom: 12px !important;
-    }
     .stTextInput input {
         background-color: #FFFFFF !important;
         color: #0F172A !important;
@@ -105,33 +102,31 @@ st.markdown("""
         font-size: 14px !important;
     }
 
-    /* FORZAR EL BOTÓN A OCUPAR EL 100% DE LA TARJETA (ESTILO IMILE) */
-    [data-testid="stFormSubmitButton"] {
+    /* REFORZAR CSS PARA BOTÓN 100% ANCHO (DEL MISMO TAMAÑO QUE LAS CREDANCIALES) */
+    div[data-testid="stFormSubmitButton"] {
         width: 100% !important;
-        display: block !important;
-        margin-top: 25px !important;
     }
-    [data-testid="stFormSubmitButton"] > button {
+    div[data-testid="stFormSubmitButton"] > button {
         width: 100% !important;
-        background-color: #3B82F6 !important;
+        background-color: #2563EB !important;
         color: #FFFFFF !important;
         border-radius: 10px !important;
         border: none !important;
-        padding: 14px 0px !important;
+        padding: 12px 0px !important;
         font-size: 16px !important;
         font-weight: 700 !important;
-        display: block !important;
+        margin-top: 15px !important;
         transition: all 0.2s ease;
     }
-    [data-testid="stFormSubmitButton"] > button:hover {
-        background-color: #2563EB !important;
+    div[data-testid="stFormSubmitButton"] > button:hover {
+        background-color: #1D4ED8 !important;
     }
 
     .login-footer {
         text-align: center;
         color: #94A3B8;
         font-size: 13px;
-        margin-top: 35px;
+        margin-top: 30px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -185,7 +180,7 @@ if st.session_state.usuario_actual is None:
             </div>
         """, unsafe_allow_html=True)
         
-        # Imagen con altura equilibrada
+        # Imagen con altura alineada exactamente con la tarjeta de la derecha
         st.markdown("""
             <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80" class="hero-image" />
         """, unsafe_allow_html=True)
@@ -204,7 +199,8 @@ if st.session_state.usuario_actual is None:
             with col_opt2:
                 st.markdown('<div style="text-align: right; padding-top: 3px;"><a href="#" style="color: #2563EB; font-size: 13px; font-weight: 600; text-decoration: none;">¿Olvidaste tu contraseña?</a></div>', unsafe_allow_html=True)
             
-            submit_btn = st.form_submit_button("Iniciar Sesión")
+            # Botón configurado para tomar todo el ancho del contenedor
+            submit_btn = st.form_submit_button("Iniciar Sesión", use_container_width=True)
             
             if submit_btn:
                 if input_user in st.session_state.usuarios_registrados and st.session_state.usuarios_registrados[input_user]["pass"] == input_pass:
