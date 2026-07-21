@@ -1,3 +1,5 @@
+import base64
+import os
 import pandas as pd
 import streamlit as st
 
@@ -226,6 +228,15 @@ if "usuario_actual" not in st.session_state:
 if "rol_actual" not in st.session_state:
   st.session_state.rol_actual = None
 
+
+# FUNCIÓN PARA LEER LA IMAGEN SUBIDA A GITHUB
+def obtener_imagen_github(nombre_archivo="alfa_warehouse.jpg"):
+  if os.path.exists(nombre_archivo):
+    with open(nombre_archivo, "rb") as f:
+      return base64.b64encode(f.read()).decode("utf-8")
+  return None
+
+
 # 4. PANTALLA PRINCIPAL DE LOGIN
 if st.session_state.usuario_actual is None:
 
@@ -266,16 +277,19 @@ if st.session_state.usuario_actual is None:
         unsafe_allow_html=True,
     )
 
-    # AQUÍ SE REEMPLAZA EL ENLACE DE LA IMAGEN DE PINTEREST
-    # Usamos la CDN directa de Pinterest (i.pinimg.com) para que cargue la imagen
-    p_image_url = (
-        "https://i.pinimg.com/564x/88/11/57/881157483316153777.jpg"
-    )
+    # LECTURA DE IMAGEN DESDE GITHUB
+    img_b64 = obtener_imagen_github("alfa_warehouse.jpg")
 
-    st.markdown(
-        f'<img src="{p_image_url}" class="hero-image" />',
-        unsafe_allow_html=True,
-    )
+    if img_b64:
+      st.markdown(
+          f'<img src="data:image/jpeg;base64,{img_b64}" class="hero-image" />',
+          unsafe_allow_html=True,
+      )
+    else:
+      st.info(
+          "📌 Sube la imagen a tu repositorio de GitHub nombrándola"
+          " 'alfa_warehouse.jpg' para verla aquí."
+      )
 
   with col_right:
     with st.form("login_form"):
