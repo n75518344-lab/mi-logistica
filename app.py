@@ -4,20 +4,20 @@ import pandas as pd
 # 1. CONFIGURACIÓN DE PÁGINA
 st.set_page_config(page_title="Alfa Cargo Express", page_icon="🚚", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. ESTILOS CSS - MARCO BLANCO REDONDEADO CONTENEDOR EXACTO (PRIMERA IMAGEN)
+# 2. ESTILOS CSS - CONTENEDOR BLANCO, CENTRADO Y BOTÓN
 st.markdown("""
     <style>
-    /* Ocultar la barra lateral completamente */
+    /* Ocultar barra lateral */
     [data-testid="stSidebar"], [data-testid="collapsedControl"] {
         display: none !important;
     }
     
-    /* Fondo general gris tenue */
+    /* Fondo general */
     .stApp {
         background-color: #F8FAFC;
     }
     
-    /* Títulos e información de la izquierda */
+    /* Columna izquierda */
     .hero-title {
         color: #0F172A;
         font-size: 30px;
@@ -45,7 +45,7 @@ st.markdown("""
         font-size: 18px;
     }
 
-    /* FORZAR LA SEGUNDA COLUMNA COMO TARJETA BLANCA REDONDEADA CONTENEDORA */
+    /* TARJETA BLANCA CONTENEDORA DE LOGIN (COLUMNA DERECHA) */
     [data-testid="column"]:nth-child(3) {
         background-color: #FFFFFF !important;
         border-radius: 24px !important;
@@ -54,7 +54,7 @@ st.markdown("""
         padding: 30px 25px !important;
     }
 
-    /* CAMPOS DE TEXTO CON COLOR OSCURO LEGIBLE */
+    /* CAMPOS DE TEXTO LEGIBLES */
     .stTextInput input {
         background-color: #FFFFFF !important;
         color: #0F172A !important;
@@ -73,23 +73,27 @@ st.markdown("""
         font-size: 14px !important;
     }
 
-    /* CHECKBOX Y TEXTO "RECORDAR" */
+    /* CHECKBOX "RECORDAR" */
     .stCheckbox label p {
         color: #0F172A !important;
         font-weight: 600 !important;
         font-size: 14px !important;
     }
 
-    /* BOTÓN AZUL CENTRADO Y ANCHO EN LA TARJETA */
+    /* BOTÓN AZUL CENTRADO DE EXTREMO A EXTREMO */
     .stButton>button {
         background-color: #2563EB !important;
         color: #FFFFFF !important;
         border-radius: 10px !important;
         border: none !important;
-        padding: 12px !important;
+        padding: 12px 0px !important;
         font-size: 16px !important;
         font-weight: 700 !important;
         width: 100% !important;
+        text-align: center !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
         margin-top: 15px;
         margin-bottom: 10px;
     }
@@ -141,7 +145,7 @@ if st.session_state.usuario_actual is None:
     
     col_left, col_space, col_right = st.columns([1.4, 0.1, 1.0])
     
-    # --- COLUMNA IZQUIERDA (ILUSTRACIÓN LOGÍSTICA ESTILO IMILE) ---
+    # --- COLUMNA IZQUIERDA (ILUSTRACIÓN LOGÍSTICA) ---
     with col_left:
         st.markdown('<div class="hero-title">Excelencia Logística y Control Operativo</div>', unsafe_allow_html=True)
         
@@ -156,17 +160,16 @@ if st.session_state.usuario_actual is None:
             </div>
         """, unsafe_allow_html=True)
         
-        # Imagen vectorial limpia estilo iMile
         st.markdown("""
             <div style='text-align: center; margin-top: 10px;'>
                 <img src='https://illustrations.popsy.co/blue/delivery-truck.svg' style='max-width: 420px; width: 100%; height: auto;' />
             </div>
         """, unsafe_allow_html=True)
 
-    # --- COLUMNA DERECHA (TARJETA BLANCA CONTENEDORA REAL) ---
+    # --- COLUMNA DERECHA (TARJETA DE LOGIN) ---
     with col_right:
-        # Título centrado dentro del cuadro
-        st.markdown("<h2 style='text-align: center; color: #0F172A; font-size: 26px; font-weight: 800; margin-top: 5px; margin-bottom: 25px;'>Iniciar Sesión</h2>", unsafe_allow_html=True)
+        # Título "¡Bienvenido!" arriba
+        st.markdown("<h2 style='text-align: center; color: #0F172A; font-size: 28px; font-weight: 800; margin-top: 5px; margin-bottom: 25px;'>¡Bienvenido!</h2>", unsafe_allow_html=True)
         
         input_user = st.text_input("Usuario", placeholder="Ingresa tu usuario", key="u_login")
         input_pass = st.text_input("Contraseña", type="password", placeholder="Ingresa tu contraseña", key="p_login")
@@ -178,6 +181,7 @@ if st.session_state.usuario_actual is None:
         with col_opt2:
             st.markdown('<div style="text-align: right; padding-top: 3px;"><a href="#" style="color: #2563EB; font-size: 13px; font-weight: 600; text-decoration: none;">¿Olvidaste tu contraseña?</a></div>', unsafe_allow_html=True)
         
+        # Botón Azul Centrado
         if st.button("Iniciar Sesión"):
             if input_user in st.session_state.usuarios_registrados and st.session_state.usuarios_registrados[input_user]["pass"] == input_pass:
                 st.session_state.usuario_actual = input_user
