@@ -4,7 +4,7 @@ import pandas as pd
 # 1. CONFIGURACIÓN DE PÁGINA
 st.set_page_config(page_title="Alfa Cargo Express", page_icon="🚚", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. ESTILOS CSS - CONTENEDOR BLANCO, CENTRADO Y BOTÓN
+# 2. ESTILOS CSS - CONTENEDOR BLANCO, BOTÓN COMPACTO CENTRADO
 st.markdown("""
     <style>
     /* Ocultar barra lateral */
@@ -80,22 +80,23 @@ st.markdown("""
         font-size: 14px !important;
     }
 
-    /* BOTÓN AZUL CENTRADO DE EXTREMO A EXTREMO */
+    /* BOTÓN AZUL COMPACTO Y CENTRADO */
+    .stButton {
+        display: flex !important;
+        justify-content: center !important;
+        margin-top: 15px;
+        margin-bottom: 10px;
+    }
+
     .stButton>button {
         background-color: #2563EB !important;
         color: #FFFFFF !important;
         border-radius: 10px !important;
         border: none !important;
-        padding: 12px 0px !important;
-        font-size: 16px !important;
+        padding: 10px 28px !important;
+        font-size: 15px !important;
         font-weight: 700 !important;
-        width: 100% !important;
-        text-align: center !important;
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        margin-top: 15px;
-        margin-bottom: 10px;
+        width: auto !important; /* Tamaño compacto original */
     }
     .stButton>button:hover {
         background-color: #1D4ED8 !important;
@@ -181,7 +182,7 @@ if st.session_state.usuario_actual is None:
         with col_opt2:
             st.markdown('<div style="text-align: right; padding-top: 3px;"><a href="#" style="color: #2563EB; font-size: 13px; font-weight: 600; text-decoration: none;">¿Olvidaste tu contraseña?</a></div>', unsafe_allow_html=True)
         
-        # Botón Azul Centrado
+        # Botón Azul Compacto Centrado
         if st.button("Iniciar Sesión"):
             if input_user in st.session_state.usuarios_registrados and st.session_state.usuarios_registrados[input_user]["pass"] == input_pass:
                 st.session_state.usuario_actual = input_user
