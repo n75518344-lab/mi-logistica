@@ -4,10 +4,10 @@ import pandas as pd
 # 1. CONFIGURACIÓN DE PÁGINA
 st.set_page_config(page_title="Alfa Cargo Express", page_icon="🚚", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. ESTILOS CSS - ESTRUCTURA Y TARJETA BLANCA PERFECTA
+# 2. ESTILOS CSS - RÉPLICA EXACTA DE LA TARJETA Y AJUSTES DE ESPACIO
 st.markdown("""
     <style>
-    /* Ocultar barra lateral y padding superior innecesario */
+    /* Ocultar barra lateral */
     [data-testid="stSidebar"], [data-testid="collapsedControl"] {
         display: none !important;
     }
@@ -17,31 +17,31 @@ st.markdown("""
         background-color: #EEF4FC !important;
     }
 
-    /* CONTENEDOR PRINCIPAL: Ancho balanceado sin espacios exagerados */
+    /* CONTENEDOR PRINCIPAL: Margen superior para que el logo NO se corte arriba */
     .block-container {
         max-width: 88% !important;
-        padding-top: 1.5rem !important;
-        padding-bottom: 1.5rem !important;
+        padding-top: 3.5rem !important;
+        padding-bottom: 2rem !important;
         margin: 0 auto !important;
     }
 
     /* COLUMNA IZQUIERDA */
     .hero-title {
         color: #0F172A;
-        font-size: 32px;
+        font-size: 28px;
         font-weight: 800;
-        margin-bottom: 20px;
+        margin-bottom: 16px;
     }
     .value-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 16px;
+        gap: 12px;
         margin-bottom: 20px;
     }
     .value-item {
         color: #1E293B;
         font-weight: 700;
-        font-size: 15px;
+        font-size: 14px;
         display: flex;
         align-items: center;
     }
@@ -49,37 +49,35 @@ st.markdown("""
         content: "▌";
         color: #2563EB;
         font-weight: bold;
-        margin-right: 10px;
-        font-size: 18px;
+        margin-right: 8px;
+        font-size: 16px;
     }
 
-    /* TARJETA BLANCA DE LOGIN (ESTILO CONTENEDOR IMILE REAL) */
+    /* IMAGEN REDUCIDA Y ESTILIZADA */
+    .hero-image {
+        width: 100%;
+        max-height: 250px;
+        object-fit: cover;
+        border-radius: 12px;
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    /* TARJETA BLANCA DE LOGIN (ESTILO IMILE) */
     [data-testid="stForm"] {
         background-color: #FFFFFF !important;
         border-radius: 16px !important;
         border: 1px solid #E2E8F0 !important;
-        box-shadow: 0px 12px 30px rgba(0, 0, 0, 0.06) !important;
-        padding: 30px 35px !important;
+        box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.06) !important;
+        padding: 35px 30px !important;
     }
 
-    /* TITULO DE LA TARJETA */
-    .card-header {
-        text-align: center;
-        margin-bottom: 25px;
-    }
+    /* TÍTULO BIENVENIDO CENTRADO */
     .card-title {
+        text-align: center;
         color: #0F172A;
         font-size: 26px;
         font-weight: 800;
-        margin-bottom: 8px;
-    }
-    .card-tab {
-        color: #2563EB;
-        font-weight: 700;
-        font-size: 15px;
-        display: inline-block;
-        padding-bottom: 4px;
-        border-bottom: 3px solid #2563EB;
+        margin-bottom: 25px;
     }
 
     /* INPUTS DE TEXTO */
@@ -104,21 +102,18 @@ st.markdown("""
         font-size: 13px !important;
     }
 
-    /* BOTÓN AZUL COMPACTO CENTRADO PERFECTAMENTE */
-    .stFormSubmitButton {
-        display: flex !important;
-        justify-content: center !important;
-        margin-top: 15px;
-    }
+    /* BOTÓN AZUL COMPLETO ESTILO IMILE ("LOGIN") */
     .stFormSubmitButton>button {
         background-color: #3B82F6 !important;
         color: #FFFFFF !important;
         border-radius: 8px !important;
         border: none !important;
-        padding: 10px 32px !important;
-        font-size: 15px !important;
+        padding: 12px 0px !important;
+        font-size: 16px !important;
         font-weight: 700 !important;
-        width: auto !important;
+        width: 100% !important;
+        margin-top: 15px;
+        transition: all 0.2s ease;
     }
     .stFormSubmitButton>button:hover {
         background-color: #2563EB !important;
@@ -126,9 +121,9 @@ st.markdown("""
 
     .login-footer {
         text-align: center;
-        color: #64748B;
+        color: #94A3B8;
         font-size: 12px;
-        margin-top: 20px;
+        margin-top: 25px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -153,9 +148,9 @@ if 'rol_actual' not in st.session_state:
 # 4. PANTALLA PRINCIPAL DE LOGIN
 if st.session_state.usuario_actual is None:
     
-    # Encabezado superior
+    # Encabezado superior con posición corregida
     st.markdown("""
-        <div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;'>
+        <div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;'>
             <div style='font-size: 24px; font-weight: 900; color: #0F172A; letter-spacing: -0.5px;'>
                 🔷 ALFA CARGO <span style='color: #2563EB;'>EXPRESS</span>
             </div>
@@ -165,7 +160,6 @@ if st.session_state.usuario_actual is None:
         </div>
     """, unsafe_allow_html=True)
     
-    # Distribución 60% / 40% alineada
     col_left, col_right = st.columns([1.3, 1.0], gap="large")
     
     # --- COLUMNA IZQUIERDA ---
@@ -183,21 +177,15 @@ if st.session_state.usuario_actual is None:
             </div>
         """, unsafe_allow_html=True)
         
-        # Imagen de logística estable (Unsplash CDN oficial)
-        st.image(
-            "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=700&q=80", 
-            use_container_width=True
-        )
+        # Imagen reducida en altura
+        st.markdown("""
+            <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=700&q=80" class="hero-image" />
+        """, unsafe_allow_html=True)
 
-    # --- COLUMNA DERECHA (FORMULARIO EN TARJETA BLANCA DEDICADA) ---
+    # --- COLUMNA DERECHA (TARJETA DE LOGIN) ---
     with col_right:
         with st.form("login_form"):
-            st.markdown("""
-                <div class="card-header">
-                    <div class="card-title">Bienvenido a Alfa Cargo</div>
-                    <div class="card-tab">Iniciar Sesión</div>
-                </div>
-            """, unsafe_allow_html=True)
+            st.markdown('<div class="card-title">Bienvenido a Alfa Cargo</div>', unsafe_allow_html=True)
             
             input_user = st.text_input("Usuario", placeholder="Ingresa tu usuario", key="u_login")
             input_pass = st.text_input("Contraseña", type="password", placeholder="Ingresa tu contraseña", key="p_login")
