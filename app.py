@@ -4,7 +4,7 @@ import pandas as pd
 # 1. CONFIGURACIÓN DE PÁGINA
 st.set_page_config(page_title="Alfa Cargo Express", page_icon="🚚", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. ESTILOS CSS - ENCABEZADO CON MÁS MARGEN SUPERIOR
+# 2. ESTILOS CSS - JERARQUÍA DE TIPOGRAFÍA CORREGIDA
 st.markdown("""
     <style>
     /* Ocultar barra lateral */
@@ -17,30 +17,39 @@ st.markdown("""
         background-color: #EEF4FC !important;
     }
 
-    /* CONTENEDOR PRINCIPAL - BAJAMOS EL PADDING SUPERIOR */
+    /* CONTENEDOR PRINCIPAL */
     .block-container {
         max-width: 88% !important;
-        padding-top: 3.8rem !important; /* Aumentado de 2.5rem a 3.8rem para bajar el encabezado */
+        padding-top: 3.8rem !important;
         padding-bottom: 2.5rem !important;
         margin: 0 auto !important;
     }
 
-    /* ENCABEZADO SUPERIOR CON ESPACIO DESDE ARRIBA */
+    /* ENCABEZADO SUPERIOR CON LOGO PRINCIPAL MÁS GRANDE */
     .header-container {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-top: 10px; /* Un poquitín más de margen superior */
-        margin-bottom: 30px;
+        margin-top: 10px;
+        margin-bottom: 35px;
+    }
+    
+    .brand-logo {
+        font-size: 32px !important; /* Subió de 26px a 32px para resaltar la marca */
+        font-weight: 900;
+        color: #0F172A;
+        letter-spacing: -0.5px;
     }
 
-    /* COLUMNA IZQUIERDA */
+    /* COLUMNA IZQUIERDA - TITULAR MÁS SUAVE Y SECUNDARIO */
     .hero-title {
-        color: #0F172A;
-        font-size: 32px;
-        font-weight: 800;
-        margin-bottom: 20px;
+        color: #1E293B;
+        font-size: 24px !important; /* Bajó de 32px a 24px para no competir con la marca */
+        font-weight: 700;
+        margin-bottom: 22px;
+        letter-spacing: -0.2px;
     }
+    
     .value-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -62,7 +71,7 @@ st.markdown("""
         font-size: 18px;
     }
 
-    /* IMAGEN DE ALMACÉN SIN MARCO Y SIN BORDES REDONDEADOS */
+    /* IMAGEN DE ALMACÉN SIN MARCO */
     .hero-image {
         width: 100%;
         height: 330px;
@@ -166,10 +175,10 @@ if 'rol_actual' not in st.session_state:
 # 4. PANTALLA PRINCIPAL DE LOGIN
 if st.session_state.usuario_actual is None:
     
-    # Encabezado superior con la clase de margen ajustado
+    # Encabezado superior con la marca bien resaltada
     st.markdown("""
         <div class="header-container">
-            <div style='font-size: 26px; font-weight: 900; color: #0F172A; letter-spacing: -0.5px;'>
+            <div class="brand-logo">
                 🔷 ALFA CARGO <span style='color: #2563EB;'>EXPRESS</span>
             </div>
             <div style='color: #475569; font-size: 15px; font-weight: 600;'>
