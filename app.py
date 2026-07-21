@@ -4,7 +4,7 @@ import pandas as pd
 # 1. CONFIGURACIÓN DE PÁGINA
 st.set_page_config(page_title="Alfa Cargo Express", page_icon="🚚", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. ESTILOS CSS - SIN MARCO EN LA IMAGEN Y TARJETA PERFECTA
+# 2. ESTILOS CSS - ENCABEZADO CON MÁS MARGEN SUPERIOR
 st.markdown("""
     <style>
     /* Ocultar barra lateral */
@@ -17,12 +17,21 @@ st.markdown("""
         background-color: #EEF4FC !important;
     }
 
-    /* CONTENEDOR PRINCIPAL */
+    /* CONTENEDOR PRINCIPAL - BAJAMOS EL PADDING SUPERIOR */
     .block-container {
         max-width: 88% !important;
-        padding-top: 2.5rem !important;
+        padding-top: 3.8rem !important; /* Aumentado de 2.5rem a 3.8rem para bajar el encabezado */
         padding-bottom: 2.5rem !important;
         margin: 0 auto !important;
+    }
+
+    /* ENCABEZADO SUPERIOR CON ESPACIO DESDE ARRIBA */
+    .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px; /* Un poquitín más de margen superior */
+        margin-bottom: 30px;
     }
 
     /* COLUMNA IZQUIERDA */
@@ -58,7 +67,7 @@ st.markdown("""
         width: 100%;
         height: 330px;
         object-fit: cover;
-        border-radius: 0px !important; /* Bordes totalmente rectos sin marco */
+        border-radius: 0px !important;
         display: block;
     }
 
@@ -157,9 +166,9 @@ if 'rol_actual' not in st.session_state:
 # 4. PANTALLA PRINCIPAL DE LOGIN
 if st.session_state.usuario_actual is None:
     
-    # Encabezado superior
+    # Encabezado superior con la clase de margen ajustado
     st.markdown("""
-        <div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;'>
+        <div class="header-container">
             <div style='font-size: 26px; font-weight: 900; color: #0F172A; letter-spacing: -0.5px;'>
                 🔷 ALFA CARGO <span style='color: #2563EB;'>EXPRESS</span>
             </div>
@@ -186,7 +195,7 @@ if st.session_state.usuario_actual is None:
             </div>
         """, unsafe_allow_html=True)
         
-        # Imagen directa sin div contenedor contenedor/marco
+        # Imagen directa limpia sin marco
         st.markdown("""
             <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80" class="hero-image" />
         """, unsafe_allow_html=True)
