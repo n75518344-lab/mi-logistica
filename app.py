@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# REVISAR SESIÓN EN URL (RECORDAR SESIÓN)
+# --- REVISAR SI EXISTE SESIÓN GUARDADA EN LA URL (MECANISMO "RECORDAR") ---
 query_params = st.query_params
 
 if "usuario_actual" not in st.session_state:
@@ -24,106 +24,41 @@ if "usuario_actual" not in st.session_state:
     st.session_state.usuario_actual = None
     st.session_state.rol_actual = None
 
-# 2. ESTILOS CSS GENERALES Y PANELES
+# ESTILOS CSS
 st.markdown(
     """
     <style>
-    /* Ocultar barra lateral */
     [data-testid="stSidebar"], [data-testid="collapsedControl"] { display: none !important; }
-    
     .stApp { background-color: #EEF4FC !important; }
-
-    .block-container {
-        max-width: 88% !important;
-        padding-top: 3rem !important;
-        padding-bottom: 2.5rem !important;
-        margin: 0 auto !important;
-    }
-
-    /* HEADER LOGIN */
+    .block-container { max-width: 88% !important; padding-top: 3.5rem !important; padding-bottom: 2.5rem !important; margin: 0 auto !important; }
     .header-container { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; margin-bottom: 35px; }
     .brand-logo { font-size: 32px !important; font-weight: 900; color: #0F172A; letter-spacing: -0.5px; }
-    .hero-title { color: #1E293B; font-size: 24px !important; font-weight: 700; margin-bottom: 22px; }
-    
+    .hero-title { color: #1E293B; font-size: 24px !important; font-weight: 700; margin-bottom: 22px; letter-spacing: -0.2px; }
     .value-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 22px; }
     .value-item { color: #1E293B; font-weight: 700; font-size: 15px; display: flex; align-items: center; }
     .value-item::before { content: "▌"; color: #2563EB; font-weight: bold; margin-right: 10px; font-size: 18px; }
-
     .hero-image { width: 100%; height: 330px; object-fit: cover; border-radius: 12px !important; display: block; }
-
-    /* TARJETA DE LOGIN */
-    [data-testid="stForm"] {
-        background-color: #FFFFFF !important;
-        border-radius: 20px !important;
-        border: 1px solid #E2E8F0 !important;
-        box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.06) !important;
-        padding: 40px 35px 50px 35px !important;
-    }
-
+    [data-testid="stForm"] { background-color: #FFFFFF !important; border-radius: 20px !important; border: 1px solid #E2E8F0 !important; box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.06) !important; padding: 50px 40px 68px 40px !important; margin-top: 0px !important; }
     .card-title { text-align: center; color: #0F172A; font-size: 28px; font-weight: 800; margin-bottom: 28px; }
-
-    .stTextInput input {
-        background-color: #FFFFFF !important;
-        color: #0F172A !important;
-        border: 1px solid #CBD5E1 !important;
-        border-radius: 10px !important;
-        padding: 12px 16px !important;
-    }
-
-    div[data-testid="stFormSubmitButton"] > button {
-        background-color: #2563EB !important;
-        color: #FFFFFF !important;
-        border-radius: 10px !important;
-        border: none !important;
-        padding: 12px 0px !important;
-        font-weight: 700 !important;
-    }
-
-    .login-footer { text-align: center; color: #94A3B8; font-size: 13px; margin-top: 40px; }
-
-    /* PANEL DASHBOARD */
-    .dashboard-title { color: #0F172A !important; font-size: 26px !important; font-weight: 900 !important; }
+    .stTextInput { margin-bottom: 12px !important; }
+    .stTextInput input { background-color: #FFFFFF !important; color: #0F172A !important; border: 1px solid #CBD5E1 !important; border-radius: 10px !important; padding: 12px 16px !important; font-size: 15px !important; }
+    .stTextInput label { color: #1E293B !important; font-weight: 700 !important; font-size: 15px !important; margin-bottom: 4px !important; }
+    .stCheckbox label p { color: #334155 !important; font-weight: 600 !important; font-size: 14px !important; }
+    div[data-testid="stFormSubmitButton"] { width: 100% !important; margin-top: 24px !important; }
+    div[data-testid="stFormSubmitButton"] > button { width: 100% !important; background-color: #2563EB !important; color: #FFFFFF !important; border-radius: 10px !important; border: none !important; padding: 13px 0px !important; font-size: 16px !important; font-weight: 700 !important; transition: all 0.2s ease; }
+    div[data-testid="stFormSubmitButton"] > button:hover { background-color: #1D4ED8 !important; }
+    .login-footer { text-align: center; color: #94A3B8; font-size: 13px; margin-top: 58px; }
+    .dashboard-title { color: #0F172A !important; font-size: 26px !important; font-weight: 900 !important; margin-bottom: 2px !important; }
     .dashboard-sub { color: #475569 !important; font-size: 14px !important; font-weight: 600 !important; }
-
-    /* BOTÓN CERRAR SESIÓN */
-    div[data-testid="stButton"] > button {
-        background-color: #EF4444 !important;
-        color: #FFFFFF !important;
-        border: none !important;
-        border-radius: 8px !important;
-        font-weight: 700 !important;
-    }
-
-    /* ESTILO DE PESTAÑAS (TABS) */
-    .stTabs [data-baseweb="tab-list"] { gap: 10px; }
-    .stTabs [data-baseweb="tab"] {
-        background-color: #FFFFFF;
-        border-radius: 8px 8px 0px 0px;
-        padding: 10px 20px;
-        color: #1E293B;
-        font-weight: 700;
-        border: 1px solid #E2E8F0;
-    }
-    .stTabs [aria-selected="true"] {
-        background-color: #2563EB !important;
-        color: #FFFFFF !important;
-    }
-
-    /* CONTENEDOR BLANCO PARA FORMULARIOS Y TABLAS */
-    .admin-card {
-        background-color: #FFFFFF;
-        padding: 25px;
-        border-radius: 12px;
-        border: 1px solid #E2E8F0;
-        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.04);
-        margin-top: 10px;
-    }
+    div[data-testid="stButton"] > button { background-color: #EF4444 !important; color: #FFFFFF !important; border: none !important; border-radius: 8px !important; font-weight: 700 !important; padding: 8px 16px !important; transition: all 0.2s ease !important; }
+    div[data-testid="stButton"] > button:hover { background-color: #DC2626 !important; }
+    [data-testid="stDataFrame"] { background-color: #FFFFFF !important; border-radius: 12px !important; padding: 10px !important; box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.04) !important; border: 1px solid #E2E8F0 !important; }
     </style>
 """,
     unsafe_allow_html=True,
 )
 
-# 3. BASE DE DATOS EN MEMORIA
+# DATOS
 if "db_logistica" not in st.session_state:
   st.session_state.db_logistica = pd.DataFrame([
       {
@@ -159,7 +94,7 @@ def obtener_imagen_github(nombre_archivo="alfa_warehouse.jpg"):
   return None
 
 
-# 4. LOGIN
+# LOGIN
 if st.session_state.usuario_actual is None:
   st.markdown(
       """
@@ -241,6 +176,7 @@ if st.session_state.usuario_actual is None:
               input_user
           ]["rol"]
 
+          # SI MARCA "RECORDAR", GUARDA EL ESTADO EN LA URL
           if remember:
             st.query_params["saved_user"] = input_user
             st.query_params["saved_rol"] = st.session_state.rol_actual
@@ -256,7 +192,7 @@ if st.session_state.usuario_actual is None:
           unsafe_allow_html=True,
       )
 
-# 5. DASHBOARD ADMINISTRADOR CON MÚLTIPLES FUNCIONES
+# POST-LOGIN
 else:
   col_nav1, col_nav2 = st.columns([5, 1])
   with col_nav1:
@@ -272,89 +208,8 @@ else:
     if st.button("🚪 Cerrar Sesión", key="logout_btn"):
       st.session_state.usuario_actual = None
       st.session_state.rol_actual = None
-      st.query_params.clear()
+      st.query_params.clear()  # Borrar sesión guardada
       st.rerun()
 
   st.markdown("<br>", unsafe_allow_html=True)
-
-  # PESTAÑAS PRINCIPALES DEL ADMINISTRADOR
-  tab_envios, tab_subir_base, tab_usuarios = st.tabs([
-      "📦 Envíos Activos",
-      "📤 Cargar Base de Datos",
-      "👤 Gestión de Usuarios",
-  ])
-
-  # TAB 1: VER ENVÍOS
-  with tab_envios:
-    st.markdown("### 📋 Listado General de Operaciones")
-    st.dataframe(st.session_state.db_logistica, use_container_width=True)
-
-  # TAB 2: SUBIR BASES DE DATOS (CSV O EXCEL)
-  with tab_subir_base:
-    st.markdown("### 📤 Cargar Masiva de Envíos (Excel / CSV)")
-    st.info(
-        "Sube un archivo `.csv` o `.xlsx` con las columnas: **ID ENVÍO,"
-        " CLIENTE, ORIGEN, DESTINO, ESTADO, CONDUCTOR, EVIDENCIA**"
-    )
-
-    file_uploaded = st.file_uploader(
-        "Selecciona el archivo de la base", type=["csv", "xlsx"]
-    )
-
-    if file_uploaded is not None:
-      try:
-        if file_uploaded.name.endswith(".csv"):
-          df_new = pd.read_csv(file_uploaded)
-        else:
-          df_new = pd.read_excel(file_uploaded)
-
-        st.write("🔍 **Vista previa de la base importada:**")
-        st.dataframe(df_new.head(), use_container_width=True)
-
-        if st.button("✅ Anexar Base a la Plataforma"):
-          st.session_state.db_logistica = pd.concat(
-              [st.session_state.db_logistica, df_new], ignore_index=True
-          )
-          st.success("¡Base de datos cargada e integrada correctamente!")
-          st.rerun()
-      except Exception as e:
-        st.error(f"❌ Error al procesar el archivo: {e}")
-
-  # TAB 3: CREAR Y GESTIONAR USUARIOS
-  with tab_usuarios:
-    col_u1, col_u2 = st.columns([1, 1], gap="large")
-
-    with col_u1:
-      st.markdown("### ➕ Registrar Nuevo Usuario")
-      with st.form("form_nuevo_usuario"):
-        nuevo_user = st.text_input("Nombre de Usuario (Login)")
-        nueva_pass = st.text_input("Contraseña", type="password")
-        nuevo_rol = st.selectbox(
-            "Rol / Permisos",
-            [
-                "👨‍💼 Portal Administrador",
-                "🚚 Conductor / Repartidor",
-                "🏢 Cliente Corporativo",
-                "⚙️ Operativo de Almacén",
-            ],
-        )
-
-        btn_crear = st.form_submit_button("Guardar Usuario")
-
-        if btn_crear:
-          if nuevo_user and nueva_pass:
-            st.session_state.usuarios_registrados[nuevo_user] = {
-                "pass": nueva_pass,
-                "rol": nuevo_rol,
-            }
-            st.success(f"¡Usuario **{nuevo_user}** registrado con éxito!")
-          else:
-            st.warning("⚠️ Completa todos los campos.")
-
-    with col_u2:
-      st.markdown("### 👥 Usuarios Registrados")
-      df_users = pd.DataFrame([
-          {"Usuario": u, "Rol": datos["rol"]}
-          for u, datos in st.session_state.usuarios_registrados.items()
-      ])
-      st.dataframe(df_users, use_container_width=True)
+  st.dataframe(st.session_state.db_logistica, use_container_width=True)
