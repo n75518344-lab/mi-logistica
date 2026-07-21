@@ -24,7 +24,7 @@ if "usuario_actual" not in st.session_state:
     st.session_state.usuario_actual = None
     st.session_state.rol_actual = None
 
-# 2. ESTILOS CSS GENERALES Y PANELES
+# 2. ESTILOS CSS CORREGIDOS (VISIBILIDAD TOTAL)
 st.markdown(
     """
     <style>
@@ -51,7 +51,7 @@ st.markdown(
 
     .hero-image { width: 100%; height: 330px; object-fit: cover; border-radius: 12px !important; display: block; }
 
-    /* TARJETA DE LOGIN */
+    /* TARJETA DE LOGIN Y INPUTS */
     [data-testid="stForm"] {
         background-color: #FFFFFF !important;
         border-radius: 20px !important;
@@ -60,14 +60,18 @@ st.markdown(
         padding: 40px 35px 50px 35px !important;
     }
 
-    .card-title { text-align: center; color: #0F172A; font-size: 28px; font-weight: 800; margin-bottom: 28px; }
+    .card-title { text-align: center; color: #0F172A !important; font-size: 28px; font-weight: 800; margin-bottom: 28px; }
 
-    .stTextInput input {
+    .stTextInput input, .stSelectbox div[data-baseweb="select"] {
         background-color: #FFFFFF !important;
         color: #0F172A !important;
         border: 1px solid #CBD5E1 !important;
         border-radius: 10px !important;
-        padding: 12px 16px !important;
+    }
+    
+    .stTextInput label, .stSelectbox label, .stFileUploader label {
+        color: #0F172A !important;
+        font-weight: 700 !important;
     }
 
     div[data-testid="stFormSubmitButton"] > button {
@@ -79,11 +83,11 @@ st.markdown(
         font-weight: 700 !important;
     }
 
-    .login-footer { text-align: center; color: #94A3B8; font-size: 13px; margin-top: 40px; }
+    .login-footer { text-align: center; color: #64748B; font-size: 13px; margin-top: 40px; }
 
-    /* PANEL DASHBOARD */
+    /* PANEL DASHBOARD POST-LOGIN */
     .dashboard-title { color: #0F172A !important; font-size: 26px !important; font-weight: 900 !important; }
-    .dashboard-sub { color: #475569 !important; font-size: 14px !important; font-weight: 600 !important; }
+    .dashboard-sub { color: #334155 !important; font-size: 14px !important; font-weight: 600 !important; }
 
     /* BOTÓN CERRAR SESIÓN */
     div[data-testid="stButton"] > button {
@@ -94,29 +98,36 @@ st.markdown(
         font-weight: 700 !important;
     }
 
-    /* ESTILO DE PESTAÑAS (TABS) */
-    .stTabs [data-baseweb="tab-list"] { gap: 10px; }
+    /* CORRECCIÓN DE VISIBILIDAD EN LAS PESTAÑAS (TABS) */
+    .stTabs [data-baseweb="tab-list"] { gap: 8px; }
     .stTabs [data-baseweb="tab"] {
-        background-color: #FFFFFF;
-        border-radius: 8px 8px 0px 0px;
-        padding: 10px 20px;
-        color: #1E293B;
-        font-weight: 700;
-        border: 1px solid #E2E8F0;
+        background-color: #E2E8F0 !important;
+        border-radius: 8px 8px 0px 0px !important;
+        padding: 12px 24px !important;
+        color: #1E293B !important;
+        font-weight: 700 !important;
+        border: 1px solid #CBD5E1 !important;
     }
     .stTabs [aria-selected="true"] {
         background-color: #2563EB !important;
         color: #FFFFFF !important;
     }
+    .stTabs [aria-selected="true"] p {
+        color: #FFFFFF !important;
+    }
 
-    /* CONTENEDOR BLANCO PARA FORMULARIOS Y TABLAS */
-    .admin-card {
-        background-color: #FFFFFF;
-        padding: 25px;
-        border-radius: 12px;
-        border: 1px solid #E2E8F0;
-        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.04);
-        margin-top: 10px;
+    /* FORZAR TEXTO NEGRO Y FONDO BLANCO EN TABLAS Y TARJETAS */
+    [data-testid="stDataFrame"] {
+        background-color: #FFFFFF !important;
+        border-radius: 12px !important;
+        padding: 10px !important;
+        border: 1px solid #CBD5E1 !important;
+    }
+
+    /* TITULOS H3 DENTRO DEL PANEL */
+    h3 {
+        color: #0F172A !important;
+        font-weight: 800 !important;
     }
     </style>
 """,
@@ -159,7 +170,7 @@ def obtener_imagen_github(nombre_archivo="alfa_warehouse.jpg"):
   return None
 
 
-# 4. LOGIN
+# 4. PANTALLA LOGIN
 if st.session_state.usuario_actual is None:
   st.markdown(
       """
@@ -256,7 +267,7 @@ if st.session_state.usuario_actual is None:
           unsafe_allow_html=True,
       )
 
-# 5. DASHBOARD ADMINISTRADOR CON MÚLTIPLES FUNCIONES
+# 5. DASHBOARD ADMINISTRADOR
 else:
   col_nav1, col_nav2 = st.columns([5, 1])
   with col_nav1:
@@ -320,7 +331,7 @@ else:
       except Exception as e:
         st.error(f"❌ Error al procesar el archivo: {e}")
 
-  # TAB 3: CREAR Y GESTIONAR USUARIOS
+  # TAB 3: CREAR USUARIOS (SOLO SUBADMINISTRADOR, REPARTIDOR Y CLIENTE)
   with tab_usuarios:
     col_u1, col_u2 = st.columns([1, 1], gap="large")
 
@@ -329,13 +340,14 @@ else:
       with st.form("form_nuevo_usuario"):
         nuevo_user = st.text_input("Nombre de Usuario (Login)")
         nueva_pass = st.text_input("Contraseña", type="password")
+
+        # ROLES EXCLUSIVOS SOLICITADOS
         nuevo_rol = st.selectbox(
             "Rol / Permisos",
             [
-                "👨‍💼 Portal Administrador",
-                "🚚 Conductor / Repartidor",
-                "🏢 Cliente Corporativo",
-                "⚙️ Operativo de Almacén",
+                "👨‍💼 Subadministrador",
+                "🚚 Repartidor",
+                "🏢 Cliente",
             ],
         )
 
