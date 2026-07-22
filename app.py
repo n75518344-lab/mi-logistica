@@ -25,7 +25,7 @@ if "usuario_actual" not in st.session_state:
     st.session_state.usuario_actual = None
     st.session_state.rol_actual = None
 
-# CSS QUIRÚRGICO Y DEFINITIVO
+# CSS QUIRÚRGICO Y ESTILOS DE TABLA MEJORADOS
 st.markdown(
     """
     <style>
@@ -45,7 +45,7 @@ st.markdown(
         padding-bottom: 2rem !important; 
     }
     
-    /* 3. TEXTOS Y ENCABEZADOS */
+    /* 3. TEXTOS Y ENCABEZADOS DE PÁGINA */
     h1, h2, h3, h4, h5, h6, p, label, span, div { 
         color: #0F172A !important; 
     }
@@ -80,7 +80,7 @@ st.markdown(
         opacity: 1 !important; 
     }
 
-    /* FIX DEFINITIVO AL OJO DE CONTRASEÑA ("visibili...") */
+    /* FIX OJO DE CONTRASEÑA */
     div[data-baseweb="input"] > div {
         background-color: transparent !important;
         color: transparent !important;
@@ -104,14 +104,13 @@ st.markdown(
         height: 18px !important;
     }
 
-    /* 6. FIX DEFINITIVO AL SELECTBOX Y SU MENÚ DESPLEGABLE */
+    /* 6. SELECTBOX Y SU MENÚ DESPLEGABLE */
     div[data-baseweb="select"] > div {
         background-color: #FFFFFF !important;
         color: #0F172A !important;
         border: 1px solid #CBD5E1 !important;
         border-radius: 8px !important;
     }
-    /* Estilos para la lista flotante de opciones (Popovers) */
     div[data-baseweb="popover"], 
     div[data-baseweb="menu"], 
     ul[role="listbox"] {
@@ -128,7 +127,7 @@ st.markdown(
         color: #0F382C !important;
     }
 
-    /* 7. BOTÓN PRINCIPAL (INICIAR SESIÓN / GUARDAR) */
+    /* 7. BOTÓN PRINCIPAL */
     div[data-testid="stFormSubmitButton"] > button { 
         background-color: #0F382C !important; 
         border-radius: 8px !important; 
@@ -158,7 +157,7 @@ st.markdown(
         font-weight: 700 !important; 
     }
 
-    /* 9. TABLAS Y PESTAÑAS */
+    /* 9. PESTAÑAS */
     .stTabs [data-baseweb="tab-list"] { 
         background-color: transparent !important; 
         gap: 6px; 
@@ -180,16 +179,38 @@ st.markdown(
         font-weight: 800 !important; 
     }
 
-    /* TABLA NATIVA ESTÁTICA EN BLANCO */
+    /* 10. ESTILIZADO DE ENCABEZADOS DE TABLA (NUEVO) */
     .stTable, [data-testid="stTable"] {
         background-color: #FFFFFF !important;
-        border-radius: 10px !important;
+        border-radius: 12px !important;
         overflow: hidden !important;
         border: 1px solid #E2E8F0 !important;
+        box-shadow: 0px 4px 12px rgba(0,0,0,0.03) !important;
     }
-    .stTable td, .stTable th { 
-        color: #0F172A !important; 
+    
+    /* ENCABEZADOS CON FONDO VERDE Y TEXTO BLANCO */
+    .stTable th, [data-testid="stTable"] th { 
+        background-color: #0F382C !important; 
+        color: #FFFFFF !important; 
+        font-weight: 700 !important; 
+        font-size: 14px !important;
+        padding: 12px 16px !important;
+        border-bottom: 2px solid #0B2B22 !important;
+        text-align: left !important;
+    }
+    
+    /* CELDAS DE CONTENIDO */
+    .stTable td, [data-testid="stTable"] td { 
+        color: #1E293B !important; 
         background-color: #FFFFFF !important; 
+        padding: 12px 16px !important;
+        border-bottom: 1px solid #F1F5F9 !important;
+        font-size: 14px !important;
+    }
+
+    /* FILAS ALTERNADAS / HOVER */
+    .stTable tr:hover td {
+        background-color: #F8FAFC !important;
     }
     </style>
 """,
