@@ -179,38 +179,47 @@ st.markdown(
         font-weight: 800 !important; 
     }
 
-    /* 10. ESTILIZADO Y FORZADO DE TEXTO BLANCO EN CABECERAS DE TABLA */
+    /* 10. TABLAS: ENCABEZADOS COMPACTOS Y TEXTO BLANCO SIN RAYAS INTERNAS */
     .stTable, [data-testid="stTable"] {
         background-color: #FFFFFF !important;
-        border-radius: 12px !important;
+        border-radius: 10px !important;
         overflow: hidden !important;
         border: 1px solid #E2E8F0 !important;
         box-shadow: 0px 4px 12px rgba(0,0,0,0.03) !important;
     }
     
-    /* CABECERAS Y ELEMENTOS HIJOS EN BLANCO ABSOLUTO */
-    .stTable th, [data-testid="stTable"] th,
-    .stTable th *, [data-testid="stTable"] th * { 
+    /* CELDA CONTENEDORA DEL ENCABEZADO */
+    .stTable th, [data-testid="stTable"] th { 
         background-color: #0F382C !important; 
-        color: #FFFFFF !important; 
-        font-weight: 700 !important; 
-        font-size: 14px !important;
-        padding: 12px 16px !important;
-        border-bottom: 2px solid #0B2B22 !important;
+        padding: 8px 12px !important; 
+        border-bottom: 1px solid #0B2B22 !important;
+        border-top: none !important;
+        border-left: none !important;
+        border-right: none !important;
         text-align: left !important;
+        vertical-align: middle !important;
     }
     
-    /* CELDAS DE CONTENIDO */
-    .stTable td, [data-testid="stTable"] td,
-    .stTable td *, [data-testid="stTable"] td * { 
+    /* ELEMENTOS INTERNOS DE LA CABECERA (ÚNICAMENTE TEXTO EN BLANCO Y SIN BORDES/PADDING EXTRA) */
+    .stTable th *, [data-testid="stTable"] th * { 
+        color: #FFFFFF !important; 
+        font-weight: 700 !important; 
+        font-size: 13px !important;
+        background-color: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    /* CELDAS DE CONTENIDO DE LA TABLA */
+    .stTable td, [data-testid="stTable"] td { 
         color: #1E293B !important; 
         background-color: #FFFFFF !important; 
-        padding: 12px 16px !important;
+        padding: 10px 12px !important;
         border-bottom: 1px solid #F1F5F9 !important;
-        font-size: 14px !important;
+        font-size: 13.5px !important;
     }
 
-    /* HOVER EN FILAS */
     .stTable tr:hover td {
         background-color: #F8FAFC !important;
     }
