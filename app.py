@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# REVISAR SESIÓN GUARDADA EN LA URL
+# REVISAR SESIÓN GUARDADA
 query_params = st.query_params
 
 if "usuario_actual" not in st.session_state:
@@ -25,111 +25,125 @@ if "usuario_actual" not in st.session_state:
     st.session_state.usuario_actual = None
     st.session_state.rol_actual = None
 
-# ESTILOS CSS - FORZANDO TEMA CLARO Y ALTO CONTRASTE
+# CSS ULTRA ESTRICTO - REESCRITURA DE BASEWEB Y WIDGETS
 st.markdown(
     """
     <style>
-    /* 1. CONFIGURACIÓN GLOBAL Y OCULTAR SIDEBAR */
-    [data-testid="stSidebar"], [data-testid="collapsedControl"] { display: none !important; }
-    .stApp { background-color: #F4F7F6 !important; color: #0F382C !important; }
-    .block-container { max-width: 88% !important; padding-top: 3.5rem !important; padding-bottom: 2.5rem !important; margin: 0 auto !important; }
+    /* OCULTAR ELEMENTOS NATIVOS */
+    [data-testid="stSidebar"], [data-testid="collapsedControl"], header[data-testid="stHeader"] { display: none !important; }
     
-    /* 2. TEXTOS Y ENCABEZADOS GLOBALMENTE OSCUROS */
-    h1, h2, h3, h4, h5, h6, .stSubheader, label, p, span, div {
+    /* FONDO DE PÁGINA */
+    .stApp { background-color: #F8FAFC !important; color: #0F172A !important; }
+    .block-container { max-width: 90% !important; padding-top: 2rem !important; padding-bottom: 2rem !important; }
+    
+    /* RESET DE TEXTOS */
+    h1, h2, h3, h4, h5, h6, p, label, span, div, small {
+        color: #0F172A !important;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    }
+
+    /* HEADER Y LANDING */
+    .header-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+    .brand-logo { font-size: 30px !important; font-weight: 900; color: #0F382C !important; }
+    .hero-title { color: #0F172A !important; font-size: 22px !important; font-weight: 700; margin-bottom: 20px; }
+    .value-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .value-item { color: #334155 !important; font-weight: 600; font-size: 14px; display: flex; align-items: center; }
+    .value-item::before { content: "▌"; color: #0F382C !important; margin-right: 8px; font-size: 16px; }
+    .hero-image { width: 100%; height: 320px; object-fit: cover; border-radius: 12px !important; }
+
+    /* FORMULARIO CONTENEDOR */
+    [data-testid="stForm"] { 
+        background-color: #FFFFFF !important; 
+        border-radius: 16px !important; 
+        border: 1px solid #E2E8F0 !important; 
+        box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.05) !important; 
+        padding: 32px !important; 
+        border-top: 5px solid #0F382C !important; 
+    }
+    .card-title { text-align: center; color: #0F382C !important; font-size: 26px; font-weight: 800; margin-bottom: 20px; }
+
+    /* FIX INPUTS Y PLACEHOLDERS */
+    .stTextInput input, .stTextInput input:focus { 
+        background-color: #FFFFFF !important; 
+        color: #0F172A !important; 
+        border: 1px solid #CBD5E1 !important; 
+        border-radius: 8px !important; 
+    }
+    .stTextInput input::placeholder { color: #94A3B8 !important; opacity: 1 !important; }
+
+    /* FIX SELECTBOX (DESPLEGABLE / MENU) */
+    div[data-baseweb="select"] > div {
+        background-color: #FFFFFF !important;
+        color: #0F172A !important;
+        border: 1px solid #CBD5E1 !important;
+        border-radius: 8px !important;
+    }
+    div[data-baseweb="popover"], div[data-baseweb="menu"], ul[role="listbox"] {
+        background-color: #FFFFFF !important;
+    }
+    li[role="option"] {
+        background-color: #FFFFFF !important;
+        color: #0F172A !important;
+    }
+    li[role="option"]:hover {
+        background-color: #F1F5F9 !important;
+    }
+
+    /* FIX ICONO DE OJITO EN CONTRASEÑA Y FLECHA DE SELECTBOX */
+    button[aria-label="Show password"], button[aria-label="Hide password"], [data-baseweb="icon"] {
+        background-color: transparent !important;
         color: #0F382C !important;
     }
-    
-    /* 3. LANDING Y HERO */
-    .header-container { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; margin-bottom: 35px; }
-    .brand-logo { font-size: 32px !important; font-weight: 900; color: #0F382C !important; letter-spacing: -0.5px; }
-    .hero-title { color: #1E293B !important; font-size: 24px !important; font-weight: 700; margin-bottom: 22px; }
-    .value-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 22px; }
-    .value-item { color: #1E293B !important; font-weight: 700; font-size: 15px; display: flex; align-items: center; }
-    .value-item::before { content: "▌"; color: #0F382C !important; font-weight: bold; margin-right: 10px; font-size: 18px; }
-    .hero-image { width: 100%; height: 330px; object-fit: cover; border-radius: 12px !important; display: block; }
-    
-    /* 4. FORMULARIOS E INPUTS (FIX PLACEHOLDERS) */
-    [data-testid="stForm"] { background-color: #FFFFFF !important; border-radius: 20px !important; border: 1px solid #E2E8F0 !important; box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.06) !important; padding: 40px 40px !important; margin-top: 0px !important; border-top: 6px solid #0F382C !important; }
-    .card-title { text-align: center; color: #0F382C !important; font-size: 28px; font-weight: 800; margin-bottom: 28px; }
-    
-    .stTextInput input, .stSelectbox div[data-baseweb="select"] { 
-        background-color: #FFFFFF !important; 
-        color: #0F382C !important; 
-        border: 1px solid #CBD5E1 !important; 
-        border-radius: 10px !important; 
-        font-size: 15px !important; 
-    }
-    
-    /* Forzar visibilidad del texto placeholder (ej. "Ingresa tu usuario") */
-    .stTextInput input::placeholder {
-        color: #64748B !important;
-        opacity: 1 !important;
-    }
-    
-    /* 5. BOTÓN PRINCIPAL DEL FORMULARIO */
+    svg { fill: #0F382C !important; }
+
+    /* BOTONES PRIMARIOS */
     div[data-testid="stFormSubmitButton"] > button { 
-        width: 100% !important; 
         background-color: #0F382C !important; 
-        border-radius: 10px !important; 
+        border-radius: 8px !important; 
         border: none !important; 
-        padding: 13px 0px !important; 
-        transition: all 0.2s ease; 
+        padding: 10px 0px !important; 
+        width: 100% !important;
     }
     div[data-testid="stFormSubmitButton"] > button p, 
     div[data-testid="stFormSubmitButton"] > button span { 
         color: #FFFFFF !important; 
-        font-size: 16px !important; 
         font-weight: 700 !important; 
+        font-size: 15px !important; 
     }
     div[data-testid="stFormSubmitButton"] > button:hover { background-color: #15803D !important; }
-    
-    /* 6. BOTÓN DE CERRAR SESIÓN (FIX BOTÓN OSCURO) */
+
+    /* BOTÓN CERRAR SESIÓN */
     div[data-testid="stButton"] > button { 
-        background-color: #EF4444 !important; 
+        background-color: #DC2626 !important; 
         border: none !important; 
         border-radius: 8px !important; 
-        padding: 8px 16px !important; 
     }
     div[data-testid="stButton"] > button p, 
     div[data-testid="stButton"] > button span { 
         color: #FFFFFF !important; 
         font-weight: 700 !important; 
-        font-size: 14px !important; 
     }
-    div[data-testid="stButton"] > button:hover { background-color: #DC2626 !important; }
-    
-    /* 7. TABLAS / DATAFRAMES (FIX MODO OSCURO EN TABLAS) */
-    [data-testid="stDataFrame"], div[data-testid="stTable"] { 
-        background-color: #FFFFFF !important; 
-        border-radius: 12px !important; 
-        padding: 10px !important; 
-        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.04) !important; 
-        border: 1px solid #E2E8F0 !important; 
-    }
-    [data-testid="stDataFrame"] * {
-        background-color: #FFFFFF !important;
-        color: #0F382C !important;
-    }
-    
-    /* 8. PESTAÑAS (ST.TABS) */
-    .stTabs [data-baseweb="tab-list"] { gap: 8px; }
+
+    /* FIX PESTAÑAS (ST.TABS) */
+    .stTabs [data-baseweb="tab-list"] { background-color: transparent !important; gap: 6px; }
     .stTabs [data-baseweb="tab"] { 
         background-color: #E2E8F0 !important; 
-        border-radius: 8px !important; 
-        padding: 10px 18px !important; 
+        border-radius: 8px 8px 0px 0px !important; 
+        padding: 8px 16px !important; 
         border: none !important; 
     }
-    .stTabs [data-baseweb="tab"] p, .stTabs [data-baseweb="tab"] span { 
-        color: #0F382C !important; 
-        font-weight: 700 !important; 
+    .stTabs [data-baseweb="tab"] p { color: #334155 !important; font-weight: 700 !important; }
+    .stTabs [aria-selected="true"] { background-color: #0F382C !important; }
+    .stTabs [aria-selected="true"] p { color: #FFFFFF !important; font-weight: 800 !important; }
+
+    /* TABLAS ESTÁTICAS Y NATIVAS */
+    .stTable, [data-testid="stTable"] {
+        background-color: #FFFFFF !important;
+        border-radius: 10px !important;
+        overflow: hidden !important;
+        border: 1px solid #E2E8F0 !important;
     }
-    .stTabs [aria-selected="true"] { 
-        background-color: #0F382C !important; 
-    }
-    .stTabs [aria-selected="true"] p, .stTabs [aria-selected="true"] span { 
-        color: #FFFFFF !important; 
-        font-weight: 800 !important; 
-    }
+    .stTable td, .stTable th { color: #0F172A !important; background-color: #FFFFFF !important; }
     </style>
 """,
     unsafe_allow_html=True,
@@ -219,8 +233,8 @@ if st.session_state.usuario_actual is None:
   st.markdown(
       """
         <div class="header-container">
-            <div class="brand-logo">🌲 ALFA CARGO <span style='color: #0F382C;'>EXPRESS</span></div>
-            <div style='color: #475569; font-size: 15px; font-weight: 600;'>🌐 Central Lima, Perú</div>
+            <div class="brand-logo">🌲 ALFA CARGO EXPRESS</div>
+            <div style='color: #64748B; font-size: 14px; font-weight: 600;'>🌐 Central Lima, Perú</div>
         </div>
     """,
       unsafe_allow_html=True,
@@ -305,26 +319,18 @@ if st.session_state.usuario_actual is None:
         else:
           st.error("❌ Credenciales incorrectas.")
 
-      st.markdown(
-          """
-                <div class="login-footer" style="text-align: center; color: #94A3B8; font-size: 13px; margin-top: 30px;">Copyright © 2026 Alfa Cargo Express. All rights reserved.</div>
-            """,
-          unsafe_allow_html=True,
-      )
-
-# VISTA ADMINISTRADOR (POST-LOGIN)
+# VISTA DASHBOARD (POST-LOGIN)
 else:
   col_nav1, col_nav2 = st.columns([5, 1])
   with col_nav1:
     st.markdown(
         f"""
-            <div style="color: #0F382C !important; font-size: 26px !important; font-weight: 900 !important; margin-bottom: 2px !important;">🌲 ALFA CARGO <span style='color: #0F382C;'>EXPRESS</span> — {st.session_state.rol_actual}</div>
-            <div style="color: #475569 !important; font-size: 14px !important; font-weight: 600 !important;">Usuario activo: <strong>{st.session_state.usuario_actual}</strong> | Estado: Conectado</div>
+            <div style="font-size: 24px; font-weight: 800; color: #0F382C;">🌲 ALFA CARGO EXPRESS — {st.session_state.rol_actual}</div>
+            <div style="font-size: 14px; color: #475569; font-weight: 600;">Usuario activo: <strong>{st.session_state.usuario_actual}</strong></div>
         """,
         unsafe_allow_html=True,
     )
   with col_nav2:
-    st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
     if st.button("🚪 Cerrar Sesión", key="logout_btn"):
       registrar_log("Cierre de sesión")
       st.session_state.usuario_actual = None
@@ -334,7 +340,6 @@ else:
 
   st.markdown("<br>", unsafe_allow_html=True)
 
-  # ESTRUCTURA EN PESTAÑAS (ADMIN)
   tab_users, tab_envios, tab_kpi, tab_audit = st.tabs([
       "👥 Gestión de Usuarios",
       "📦 Control de Envíos",
@@ -342,9 +347,9 @@ else:
       "📜 Historial de Actividad",
   ])
 
-  # PESTAÑA 1: CREAR Y VER USUARIOS
+  # TAB 1: USUARIOS
   with tab_users:
-    col_u1, col_u2 = st.columns([1, 1.5], gap="large")
+    col_u1, col_u2 = st.columns([1, 1.4], gap="large")
 
     with col_u1:
       st.subheader("Crear Nuevo Usuario")
@@ -388,33 +393,26 @@ else:
 
     with col_u2:
       st.subheader("Usuarios Registrados")
-      st.dataframe(
-          st.session_state.usuarios_registrados[["USUARIO", "ROL", "ESTADO"]],
-          use_container_width=True,
+      # Usamos st.table para garantizar 0 errores de renderizado oscuro
+      st.table(
+          st.session_state.usuarios_registrados[["USUARIO", "ROL", "ESTADO"]]
       )
 
-  # PESTAÑA 2: CONTROL GLOBAL DE ENVÍOS
+  # TAB 2: ENVÍOS
   with tab_envios:
     st.subheader("Listado General de Envíos")
-    st.dataframe(st.session_state.db_logistica, use_container_width=True)
+    st.table(st.session_state.db_logistica)
 
-  # PESTAÑA 3: MÉTRICAS RÁPIDAS
+  # TAB 3: METRICAS
   with tab_kpi:
     st.subheader("Resumen del Estado Operativo")
     df_env = st.session_state.db_logistica
-
-    total_envios = len(df_env)
-    entregados = len(df_env[df_env["ESTADO"] == "DELIVERED"])
-    en_ruta = len(df_env[df_env["ESTADO"] == "EN RUTA"])
-
     m1, m2, m3 = st.columns(3)
-    m1.metric("📦 Total de Envíos", total_envios)
-    m2.metric("✅ Entregados", entregados)
-    m3.metric("🚚 En Ruta", en_ruta)
+    m1.metric("📦 Total de Envíos", len(df_env))
+    m2.metric("✅ Entregados", len(df_env[df_env["ESTADO"] == "DELIVERED"]))
+    m3.metric("🚚 En Ruta", len(df_env[df_env["ESTADO"] == "EN RUTA"]))
 
-  # PESTAÑA 4: AUDITORÍA BÁSICA
+  # TAB 4: AUDITORIA
   with tab_audit:
     st.subheader("Registro de Movimientos")
-    st.dataframe(
-        st.session_state.historial_acciones, use_container_width=True
-    )
+    st.table(st.session_state.historial_acciones)
