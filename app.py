@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# REVISAR SESIÓN GUARDADA
+# REVISAR SESIÓN GUARDADA EN LA URL
 query_params = st.query_params
 
 if "usuario_actual" not in st.session_state:
@@ -25,53 +25,111 @@ if "usuario_actual" not in st.session_state:
     st.session_state.usuario_actual = None
     st.session_state.rol_actual = None
 
-# ESTILOS CSS CORREGIDOS (LECTURA CLARA EN TEXTOS)
+# ESTILOS CSS - FORZANDO TEMA CLARO Y ALTO CONTRASTE
 st.markdown(
     """
     <style>
+    /* 1. CONFIGURACIÓN GLOBAL Y OCULTAR SIDEBAR */
     [data-testid="stSidebar"], [data-testid="collapsedControl"] { display: none !important; }
-    .stApp { background-color: #F4F7F6 !important; }
+    .stApp { background-color: #F4F7F6 !important; color: #0F382C !important; }
     .block-container { max-width: 88% !important; padding-top: 3.5rem !important; padding-bottom: 2.5rem !important; margin: 0 auto !important; }
     
-    /* ENCABEZADOS Y SUBTÍTULOS */
-    h1, h2, h3, h4, h5, h6, .stSubheader { color: #0F382C !important; font-weight: 800 !important; }
-    p, label, span { color: #1E293B !important; }
-
+    /* 2. TEXTOS Y ENCABEZADOS GLOBALMENTE OSCUROS */
+    h1, h2, h3, h4, h5, h6, .stSubheader, label, p, span, div {
+        color: #0F382C !important;
+    }
+    
+    /* 3. LANDING Y HERO */
     .header-container { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; margin-bottom: 35px; }
-    .brand-logo { font-size: 32px !important; font-weight: 900; color: #0F382C; letter-spacing: -0.5px; }
-    .hero-title { color: #1E293B; font-size: 24px !important; font-weight: 700; margin-bottom: 22px; letter-spacing: -0.2px; }
+    .brand-logo { font-size: 32px !important; font-weight: 900; color: #0F382C !important; letter-spacing: -0.5px; }
+    .hero-title { color: #1E293B !important; font-size: 24px !important; font-weight: 700; margin-bottom: 22px; }
     .value-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 22px; }
-    .value-item { color: #1E293B; font-weight: 700; font-size: 15px; display: flex; align-items: center; }
-    .value-item::before { content: "▌"; color: #0F382C; font-weight: bold; margin-right: 10px; font-size: 18px; }
+    .value-item { color: #1E293B !important; font-weight: 700; font-size: 15px; display: flex; align-items: center; }
+    .value-item::before { content: "▌"; color: #0F382C !important; font-weight: bold; margin-right: 10px; font-size: 18px; }
     .hero-image { width: 100%; height: 330px; object-fit: cover; border-radius: 12px !important; display: block; }
     
-    /* FORMULARIO */
+    /* 4. FORMULARIOS E INPUTS (FIX PLACEHOLDERS) */
     [data-testid="stForm"] { background-color: #FFFFFF !important; border-radius: 20px !important; border: 1px solid #E2E8F0 !important; box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.06) !important; padding: 40px 40px !important; margin-top: 0px !important; border-top: 6px solid #0F382C !important; }
-    .card-title { text-align: center; color: #0F382C; font-size: 28px; font-weight: 800; margin-bottom: 28px; }
+    .card-title { text-align: center; color: #0F382C !important; font-size: 28px; font-weight: 800; margin-bottom: 28px; }
     
-    /* INPUTS Y CHECKBOXES */
-    .stTextInput input, .stSelectbox div[data-baseweb="select"] { background-color: #FFFFFF !important; color: #0F382C !important; border: 1px solid #CBD5E1 !important; border-radius: 10px !important; font-size: 15px !important; }
-    .stTextInput label, .stSelectbox label { color: #1E293B !important; font-weight: 700 !important; font-size: 15px !important; margin-bottom: 4px !important; }
-    [data-testid="stCheckbox"] label p { color: #0F382C !important; font-weight: 700 !important; font-size: 14px !important; }
+    .stTextInput input, .stSelectbox div[data-baseweb="select"] { 
+        background-color: #FFFFFF !important; 
+        color: #0F382C !important; 
+        border: 1px solid #CBD5E1 !important; 
+        border-radius: 10px !important; 
+        font-size: 15px !important; 
+    }
     
-    /* BOTONES */
-    div[data-testid="stFormSubmitButton"] > button { width: 100% !important; background-color: #0F382C !important; color: #FFFFFF !important; border-radius: 10px !important; border: none !important; padding: 13px 0px !important; font-size: 16px !important; font-weight: 700 !important; transition: all 0.2s ease; }
+    /* Forzar visibilidad del texto placeholder (ej. "Ingresa tu usuario") */
+    .stTextInput input::placeholder {
+        color: #64748B !important;
+        opacity: 1 !important;
+    }
+    
+    /* 5. BOTÓN PRINCIPAL DEL FORMULARIO */
+    div[data-testid="stFormSubmitButton"] > button { 
+        width: 100% !important; 
+        background-color: #0F382C !important; 
+        border-radius: 10px !important; 
+        border: none !important; 
+        padding: 13px 0px !important; 
+        transition: all 0.2s ease; 
+    }
+    div[data-testid="stFormSubmitButton"] > button p, 
+    div[data-testid="stFormSubmitButton"] > button span { 
+        color: #FFFFFF !important; 
+        font-size: 16px !important; 
+        font-weight: 700 !important; 
+    }
     div[data-testid="stFormSubmitButton"] > button:hover { background-color: #15803D !important; }
-    div[data-testid="stFormSubmitButton"] > button p { color: #FFFFFF !important; }
     
-    .login-footer { text-align: center; color: #94A3B8; font-size: 13px; margin-top: 30px; }
-    .dashboard-title { color: #0F382C !important; font-size: 26px !important; font-weight: 900 !important; margin-bottom: 2px !important; }
-    .dashboard-sub { color: #475569 !important; font-size: 14px !important; font-weight: 600 !important; }
+    /* 6. BOTÓN DE CERRAR SESIÓN (FIX BOTÓN OSCURO) */
+    div[data-testid="stButton"] > button { 
+        background-color: #EF4444 !important; 
+        border: none !important; 
+        border-radius: 8px !important; 
+        padding: 8px 16px !important; 
+    }
+    div[data-testid="stButton"] > button p, 
+    div[data-testid="stButton"] > button span { 
+        color: #FFFFFF !important; 
+        font-weight: 700 !important; 
+        font-size: 14px !important; 
+    }
+    div[data-testid="stButton"] > button:hover { background-color: #DC2626 !important; }
     
-    /* DATAFRAME */
-    [data-testid="stDataFrame"] { background-color: #FFFFFF !important; border-radius: 12px !important; padding: 10px !important; box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.04) !important; border: 1px solid #E2E8F0 !important; }
+    /* 7. TABLAS / DATAFRAMES (FIX MODO OSCURO EN TABLAS) */
+    [data-testid="stDataFrame"], div[data-testid="stTable"] { 
+        background-color: #FFFFFF !important; 
+        border-radius: 12px !important; 
+        padding: 10px !important; 
+        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.04) !important; 
+        border: 1px solid #E2E8F0 !important; 
+    }
+    [data-testid="stDataFrame"] * {
+        background-color: #FFFFFF !important;
+        color: #0F382C !important;
+    }
     
-    /* PESTAÑAS (TABS) FIX TEXTO VISIBLE */
+    /* 8. PESTAÑAS (ST.TABS) */
     .stTabs [data-baseweb="tab-list"] { gap: 8px; }
-    .stTabs [data-baseweb="tab"] { background-color: #E2E8F0 !important; border-radius: 8px !important; padding: 10px 18px !important; border: none !important; }
-    .stTabs [data-baseweb="tab"] p { color: #0F382C !important; font-weight: 700 !important; }
-    .stTabs [aria-selected="true"] { background-color: #0F382C !important; }
-    .stTabs [aria-selected="true"] p { color: #FFFFFF !important; font-weight: 800 !important; }
+    .stTabs [data-baseweb="tab"] { 
+        background-color: #E2E8F0 !important; 
+        border-radius: 8px !important; 
+        padding: 10px 18px !important; 
+        border: none !important; 
+    }
+    .stTabs [data-baseweb="tab"] p, .stTabs [data-baseweb="tab"] span { 
+        color: #0F382C !important; 
+        font-weight: 700 !important; 
+    }
+    .stTabs [aria-selected="true"] { 
+        background-color: #0F382C !important; 
+    }
+    .stTabs [aria-selected="true"] p, .stTabs [aria-selected="true"] span { 
+        color: #FFFFFF !important; 
+        font-weight: 800 !important; 
+    }
     </style>
 """,
     unsafe_allow_html=True,
@@ -249,7 +307,7 @@ if st.session_state.usuario_actual is None:
 
       st.markdown(
           """
-                <div class="login-footer">Copyright © 2026 Alfa Cargo Express. All rights reserved.</div>
+                <div class="login-footer" style="text-align: center; color: #94A3B8; font-size: 13px; margin-top: 30px;">Copyright © 2026 Alfa Cargo Express. All rights reserved.</div>
             """,
           unsafe_allow_html=True,
       )
@@ -260,8 +318,8 @@ else:
   with col_nav1:
     st.markdown(
         f"""
-            <div class="dashboard-title">🌲 ALFA CARGO <span style='color: #0F382C;'>EXPRESS</span> — {st.session_state.rol_actual}</div>
-            <div class="dashboard-sub">Usuario activo: <strong>{st.session_state.usuario_actual}</strong> | Estado: Conectado</div>
+            <div style="color: #0F382C !important; font-size: 26px !important; font-weight: 900 !important; margin-bottom: 2px !important;">🌲 ALFA CARGO <span style='color: #0F382C;'>EXPRESS</span> — {st.session_state.rol_actual}</div>
+            <div style="color: #475569 !important; font-size: 14px !important; font-weight: 600 !important;">Usuario activo: <strong>{st.session_state.usuario_actual}</strong> | Estado: Conectado</div>
         """,
         unsafe_allow_html=True,
     )
@@ -291,8 +349,12 @@ else:
     with col_u1:
       st.subheader("Crear Nuevo Usuario")
       with st.form("form_crear_usuario"):
-        nuevo_u = st.text_input("Nombre de Usuario")
-        nuevo_p = st.text_input("Contraseña", type="password")
+        nuevo_u = st.text_input(
+            "Nombre de Usuario", placeholder="Ej: operario_lima"
+        )
+        nuevo_p = st.text_input(
+            "Contraseña", type="password", placeholder="Escribe la clave"
+        )
         nuevo_r = st.selectbox(
             "Rol asignado",
             ["🛠️ Operario", "🏢 Cliente", "🛵 Repartidor (App)"],
