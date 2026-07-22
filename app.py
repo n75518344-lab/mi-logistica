@@ -25,7 +25,7 @@ if "usuario_actual" not in st.session_state:
     st.session_state.usuario_actual = None
     st.session_state.rol_actual = None
 
-# CSS QUIRÚRGICO Y ESTILOS DE TABLA MEJORADOS
+# CSS QUIRÚRGICO Y ESTILOS DE TABLA CORREGIDOS
 st.markdown(
     """
     <style>
@@ -179,7 +179,7 @@ st.markdown(
         font-weight: 800 !important; 
     }
 
-    /* 10. ESTILIZADO DE ENCABEZADOS DE TABLA (NUEVO) */
+    /* 10. ESTILIZADO Y FORZADO DE TEXTO BLANCO EN CABECERAS DE TABLA */
     .stTable, [data-testid="stTable"] {
         background-color: #FFFFFF !important;
         border-radius: 12px !important;
@@ -188,8 +188,9 @@ st.markdown(
         box-shadow: 0px 4px 12px rgba(0,0,0,0.03) !important;
     }
     
-    /* ENCABEZADOS CON FONDO VERDE Y TEXTO BLANCO */
-    .stTable th, [data-testid="stTable"] th { 
+    /* CABECERAS Y ELEMENTOS HIJOS EN BLANCO ABSOLUTO */
+    .stTable th, [data-testid="stTable"] th,
+    .stTable th *, [data-testid="stTable"] th * { 
         background-color: #0F382C !important; 
         color: #FFFFFF !important; 
         font-weight: 700 !important; 
@@ -200,7 +201,8 @@ st.markdown(
     }
     
     /* CELDAS DE CONTENIDO */
-    .stTable td, [data-testid="stTable"] td { 
+    .stTable td, [data-testid="stTable"] td,
+    .stTable td *, [data-testid="stTable"] td * { 
         color: #1E293B !important; 
         background-color: #FFFFFF !important; 
         padding: 12px 16px !important;
@@ -208,7 +210,7 @@ st.markdown(
         font-size: 14px !important;
     }
 
-    /* FILAS ALTERNADAS / HOVER */
+    /* HOVER EN FILAS */
     .stTable tr:hover td {
         background-color: #F8FAFC !important;
     }
