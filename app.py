@@ -24,31 +24,31 @@ if "usuario_actual" not in st.session_state:
     st.session_state.usuario_actual = None
     st.session_state.rol_actual = None
 
-# ESTILOS CSS
+# ESTILOS CSS (CAMBIADO A PALETA VERDE OSCURO CORPORATIVO)
 st.markdown(
     """
     <style>
     [data-testid="stSidebar"], [data-testid="collapsedControl"] { display: none !important; }
-    .stApp { background-color: #EEF4FC !important; }
+    .stApp { background-color: #F4F7F6 !important; }
     .block-container { max-width: 88% !important; padding-top: 3.5rem !important; padding-bottom: 2.5rem !important; margin: 0 auto !important; }
     .header-container { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; margin-bottom: 35px; }
-    .brand-logo { font-size: 32px !important; font-weight: 900; color: #0F172A; letter-spacing: -0.5px; }
+    .brand-logo { font-size: 32px !important; font-weight: 900; color: #0F382C; letter-spacing: -0.5px; }
     .hero-title { color: #1E293B; font-size: 24px !important; font-weight: 700; margin-bottom: 22px; letter-spacing: -0.2px; }
     .value-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 22px; }
     .value-item { color: #1E293B; font-weight: 700; font-size: 15px; display: flex; align-items: center; }
-    .value-item::before { content: "▌"; color: #2563EB; font-weight: bold; margin-right: 10px; font-size: 18px; }
+    .value-item::before { content: "▌"; color: #0F382C; font-weight: bold; margin-right: 10px; font-size: 18px; }
     .hero-image { width: 100%; height: 330px; object-fit: cover; border-radius: 12px !important; display: block; }
-    [data-testid="stForm"] { background-color: #FFFFFF !important; border-radius: 20px !important; border: 1px solid #E2E8F0 !important; box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.06) !important; padding: 50px 40px 68px 40px !important; margin-top: 0px !important; }
-    .card-title { text-align: center; color: #0F172A; font-size: 28px; font-weight: 800; margin-bottom: 28px; }
+    [data-testid="stForm"] { background-color: #FFFFFF !important; border-radius: 20px !important; border: 1px solid #E2E8F0 !important; box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.06) !important; padding: 50px 40px 68px 40px !important; margin-top: 0px !important; border-top: 6px solid #0F382C !important; }
+    .card-title { text-align: center; color: #0F382C; font-size: 28px; font-weight: 800; margin-bottom: 28px; }
     .stTextInput { margin-bottom: 12px !important; }
-    .stTextInput input { background-color: #FFFFFF !important; color: #0F172A !important; border: 1px solid #CBD5E1 !important; border-radius: 10px !important; padding: 12px 16px !important; font-size: 15px !important; }
+    .stTextInput input { background-color: #FFFFFF !important; color: #0F382C !important; border: 1px solid #CBD5E1 !important; border-radius: 10px !important; padding: 12px 16px !important; font-size: 15px !important; }
     .stTextInput label { color: #1E293B !important; font-weight: 700 !important; font-size: 15px !important; margin-bottom: 4px !important; }
-    .stCheckbox label p { color: #334155 !important; font-weight: 600 !important; font-size: 14px !important; }
+    .stCheckbox label p { color: #0F382C !important; font-weight: 700 !important; font-size: 14px !important; }
     div[data-testid="stFormSubmitButton"] { width: 100% !important; margin-top: 24px !important; }
-    div[data-testid="stFormSubmitButton"] > button { width: 100% !important; background-color: #2563EB !important; color: #FFFFFF !important; border-radius: 10px !important; border: none !important; padding: 13px 0px !important; font-size: 16px !important; font-weight: 700 !important; transition: all 0.2s ease; }
-    div[data-testid="stFormSubmitButton"] > button:hover { background-color: #1D4ED8 !important; }
+    div[data-testid="stFormSubmitButton"] > button { width: 100% !important; background-color: #0F382C !important; color: #FFFFFF !important; border-radius: 10px !important; border: none !important; padding: 13px 0px !important; font-size: 16px !important; font-weight: 700 !important; transition: all 0.2s ease; }
+    div[data-testid="stFormSubmitButton"] > button:hover { background-color: #15803D !important; }
     .login-footer { text-align: center; color: #94A3B8; font-size: 13px; margin-top: 58px; }
-    .dashboard-title { color: #0F172A !important; font-size: 26px !important; font-weight: 900 !important; margin-bottom: 2px !important; }
+    .dashboard-title { color: #0F382C !important; font-size: 26px !important; font-weight: 900 !important; margin-bottom: 2px !important; }
     .dashboard-sub { color: #475569 !important; font-size: 14px !important; font-weight: 600 !important; }
     div[data-testid="stButton"] > button { background-color: #EF4444 !important; color: #FFFFFF !important; border: none !important; border-radius: 8px !important; font-weight: 700 !important; padding: 8px 16px !important; transition: all 0.2s ease !important; }
     div[data-testid="stButton"] > button:hover { background-color: #DC2626 !important; }
@@ -99,7 +99,7 @@ if st.session_state.usuario_actual is None:
   st.markdown(
       """
         <div class="header-container">
-            <div class="brand-logo">🔷 ALFA CARGO <span style='color: #2563EB;'>EXPRESS</span></div>
+            <div class="brand-logo">🌲 ALFA CARGO <span style='color: #0F382C;'>EXPRESS</span></div>
             <div style='color: #475569; font-size: 15px; font-weight: 600;'>🌐 Central Lima, Perú</div>
         </div>
     """,
@@ -156,7 +156,7 @@ if st.session_state.usuario_actual is None:
       with col_opt2:
         st.markdown(
             '<div style="text-align: right; padding-top: 3px;"><a href="#"'
-            ' style="color: #2563EB; font-size: 13px; font-weight: 600;'
+            ' style="color: #0F382C; font-size: 13px; font-weight: 600;'
             ' text-decoration: none;">¿Olvidaste tu contraseña?</a></div>',
             unsafe_allow_html=True,
         )
@@ -198,7 +198,7 @@ else:
   with col_nav1:
     st.markdown(
         f"""
-            <div class="dashboard-title">🔷 ALFA CARGO <span style='color: #2563EB;'>EXPRESS</span> — {st.session_state.rol_actual}</div>
+            <div class="dashboard-title">🌲 ALFA CARGO <span style='color: #0F382C;'>EXPRESS</span> — {st.session_state.rol_actual}</div>
             <div class="dashboard-sub">Usuario activo: <strong>{st.session_state.usuario_actual}</strong> | Estado: Conectado</div>
         """,
         unsafe_allow_html=True,
