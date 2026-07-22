@@ -1,4 +1,5 @@
 import base64
+from datetime import datetime
 import os
 import pandas as pd
 import streamlit as st
@@ -11,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# --- REVISAR SI EXISTE SESIÓN GUARDADA EN LA URL (MECANISMO "RECORDAR") ---
+# REVISAR SESIÓN GUARDADA
 query_params = st.query_params
 
 if "usuario_actual" not in st.session_state:
@@ -24,7 +25,7 @@ if "usuario_actual" not in st.session_state:
     st.session_state.usuario_actual = None
     st.session_state.rol_actual = None
 
-# ESTILOS CSS (CAMBIADO A PALETA VERDE OSCURO CORPORATIVO)
+# ESTILOS CSS - VERDE OSCURO CORPORATIVO
 st.markdown(
     """
     <style>
@@ -38,27 +39,28 @@ st.markdown(
     .value-item { color: #1E293B; font-weight: 700; font-size: 15px; display: flex; align-items: center; }
     .value-item::before { content: "▌"; color: #0F382C; font-weight: bold; margin-right: 10px; font-size: 18px; }
     .hero-image { width: 100%; height: 330px; object-fit: cover; border-radius: 12px !important; display: block; }
-    [data-testid="stForm"] { background-color: #FFFFFF !important; border-radius: 20px !important; border: 1px solid #E2E8F0 !important; box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.06) !important; padding: 50px 40px 68px 40px !important; margin-top: 0px !important; border-top: 6px solid #0F382C !important; }
+    [data-testid="stForm"] { background-color: #FFFFFF !important; border-radius: 20px !important; border: 1px solid #E2E8F0 !important; box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.06) !important; padding: 40px 40px !important; margin-top: 0px !important; border-top: 6px solid #0F382C !important; }
     .card-title { text-align: center; color: #0F382C; font-size: 28px; font-weight: 800; margin-bottom: 28px; }
-    .stTextInput { margin-bottom: 12px !important; }
     .stTextInput input { background-color: #FFFFFF !important; color: #0F382C !important; border: 1px solid #CBD5E1 !important; border-radius: 10px !important; padding: 12px 16px !important; font-size: 15px !important; }
     .stTextInput label { color: #1E293B !important; font-weight: 700 !important; font-size: 15px !important; margin-bottom: 4px !important; }
-    .stCheckbox label p { color: #0F382C !important; font-weight: 700 !important; font-size: 14px !important; }
-    div[data-testid="stFormSubmitButton"] { width: 100% !important; margin-top: 24px !important; }
     div[data-testid="stFormSubmitButton"] > button { width: 100% !important; background-color: #0F382C !important; color: #FFFFFF !important; border-radius: 10px !important; border: none !important; padding: 13px 0px !important; font-size: 16px !important; font-weight: 700 !important; transition: all 0.2s ease; }
     div[data-testid="stFormSubmitButton"] > button:hover { background-color: #15803D !important; }
-    .login-footer { text-align: center; color: #94A3B8; font-size: 13px; margin-top: 58px; }
+    .login-footer { text-align: center; color: #94A3B8; font-size: 13px; margin-top: 30px; }
     .dashboard-title { color: #0F382C !important; font-size: 26px !important; font-weight: 900 !important; margin-bottom: 2px !important; }
     .dashboard-sub { color: #475569 !important; font-size: 14px !important; font-weight: 600 !important; }
-    div[data-testid="stButton"] > button { background-color: #EF4444 !important; color: #FFFFFF !important; border: none !important; border-radius: 8px !important; font-weight: 700 !important; padding: 8px 16px !important; transition: all 0.2s ease !important; }
+    div[data-testid="stButton"] > button { background-color: #EF4444 !important; color: #FFFFFF !important; border: none !important; border-radius: 8px !important; font-weight: 700 !important; padding: 8px 16px !important; }
     div[data-testid="stButton"] > button:hover { background-color: #DC2626 !important; }
     [data-testid="stDataFrame"] { background-color: #FFFFFF !important; border-radius: 12px !important; padding: 10px !important; box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.04) !important; border: 1px solid #E2E8F0 !important; }
+    /* Estilo para las pestañas */
+    .stTabs [data-baseweb="tab-list"] { gap: 10px; }
+    .stTabs [data-baseweb="tab"] { background-color: #FFFFFF; border-radius: 8px; padding: 10px 20px; font-weight: 700; color: #0F382C; border: 1px solid #E2E8F0; }
+    .stTabs [aria-selected="true"] { background-color: #0F382C !important; color: #FFFFFF !important; }
     </style>
 """,
     unsafe_allow_html=True,
 )
 
-# DATOS
+# BASE DE DATOS EN SESIÓN
 if "db_logistica" not in st.session_state:
   st.session_state.db_logistica = pd.DataFrame([
       {
@@ -82,9 +84,52 @@ if "db_logistica" not in st.session_state:
   ])
 
 if "usuarios_registrados" not in st.session_state:
-  st.session_state.usuarios_registrados = {
-      "admin": {"pass": "admin123", "rol": "👨‍💼 Portal Administrador"}
-  }
+  st.session_state.usuarios_registrados = pd.DataFrame([
+      {
+          "USUARIO": "admin",
+          "PASS": "admin123",
+          "ROL": "👨‍💼 Portal Administrador",
+          "ESTADO": "Activo",
+      },
+      {
+          "USUARIO": "operador1",
+          "PASS": "123",
+          "ROL": "🛠️ Operario",
+          "ESTADO": "Activo",
+      },
+      {
+          "USUARIO": "juan_repartidor",
+          "PASS": "123",
+          "ROL": "🛵 Repartidor (App)",
+          "ESTADO": "Activo",
+      },
+      {
+          "USUARIO": "cliente_global",
+          "PASS": "123",
+          "ROL": "🏢 Cliente",
+          "ESTADO": "Activo",
+      },
+  ])
+
+if "historial_acciones" not in st.session_state:
+  st.session_state.historial_acciones = pd.DataFrame([
+      {
+          "FECHA Y HORA": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+          "USUARIO": "admin",
+          "ACCIÓN": "Inicio de sistema",
+      }
+  ])
+
+
+def registrar_log(accion):
+  nuevo_log = pd.DataFrame([{
+      "FECHA Y HORA": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+      "USUARIO": st.session_state.usuario_actual,
+      "ACCIÓN": accion,
+  }])
+  st.session_state.historial_acciones = pd.concat(
+      [nuevo_log, st.session_state.historial_acciones], ignore_index=True
+  )
 
 
 def obtener_imagen_github(nombre_archivo="alfa_warehouse.jpg"):
@@ -94,7 +139,7 @@ def obtener_imagen_github(nombre_archivo="alfa_warehouse.jpg"):
   return None
 
 
-# LOGIN
+# VISTA DE LOGIN
 if st.session_state.usuario_actual is None:
   st.markdown(
       """
@@ -166,21 +211,21 @@ if st.session_state.usuario_actual is None:
       )
 
       if submit_btn:
-        if (
-            input_user in st.session_state.usuarios_registrados
-            and st.session_state.usuarios_registrados[input_user]["pass"]
-            == input_pass
-        ):
-          st.session_state.usuario_actual = input_user
-          st.session_state.rol_actual = st.session_state.usuarios_registrados[
-              input_user
-          ]["rol"]
+        df_users = st.session_state.usuarios_registrados
+        user_match = df_users[
+            (df_users["USUARIO"] == input_user)
+            & (df_users["PASS"] == input_pass)
+        ]
 
-          # SI MARCA "RECORDAR", GUARDA EL ESTADO EN LA URL
+        if not user_match.empty:
+          st.session_state.usuario_actual = input_user
+          st.session_state.rol_actual = user_match.iloc[0]["ROL"]
+
           if remember:
             st.query_params["saved_user"] = input_user
             st.query_params["saved_rol"] = st.session_state.rol_actual
 
+          registrar_log("Inicio de sesión correcto")
           st.rerun()
         else:
           st.error("❌ Credenciales incorrectas.")
@@ -192,7 +237,7 @@ if st.session_state.usuario_actual is None:
           unsafe_allow_html=True,
       )
 
-# POST-LOGIN
+# VISTA ADMINISTRADOR (POST-LOGIN)
 else:
   col_nav1, col_nav2 = st.columns([5, 1])
   with col_nav1:
@@ -206,10 +251,91 @@ else:
   with col_nav2:
     st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
     if st.button("🚪 Cerrar Sesión", key="logout_btn"):
+      registrar_log("Cierre de sesión")
       st.session_state.usuario_actual = None
       st.session_state.rol_actual = None
-      st.query_params.clear()  # Borrar sesión guardada
+      st.query_params.clear()
       st.rerun()
 
   st.markdown("<br>", unsafe_allow_html=True)
-  st.dataframe(st.session_state.db_logistica, use_container_width=True)
+
+  # ESTRUCTURA SIMPLE EN PESTAÑAS (ADMIN)
+  tab_users, tab_envios, tab_kpi, tab_audit = st.tabs([
+      "👥 Gestión de Usuarios",
+      "📦 Control de Envíos",
+      "📊 Métricas Rápidas",
+      "📜 Historial de Actividad",
+  ])
+
+  # PESTAÑA 1: CREAR Y VER USUARIOS
+  with tab_users:
+    col_u1, col_u2 = st.columns([1, 1.5], gap="large")
+
+    with col_u1:
+      st.subheader("Crear Nuevo Usuario")
+      with st.form("form_crear_usuario"):
+        nuevo_u = st.text_input("Nombre de Usuario")
+        nuevo_p = st.text_input("Contraseña", type="password")
+        nuevo_r = st.selectbox(
+            "Rol asignado",
+            ["🛠️ Operario", "🏢 Cliente", "🛵 Repartidor (App)"],
+        )
+
+        btn_crear_u = st.form_submit_button("➕ Guardar Usuario")
+
+        if btn_crear_u:
+          if nuevo_u and nuevo_p:
+            if (
+                nuevo_u
+                in st.session_state.usuarios_registrados["USUARIO"].values
+            ):
+              st.error("El nombre de usuario ya existe.")
+            else:
+              nuevo_row = pd.DataFrame([{
+                  "USUARIO": nuevo_u,
+                  "PASS": nuevo_p,
+                  "ROL": nuevo_r,
+                  "ESTADO": "Activo",
+              }])
+              st.session_state.usuarios_registrados = pd.concat(
+                  [st.session_state.usuarios_registrados, nuevo_row],
+                  ignore_index=True,
+              )
+              registrar_log(f"Creó al usuario '{nuevo_u}' con rol '{nuevo_r}'")
+              st.success(f"✅ Usuario **{nuevo_u}** creado correctamente.")
+              st.rerun()
+          else:
+            st.warning("Completa todos los campos.")
+
+    with col_u2:
+      st.subheader("Usuarios Registrados")
+      st.dataframe(
+          st.session_state.usuarios_registrados[["USUARIO", "ROL", "ESTADO"]],
+          use_container_width=True,
+      )
+
+  # PESTAÑA 2: CONTROL GLOBAL DE ENVÍOS
+  with tab_envios:
+    st.subheader("Listado General de Envíos")
+    st.dataframe(st.session_state.db_logistica, use_container_width=True)
+
+  # PESTAÑA 3: MÉTRICAS RÁPIDAS
+  with tab_kpi:
+    st.subheader("Resumen del Estado Operativo")
+    df_env = st.session_state.db_logistica
+
+    total_envios = len(df_env)
+    entregados = len(df_env[df_env["ESTADO"] == "DELIVERED"])
+    en_ruta = len(df_env[df_env["ESTADO"] == "EN RUTA"])
+
+    m1, m2, m3 = st.columns(3)
+    m1.metric("📦 Total de Envíos", total_envios)
+    m2.metric("✅ Entregados", entregados)
+    m3.metric("🚚 En Ruta", en_ruta)
+
+  # PESTAÑA 4: AUDITORÍA BÁSICA
+  with tab_audit:
+    st.subheader("Registro de Movimientos")
+    st.dataframe(
+        st.session_state.historial_acciones, use_container_width=True
+    )
