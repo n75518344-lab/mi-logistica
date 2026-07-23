@@ -49,9 +49,24 @@ st.markdown(
         color: #0F172A; 
     }
 
-    /* FIX DEFINITIVO PARA TEXTO BLANCO EN EL MODAL/VENTANA EMERGENTE */
-    div[role="dialog"] *, [data-testid="stDialog"] *, [data-testid="stModal"] * {
+    /* FIX TEXTO BLANCO EN EL MODAL (SOLO PARA PÁRRAFOS Y TÍTULOS, NO BOTONES) */
+    div[role="dialog"] h1, div[role="dialog"] h2, div[role="dialog"] h3, 
+    div[role="dialog"] p, div[role="dialog"] div, div[role="dialog"] span {
         color: #FFFFFF !important;
+    }
+
+    /* ESTILO ESPECÍFICO PARA EL BOTÓN DENTRO DEL MODAL (ENTENDIDO) */
+    div[role="dialog"] button {
+        background-color: #FFFFFF !important;
+        border: 1px solid #CBD5E1 !important;
+        border-radius: 8px !important;
+    }
+    div[role="dialog"] button p, 
+    div[role="dialog"] button span, 
+    div[role="dialog"] button div {
+        color: #0F382C !important;
+        font-weight: 800 !important;
+        font-size: 15px !important;
     }
 
     /* CONTENEDOR DE FORMULARIO DE LOGIN (TARJETA DERECHA) */
@@ -146,8 +161,8 @@ st.markdown(
         color: #0F382C !important;
     }
 
-    /* BOTONES ESTÁNDAR */
-    div[data-testid="stButton"] > button { 
+    /* BOTONES ESTÁNDAR FUERA DEL MODAL */
+    .stApp div[data-testid="stButton"] > button { 
         background-color: #FFFFFF !important; 
         color: #0F172A !important;
         border: 1px solid #CBD5E1 !important; 
@@ -296,7 +311,7 @@ def obtener_imagen_github(nombre_archivo="alfa_warehouse.jpg"):
   return None
 
 
-# MODAL / VENTANA EMERGENTE DE SOPORTE PARA CLAVES (TEXTO 100% BLANCO FORZADO)
+# MODAL / VENTANA EMERGENTE DE SOPORTE PARA CLAVES
 @st.dialog("📌 Soporte y Recuperación de Credenciales")
 def mostrar_modal_soporte():
   st.markdown(
@@ -362,7 +377,6 @@ if st.session_state.usuario_actual is None:
 
   with col_right:
     with st.form("login_form"):
-      # CAMBIADO A "Bienvenido"
       st.markdown(
           '<h3 style="text-align: center; color: #0F382C; font-weight:800;'
           ' margin-bottom: 20px;">Bienvenido</h3>',
