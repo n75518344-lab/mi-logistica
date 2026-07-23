@@ -49,24 +49,37 @@ st.markdown(
         color: #0F172A; 
     }
 
-    /* FIX TEXTO BLANCO EN EL MODAL (SOLO PARA PÁRRAFOS Y TÍTULOS, NO BOTONES) */
-    div[role="dialog"] h1, div[role="dialog"] h2, div[role="dialog"] h3, 
-    div[role="dialog"] p, div[role="dialog"] div, div[role="dialog"] span {
-        color: #FFFFFF !important;
+    /* ESTILO DEFINITIVO Y UNIFICADO PARA EL MODAL / DIÁLOGO DE SOPORTE */
+    div[role="dialog"], [data-testid="stDialog"], [data-testid="stModal"] > div {
+        background-color: #FFFFFF !important;
+        border-radius: 14px !important;
+        border: 1px solid #E2E8F0 !important;
+        box-shadow: 0px 10px 25px rgba(0,0,0,0.15) !important;
     }
 
-    /* ESTILO ESPECÍFICO PARA EL BOTÓN DENTRO DEL MODAL (ENTENDIDO) */
-    div[role="dialog"] button {
-        background-color: #FFFFFF !important;
-        border: 1px solid #CBD5E1 !important;
-        border-radius: 8px !important;
+    /* TEXTOS Y ENLACES DENTRO DEL MODAL */
+    div[role="dialog"] *, [data-testid="stDialog"] * {
+        color: #0F172A !important;
     }
-    div[role="dialog"] button p, 
-    div[role="dialog"] button span, 
-    div[role="dialog"] button div {
-        color: #0F382C !important;
-        font-weight: 800 !important;
-        font-size: 15px !important;
+    div[role="dialog"] a, [data-testid="stDialog"] a {
+        color: #0284C7 !important;
+        text-decoration: underline !important;
+    }
+
+    /* BOTÓN "ENTENDIDO" DENTRO DEL MODAL */
+    div[role="dialog"] button, [data-testid="stDialog"] button {
+        background-color: #0F382C !important;
+        border-radius: 8px !important;
+        border: none !important;
+        min-height: 42px !important;
+    }
+    div[role="dialog"] button *, [data-testid="stDialog"] button * {
+        color: #FFFFFF !important;
+        font-weight: 700 !important;
+        font-size: 14px !important;
+    }
+    div[role="dialog"] button:hover, [data-testid="stDialog"] button:hover {
+        background-color: #15803D !important;
     }
 
     /* CONTENEDOR DE FORMULARIO DE LOGIN (TARJETA DERECHA) */
@@ -162,7 +175,7 @@ st.markdown(
     }
 
     /* BOTONES ESTÁNDAR FUERA DEL MODAL */
-    .stApp div[data-testid="stButton"] > button { 
+    .stApp > div[data-testid="stButton"] > button { 
         background-color: #FFFFFF !important; 
         color: #0F172A !important;
         border: 1px solid #CBD5E1 !important; 
@@ -316,16 +329,16 @@ def obtener_imagen_github(nombre_archivo="alfa_warehouse.jpg"):
 def mostrar_modal_soporte():
   st.markdown(
       """
-        <div style="color: #FFFFFF !important; line-height: 1.6;">
-            <p style="color: #FFFFFF !important; font-size: 15px; margin-bottom: 15px;">
+        <div style="line-height: 1.6;">
+            <p style="font-size: 15px; margin-bottom: 15px;">
                 Por motivos de seguridad corporativa, la asignación y restablecimiento de contraseñas es gestionada de manera directa por el área de Administración.
             </p>
-            <p style="color: #FFFFFF !important; font-weight: bold; font-size: 15px; margin-bottom: 10px;">
+            <p style="font-weight: bold; font-size: 15px; margin-bottom: 10px;">
                 Canales de atención:
             </p>
-            <div style="color: #FFFFFF !important; font-size: 14px; margin-bottom: 8px;">💬 <b>WhatsApp Soporte:</b> +51 987 654 321</div>
-            <div style="color: #FFFFFF !important; font-size: 14px; margin-bottom: 8px;">✉️ <b>Correo Institucional:</b> <a href="mailto:soporte@alfacargo.pe" style="color: #38BDF8 !important; text-decoration: underline;">soporte@alfacargo.pe</a></div>
-            <div style="color: #FFFFFF !important; font-size: 14px; margin-bottom: 20px;">🕒 <b>Horario de Atención:</b> Lun a Vie de 8:00 am a 6:00 pm</div>
+            <div style="font-size: 14px; margin-bottom: 8px;">💬 <b>WhatsApp Soporte:</b> +51 987 654 321</div>
+            <div style="font-size: 14px; margin-bottom: 8px;">✉️ <b>Correo Institucional:</b> <a href="mailto:soporte@alfacargo.pe">soporte@alfacargo.pe</a></div>
+            <div style="font-size: 14px; margin-bottom: 20px;">🕒 <b>Horario de Atención:</b> Lun a Vie de 8:00 am a 6:00 pm</div>
         </div>
     """,
       unsafe_allow_html=True,
