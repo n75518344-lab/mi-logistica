@@ -46,11 +46,11 @@ st.markdown(
     }
     
     h1, h2, h3, h4, h5, h6, p, label, span, div { 
-        color: #0F172A !important; 
+        color: #0F172A; 
     }
 
-    /* FORZAR TEXTO BLANCO EN EL MODAL/DIALOG */
-    [data-testid="stModal"] * {
+    /* FIX DEFINITIVO PARA TEXTO BLANCO EN EL MODAL/VENTANA EMERGENTE */
+    div[role="dialog"] *, [data-testid="stDialog"] *, [data-testid="stModal"] * {
         color: #FFFFFF !important;
     }
 
@@ -92,7 +92,7 @@ st.markdown(
         fill: #0F382C !important;
     }
 
-    /* CORRECCIÓN DEL BOTÓN "INGRESAR AL PORTAL" */
+    /* BOTÓN "INGRESAR AL PORTAL" */
     div[data-testid="stFormSubmitButton"] {
         width: 100% !important;
         display: flex !important;
@@ -146,7 +146,7 @@ st.markdown(
         color: #0F382C !important;
     }
 
-    /* BOTONES ESTÁNDAR FUERA DE FORMULARIOS */
+    /* BOTONES ESTÁNDAR */
     div[data-testid="stButton"] > button { 
         background-color: #FFFFFF !important; 
         color: #0F172A !important;
@@ -296,24 +296,26 @@ def obtener_imagen_github(nombre_archivo="alfa_warehouse.jpg"):
   return None
 
 
-# MODAL / VENTANA EMERGENTE DE SOPORTE PARA CLAVES (CORREGIDO TEXTO BLANCO)
+# MODAL / VENTANA EMERGENTE DE SOPORTE PARA CLAVES (TEXTO 100% BLANCO FORZADO)
 @st.dialog("📌 Soporte y Recuperación de Credenciales")
 def mostrar_modal_soporte():
-  st.write(
-      "Por motivos de seguridad corporativa, la asignación y restablecimiento"
-      " de contraseñas es gestionada de manera directa por el área de"
-      " Administración."
+  st.markdown(
+      """
+        <div style="color: #FFFFFF !important; line-height: 1.6;">
+            <p style="color: #FFFFFF !important; font-size: 15px; margin-bottom: 15px;">
+                Por motivos de seguridad corporativa, la asignación y restablecimiento de contraseñas es gestionada de manera directa por el área de Administración.
+            </p>
+            <p style="color: #FFFFFF !important; font-weight: bold; font-size: 15px; margin-bottom: 10px;">
+                Canales de atención:
+            </p>
+            <div style="color: #FFFFFF !important; font-size: 14px; margin-bottom: 8px;">💬 <b>WhatsApp Soporte:</b> +51 987 654 321</div>
+            <div style="color: #FFFFFF !important; font-size: 14px; margin-bottom: 8px;">✉️ <b>Correo Institucional:</b> <a href="mailto:soporte@alfacargo.pe" style="color: #38BDF8 !important; text-decoration: underline;">soporte@alfacargo.pe</a></div>
+            <div style="color: #FFFFFF !important; font-size: 14px; margin-bottom: 20px;">🕒 <b>Horario de Atención:</b> Lun a Vie de 8:00 am a 6:00 pm</div>
+        </div>
+    """,
+      unsafe_allow_html=True,
   )
 
-  st.write("**Canales de atención:**")
-
-  st.markdown("""
-    💬 **WhatsApp Soporte:** +51 987 654 321  
-    ✉️ **Correo Institucional:** soporte@alfacargo.pe  
-    🕒 **Horario de Atención:** Lun a Vie de 8:00 am a 6:00 pm
-    """)
-
-  st.markdown("<br>", unsafe_allow_html=True)
   if st.button("Entendido", use_container_width=True):
     st.rerun()
 
@@ -360,9 +362,10 @@ if st.session_state.usuario_actual is None:
 
   with col_right:
     with st.form("login_form"):
+      # CAMBIADO A "Bienvenido"
       st.markdown(
           '<h3 style="text-align: center; color: #0F382C; font-weight:800;'
-          ' margin-bottom: 20px;">Acceso Administrador</h3>',
+          ' margin-bottom: 20px;">Bienvenido</h3>',
           unsafe_allow_html=True,
       )
       input_user = st.text_input(
@@ -399,7 +402,7 @@ if st.session_state.usuario_actual is None:
         else:
           st.error("❌ Credenciales incorrectas.")
 
-    # ENLACE DE SOPORTE FUERA DEL FORMULARIO PARA ABRIR MODAL
+    # ENLACE DE SOPORTE
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button(
         "❓ ¿Necesitas ayuda con tu acceso o contraseña?",
