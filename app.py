@@ -54,6 +54,22 @@ st.markdown(
         color: #FFFFFF !important;
     }
 
+    /* CORRECCIÓN DEL BOTÓN EN EL MODAL (BOTÓN VERDE CON TEXTO BLANCO VISIBLE) */
+    div[role="dialog"] button, [data-testid="stDialog"] button, [data-testid="stModal"] button {
+        background-color: #0F382C !important;
+        border: none !important;
+        border-radius: 8px !important;
+        padding: 10px 16px !important;
+    }
+    div[role="dialog"] button *, [data-testid="stDialog"] button *, [data-testid="stModal"] button * {
+        color: #FFFFFF !important;
+        font-weight: 700 !important;
+        font-size: 14px !important;
+    }
+    div[role="dialog"] button:hover, [data-testid="stDialog"] button:hover, [data-testid="stModal"] button:hover {
+        background-color: #15803D !important;
+    }
+
     /* CONTENEDOR DE FORMULARIO DE LOGIN (TARJETA DERECHA) */
     [data-testid="stForm"] { 
         background-color: #FFFFFF !important; 
@@ -296,7 +312,7 @@ def obtener_imagen_github(nombre_archivo="alfa_warehouse.jpg"):
   return None
 
 
-# MODAL / VENTANA EMERGENTE DE SOPORTE PARA CLAVES (TEXTO 100% BLANCO FORZADO)
+# MODAL / VENTANA EMERGENTE DE SOPORTE PARA CLAVES
 @st.dialog("📌 Soporte y Recuperación de Credenciales")
 def mostrar_modal_soporte():
   st.markdown(
@@ -362,7 +378,6 @@ if st.session_state.usuario_actual is None:
 
   with col_right:
     with st.form("login_form"):
-      # CAMBIADO A "Bienvenido"
       st.markdown(
           '<h3 style="text-align: center; color: #0F382C; font-weight:800;'
           ' margin-bottom: 20px;">Bienvenido</h3>',
