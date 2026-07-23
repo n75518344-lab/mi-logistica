@@ -295,19 +295,22 @@ def obtener_imagen_github(nombre_archivo="alfa_warehouse.jpg"):
 @st.dialog("📌 Soporte y Recuperación de Credenciales")
 def mostrar_modal_soporte():
   st.markdown("""
-        <div style="font-size: 14px; line-color: #334155;">
-            Por motivos de seguridad corporativa, la asignación y restablecimiento de contraseñas es gestionada de manera directa por el área de Administración.
-            <br><br>
-            Si perdiste tu acceso o necesitas actualizar tus credenciales, por favor comunícate a través de nuestros canales oficiales:
-            <br><br>
-            <ul>
-                <li><strong>📞 Central Telefónica:</strong> (01) 700-1234 (Anexo 102)</li>
-                <li><strong>💬 WhatsApp Soporte:</strong> +51 987 654 321</li>
-                <li><strong>✉️ Correo Institucional:</strong> soporte@alfacargo.pe</li>
-                <li><strong>🕒 Horario de Atención:</strong> Lun a Vie de 8:00 am a 6:00 pm</li>
+        <div style="font-size: 14.5px; color: #FFFFFF !important; line-height: 1.6;">
+            <p style="color: #FFFFFF !important; font-size: 14.5px;">
+                Por motivos de seguridad corporativa, la asignación y restablecimiento de contraseñas es gestionada de manera directa por el área de Administración.
+            </p>
+            <p style="color: #FFFFFF !important; font-weight: 700; margin-top: 15px; margin-bottom: 8px;">
+                Canales de atención:
+            </p>
+            <ul style="color: #FFFFFF !important; list-style-type: none; padding-left: 0;">
+                <li style="color: #FFFFFF !important; margin-bottom: 6px;">💬 <strong>WhatsApp Soporte:</strong> +51 987 654 321</li>
+                <li style="color: #FFFFFF !important; margin-bottom: 6px;">✉️ <strong>Correo Institucional:</strong> soporte@alfacargo.pe</li>
+                <li style="color: #FFFFFF !important; margin-bottom: 6px;">🕒 <strong>Horario de Atención:</strong> Lun a Vie de 8:00 am a 6:00 pm</li>
             </ul>
         </div>
     """, unsafe_allow_html=True)
+
+  st.markdown("<br>", unsafe_allow_html=True)
   if st.button("Entendido", use_container_width=True):
     st.rerun()
 
