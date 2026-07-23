@@ -49,6 +49,11 @@ st.markdown(
         color: #0F172A !important; 
     }
 
+    /* FORZAR TEXTO BLANCO EN EL MODAL/DIALOG */
+    [data-testid="stModal"] * {
+        color: #FFFFFF !important;
+    }
+
     /* CONTENEDOR DE FORMULARIO DE LOGIN (TARJETA DERECHA) */
     [data-testid="stForm"] { 
         background-color: #FFFFFF !important; 
@@ -291,24 +296,22 @@ def obtener_imagen_github(nombre_archivo="alfa_warehouse.jpg"):
   return None
 
 
-# MODAL / VENTANA EMERGENTE DE SOPORTE PARA CLAVES
+# MODAL / VENTANA EMERGENTE DE SOPORTE PARA CLAVES (CORREGIDO TEXTO BLANCO)
 @st.dialog("📌 Soporte y Recuperación de Credenciales")
 def mostrar_modal_soporte():
+  st.write(
+      "Por motivos de seguridad corporativa, la asignación y restablecimiento"
+      " de contraseñas es gestionada de manera directa por el área de"
+      " Administración."
+  )
+
+  st.write("**Canales de atención:**")
+
   st.markdown("""
-        <div style="font-size: 14.5px; color: #FFFFFF !important; line-height: 1.6;">
-            <p style="color: #FFFFFF !important; font-size: 14.5px;">
-                Por motivos de seguridad corporativa, la asignación y restablecimiento de contraseñas es gestionada de manera directa por el área de Administración.
-            </p>
-            <p style="color: #FFFFFF !important; font-weight: 700; margin-top: 15px; margin-bottom: 8px;">
-                Canales de atención:
-            </p>
-            <ul style="color: #FFFFFF !important; list-style-type: none; padding-left: 0;">
-                <li style="color: #FFFFFF !important; margin-bottom: 6px;">💬 <strong>WhatsApp Soporte:</strong> +51 987 654 321</li>
-                <li style="color: #FFFFFF !important; margin-bottom: 6px;">✉️ <strong>Correo Institucional:</strong> soporte@alfacargo.pe</li>
-                <li style="color: #FFFFFF !important; margin-bottom: 6px;">🕒 <strong>Horario de Atención:</strong> Lun a Vie de 8:00 am a 6:00 pm</li>
-            </ul>
-        </div>
-    """, unsafe_allow_html=True)
+    💬 **WhatsApp Soporte:** +51 987 654 321  
+    ✉️ **Correo Institucional:** soporte@alfacargo.pe  
+    🕒 **Horario de Atención:** Lun a Vie de 8:00 am a 6:00 pm
+    """)
 
   st.markdown("<br>", unsafe_allow_html=True)
   if st.button("Entendido", use_container_width=True):
