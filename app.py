@@ -87,7 +87,7 @@ st.markdown(
         fill: #0F382C !important;
     }
 
-    /* CORRECCIÓN COMPLETA DEL BOTÓN "INGRESAR AL PORTAL" */
+    /* CORRECCIÓN DEL BOTÓN "INGRESAR AL PORTAL" */
     div[data-testid="stFormSubmitButton"] {
         width: 100% !important;
         display: flex !important;
@@ -117,7 +117,7 @@ st.markdown(
         background-color: #15803D !important; 
     }
 
-    /* SELECTBOX (MENÚS DESPLEGABLES) */
+    /* SELECTBOX */
     div[data-baseweb="select"] > div {
         background-color: #FFFFFF !important;
         color: #0F172A !important;
@@ -263,16 +263,6 @@ if "usuarios_registrados" not in st.session_state:
       },
   ])
 
-if "solicitudes_clave" not in st.session_state:
-  st.session_state.solicitudes_clave = pd.DataFrame([
-      {
-          "FECHA": "2026-07-22 10:15",
-          "USUARIO": "cliente_global",
-          "MOTIVO": "Olvidé mi contraseña",
-          "ESTADO": "PENDIENTE",
-      }
-  ])
-
 if "historial_acciones" not in st.session_state:
   st.session_state.historial_acciones = pd.DataFrame([
       {
@@ -301,6 +291,27 @@ def obtener_imagen_github(nombre_archivo="alfa_warehouse.jpg"):
   return None
 
 
+# MODAL / VENTANA EMERGENTE DE SOPORTE PARA CLAVES
+@st.dialog("📌 Soporte y Recuperación de Credenciales")
+def mostrar_modal_soporte():
+  st.markdown("""
+        <div style="font-size: 14px; line-color: #334155;">
+            Por motivos de seguridad corporativa, la asignación y restablecimiento de contraseñas es gestionada de manera directa por el área de Administración.
+            <br><br>
+            Si perdiste tu acceso o necesitas actualizar tus credenciales, por favor comunícate a través de nuestros canales oficiales:
+            <br><br>
+            <ul>
+                <li><strong>📞 Central Telefónica:</strong> (01) 700-1234 (Anexo 102)</li>
+                <li><strong>💬 WhatsApp Soporte:</strong> +51 987 654 321</li>
+                <li><strong>✉️ Correo Institucional:</strong> soporte@alfacargo.pe</li>
+                <li><strong>🕒 Horario de Atención:</strong> Lun a Vie de 8:00 am a 6:00 pm</li>
+            </ul>
+        </div>
+    """, unsafe_allow_html=True)
+  if st.button("Entendido", use_container_width=True):
+    st.rerun()
+
+
 # VISTA DE LOGIN
 if st.session_state.usuario_actual is None:
   st.markdown(
@@ -325,9 +336,9 @@ if st.session_state.usuario_actual is None:
         """
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
                 <div style="color: #334155; font-weight: 600; font-size: 14px;">▌ Control de Accesos y Roles</div>
-                <div style="color: #334155; font-weight: 600; font-size: 14px;">▌ Gestión de Claves Olvidadas</div>
+                <div style="color: #334155; font-weight: 600; font-size: 14px;">▌ Gestión de Claves Directa</div>
                 <div style="color: #334155; font-weight: 600; font-size: 14px;">▌ Auditoría y Registros (Logs)</div>
-                <div style="color: #334155; font-weight: 600; font-size: 14px;">▌ Configuración Global</div>
+                <div style="color: #334155; font-weight: 600; font-size: 14px;">▌ Seguridad Operativa</div>
             </div>
         """,
         unsafe_allow_html=True,
@@ -358,16 +369,7 @@ if st.session_state.usuario_actual is None:
           key="p_login",
       )
 
-      col_opt1, col_opt2 = st.columns([1, 1])
-      with col_opt1:
-        remember = st.checkbox("Recordar", value=True)
-      with col_opt2:
-        st.markdown(
-            '<div style="text-align: right; padding-top: 3px;"><a href="#"'
-            ' style="color: #0F382C; font-size: 13px; font-weight: 600;'
-            ' text-decoration: none;">¿Soporte técnico?</a></div>',
-            unsafe_allow_html=True,
-        )
+      remember = st.checkbox("Recordar inicio de sesión", value=True)
 
       submit_btn = st.form_submit_button("Ingresar al Portal")
 
@@ -390,6 +392,14 @@ if st.session_state.usuario_actual is None:
           st.rerun()
         else:
           st.error("❌ Credenciales incorrectas.")
+
+    # ENLACE DE SOPORTE FUERA DEL FORMULARIO PARA ABRIR MODAL
+    st.markdown("<br>", unsafe_allow_html=True)
+    if st.button(
+        "❓ ¿Necesitas ayuda con tu acceso o contraseña?",
+        use_container_width=True,
+    ):
+      mostrar_modal_soporte()
 
 # VISTA DASHBOARD (ADMINISTRADOR)
 else:
@@ -414,14 +424,11 @@ else:
 
   st.markdown("<br>", unsafe_allow_html=True)
 
-  tab1, tab2, tab3, tab4 = st.tabs([
-      "👥 Control de Usuarios",
-      "🔑 Restablecer Contraseñas",
-      "⚙️ Configuración del Sistema",
-      "📜 Registro de Auditoría",
-  ])
+  tab1, tab2 = st.tabs(
+      ["👥 Control de Usuarios y Claves", "📜 Registro de Auditoría (Logs)"]
+  )
 
-  # TAB 1: CONTROL DE USUARIOS
+  # TAB 1: CONTROL DE USUARIOS Y CLAVES
   with tab1:
     col_a, col_b = st.columns([1, 1.3], gap="large")
 
@@ -466,18 +473,42 @@ else:
             st.warning("Completa los campos obligatorios.")
 
     with col_b:
-      st.subheader("📋 Lista de Usuarios Registrados")
+      st.subheader("📋 Usuarios Registrados")
       st.table(
           st.session_state.usuarios_registrados[["USUARIO", "ROL", "ESTADO"]]
       )
 
       st.markdown("---")
-      st.subheader("⚙️ Acciones sobre Usuarios")
+      st.subheader("⚙️ Gestión de Claves y Accesos")
       usr_gestion = st.selectbox(
-          "Selecciona un usuario para modificar",
+          "Selecciona un usuario para gestionar",
           st.session_state.usuarios_registrados["USUARIO"].tolist(),
           key="select_gestion",
       )
+
+      with st.expander("🔑 Restablecer Contraseña Directamente"):
+        nueva_pass_admin = st.text_input(
+            f"Nueva Contraseña para {usr_gestion}",
+            type="password",
+            placeholder="Escribe la nueva clave",
+            key="n_p_admin",
+        )
+        if st.button("🔄 Actualizar Clave Now", use_container_width=True):
+          if nueva_pass_admin:
+            st.session_state.usuarios_registrados.loc[
+                st.session_state.usuarios_registrados["USUARIO"]
+                == usr_gestion,
+                "PASS",
+            ] = nueva_pass_admin
+            registrar_log(
+                f"Restableció la contraseña del usuario '{usr_gestion}'"
+            )
+            st.success(
+                f"✅ Contraseña de '{usr_gestion}' actualizada correctamente."
+            )
+            st.rerun()
+          else:
+            st.warning("Escribe la nueva clave.")
 
       col_e1, col_e2 = st.columns(2)
       with col_e1:
@@ -499,7 +530,7 @@ else:
       with col_e2:
         st.markdown('<div id="btn_eliminar">', unsafe_allow_html=True)
         if st.button(
-            "❌ Eliminar Definitivamente",
+            "❌ Eliminar Cuenta",
             use_container_width=True,
             key="eliminar_btn",
         ):
@@ -517,62 +548,7 @@ else:
             st.error("No puedes eliminar la cuenta actualmente en uso.")
         st.markdown("</div>", unsafe_allow_html=True)
 
-  # TAB 2: RESTABLECER CONTRASEÑAS
+  # TAB 2: AUDITORÍA
   with tab2:
-    st.subheader("📩 Solicitudes Pendientes de Recuperación")
-    st.table(st.session_state.solicitudes_clave)
-
-    st.markdown("---")
-    st.subheader("🔑 Restablecer Contraseña Directamente")
-    col_r1, col_r2 = st.columns(2)
-
-    with col_r1:
-      usr_reset = st.selectbox(
-          "Seleccionar Usuario",
-          st.session_state.usuarios_registrados["USUARIO"].tolist(),
-          key="select_reset",
-      )
-    with col_r2:
-      nueva_pass_admin = st.text_input(
-          "Nueva Contraseña Temporal",
-          type="password",
-          placeholder="Escribe la nueva clave",
-      )
-
-    if st.button("🔄 Actualizar Contraseña"):
-      if nueva_pass_admin:
-        st.session_state.usuarios_registrados.loc[
-            st.session_state.usuarios_registrados["USUARIO"] == usr_reset,
-            "PASS",
-        ] = nueva_pass_admin
-        st.session_state.solicitudes_clave.loc[
-            st.session_state.solicitudes_clave["USUARIO"] == usr_reset, "ESTADO"
-        ] = "ATENDIDO"
-        registrar_log(f"Restableció la contraseña del usuario '{usr_reset}'")
-        st.success(
-            f"✅ Contraseña del usuario '{usr_reset}' actualizada"
-            " correctamente."
-        )
-        st.rerun()
-      else:
-        st.warning("Escribe la nueva contraseña temporal.")
-
-  # TAB 3: CONFIGURACIÓN
-  with tab3:
-    st.subheader("⚙️ Parámetros Generales de la Empresa")
-    with st.form("form_config"):
-      c_empresa = st.text_input(
-          "Nombre Comercial", value="Alfa Cargo Express S.A.C."
-      )
-      c_ruc = st.text_input("RUC Corporativo", value="20601234567")
-      c_correo = st.text_input("Correo de Soporte", value="soporte@alfacargo.pe")
-      c_moneda = st.selectbox("Moneda Principal", ["Soles (S/)", "Dólares ($)"])
-
-      if st.form_submit_button("Guardar Parámetros"):
-        registrar_log("Actualizó los parámetros corporativos del sistema")
-        st.success("Configuración guardada correctamente.")
-
-  # TAB 4: AUDITORÍA
-  with tab4:
     st.subheader("📜 Historial de Seguridad y Movimientos")
     st.table(st.session_state.historial_acciones)
