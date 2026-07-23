@@ -25,39 +25,38 @@ if "usuario_actual" not in st.session_state:
     st.session_state.usuario_actual = None
     st.session_state.rol_actual = None
 
-# CSS ROBUSTO (FORZANDO MODO CLARO EN TODOS LOS COMPONENTES)
+# CSS PERFECCIONADO PARA LOGIN Y DASHBOARD
 st.markdown(
     """
     <style>
-    /* OCULTAR SIDEBAR Y CABECERA NATIVA */
+    /* OCULTAR SIDEBAR Y CABECERA */
     [data-testid="stSidebar"], [data-testid="collapsedControl"], header[data-testid="stHeader"] { 
         display: none !important; 
     }
     
-    /* FONDO PRINCIPAL Y CONTENEDOR */
+    /* FONDO Y TEXTOS PRINCIPALES */
     .stApp { 
         background-color: #F8FAFC !important; 
         color: #0F172A !important; 
     }
     .block-container { 
-        max-width: 90% !important; 
-        padding-top: 1.5rem !important; 
+        max-width: 88% !important; 
+        padding-top: 2rem !important; 
         padding-bottom: 2rem !important; 
     }
     
-    /* FORZAR TEXTOS Y LABELS A NEGRO */
     h1, h2, h3, h4, h5, h6, p, label, span, div { 
         color: #0F172A !important; 
     }
 
-    /* CONTENEDOR DE FORMULARIO / TARJETA */
+    /* CONTENEDOR DE FORMULARIO DE LOGIN (TARJETA DERECHA) */
     [data-testid="stForm"] { 
         background-color: #FFFFFF !important; 
-        border-radius: 12px !important; 
+        border-radius: 14px !important; 
         border: 1px solid #E2E8F0 !important; 
-        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.04) !important; 
-        padding: 24px !important; 
-        border-top: 5px solid #0F382C !important; 
+        box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.05) !important; 
+        padding: 28px !important; 
+        border-top: 6px solid #0F382C !important; 
     }
 
     /* INPUTS DE TEXTO */
@@ -66,11 +65,20 @@ st.markdown(
         color: #0F172A !important; 
         border: 1px solid #CBD5E1 !important; 
         border-radius: 8px !important; 
+        padding: 10px 12px !important;
+        font-size: 14px !important;
     }
     .stTextInput input::placeholder { color: #94A3B8 !important; }
 
-    /* FIX ICONO DE CONTRASEÑA */
-    div[data-baseweb="input"] > div { background-color: transparent !important; }
+    /* LIMPIEZA DEL OJO EN CONTRASEÑA */
+    div[data-baseweb="input"] {
+        background-color: #FFFFFF !important;
+        border: 1px solid #CBD5E1 !important;
+        border-radius: 8px !important;
+    }
+    div[data-baseweb="input"] input {
+        border: none !important;
+    }
     button[aria-label="Show password"], button[aria-label="Hide password"] {
         background-color: transparent !important;
         border: none !important;
@@ -79,7 +87,37 @@ st.markdown(
         fill: #0F382C !important;
     }
 
-    /* SELECTBOX (MENÚS DESPLEGABLES CORREGIDOS) */
+    /* CORRECCIÓN COMPLETA DEL BOTÓN "INGRESAR AL PORTAL" */
+    div[data-testid="stFormSubmitButton"] {
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+        margin-top: 10px !important;
+    }
+    div[data-testid="stFormSubmitButton"] > button { 
+        background-color: #0F382C !important; 
+        border-radius: 8px !important; 
+        border: none !important; 
+        padding: 12px 20px !important; 
+        width: 100% !important;
+        min-height: 48px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    div[data-testid="stFormSubmitButton"] > button p, 
+    div[data-testid="stFormSubmitButton"] > button span,
+    div[data-testid="stFormSubmitButton"] > button div { 
+        color: #FFFFFF !important; 
+        font-weight: 700 !important; 
+        font-size: 15px !important;
+        white-space: nowrap !important;
+    }
+    div[data-testid="stFormSubmitButton"] > button:hover { 
+        background-color: #15803D !important; 
+    }
+
+    /* SELECTBOX (MENÚS DESPLEGABLES) */
     div[data-baseweb="select"] > div {
         background-color: #FFFFFF !important;
         color: #0F172A !important;
@@ -103,23 +141,6 @@ st.markdown(
         color: #0F382C !important;
     }
 
-    /* BOTONES PRIMARIOS DENTRO DE FORMULARIOS */
-    div[data-testid="stFormSubmitButton"] > button { 
-        background-color: #0F382C !important; 
-        border-radius: 8px !important; 
-        border: none !important; 
-        padding: 8px 0px !important; 
-        width: 100% !important;
-    }
-    div[data-testid="stFormSubmitButton"] > button p, 
-    div[data-testid="stFormSubmitButton"] > button span { 
-        color: #FFFFFF !important; 
-        font-weight: 700 !important; 
-    }
-    div[data-testid="stFormSubmitButton"] > button:hover { 
-        background-color: #15803D !important; 
-    }
-
     /* BOTONES ESTÁNDAR FUERA DE FORMULARIOS */
     div[data-testid="stButton"] > button { 
         background-color: #FFFFFF !important; 
@@ -127,14 +148,6 @@ st.markdown(
         border: 1px solid #CBD5E1 !important; 
         border-radius: 8px !important; 
         font-weight: 600 !important;
-    }
-    div[data-testid="stButton"] > button p,
-    div[data-testid="stButton"] > button span {
-        color: #0F172A !important;
-    }
-    div[data-testid="stButton"] > button:hover {
-        border-color: #0F382C !important;
-        color: #0F382C !important;
     }
 
     /* BOTÓN CERRAR SESIÓN */
@@ -147,7 +160,7 @@ st.markdown(
         font-weight: 700 !important;
     }
 
-    /* BOTONES DE BAJA Y ELIMINAR */
+    /* BOTONES ACCIÓN USUARIO */
     #btn_inactivar button {
         background-color: #FEF3C7 !important;
         border: 1px solid #FCD34D !important;
@@ -166,7 +179,7 @@ st.markdown(
         font-weight: 700 !important;
     }
 
-    /* PESTAÑAS (TABS) FIX */
+    /* PESTAÑAS (TABS) */
     .stTabs [data-baseweb="tab-list"] { 
         background-color: transparent !important; 
         gap: 8px; 
@@ -189,7 +202,7 @@ st.markdown(
         font-weight: 800 !important; 
     }
 
-    /* TABLAS COMPACTAS Y LIMPIAS */
+    /* TABLAS COMPACTAS */
     .stTable, [data-testid="stTable"] {
         background-color: #FFFFFF !important;
         border-radius: 8px !important;
@@ -292,7 +305,7 @@ def obtener_imagen_github(nombre_archivo="alfa_warehouse.jpg"):
 if st.session_state.usuario_actual is None:
   st.markdown(
       """
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
             <div style="font-size: 28px; font-weight: 900; color: #0F382C;">🌲 ALFA CARGO EXPRESS</div>
             <div style='color: #64748B; font-size: 14px; font-weight: 600;'>🌐 Central Lima, Perú</div>
         </div>
@@ -300,7 +313,7 @@ if st.session_state.usuario_actual is None:
       unsafe_allow_html=True,
   )
 
-  col_left, col_right = st.columns([1.3, 1.0], gap="large")
+  col_left, col_right = st.columns([1.2, 1.0], gap="large")
 
   with col_left:
     st.markdown(
@@ -310,7 +323,7 @@ if st.session_state.usuario_actual is None:
     )
     st.markdown(
         """
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
                 <div style="color: #334155; font-weight: 600; font-size: 14px;">▌ Control de Accesos y Roles</div>
                 <div style="color: #334155; font-weight: 600; font-size: 14px;">▌ Gestión de Claves Olvidadas</div>
                 <div style="color: #334155; font-weight: 600; font-size: 14px;">▌ Auditoría y Registros (Logs)</div>
@@ -324,15 +337,15 @@ if st.session_state.usuario_actual is None:
     if img_b64:
       st.markdown(
           f'<img src="data:image/jpeg;base64,{img_b64}" style="width: 100%;'
-          ' height: 300px; object-fit: cover; border-radius: 12px;" />',
+          ' max-height: 280px; object-fit: contain; border-radius: 12px;" />',
           unsafe_allow_html=True,
       )
 
   with col_right:
     with st.form("login_form"):
       st.markdown(
-          '<h3 style="text-align: center; color: #0F382C;'
-          ' font-weight:800;">Acceso Administrador</h3>',
+          '<h3 style="text-align: center; color: #0F382C; font-weight:800;'
+          ' margin-bottom: 20px;">Acceso Administrador</h3>',
           unsafe_allow_html=True,
       )
       input_user = st.text_input(
@@ -345,7 +358,7 @@ if st.session_state.usuario_actual is None:
           key="p_login",
       )
 
-      col_opt1, col_opt2 = st.columns([1, 1.2])
+      col_opt1, col_opt2 = st.columns([1, 1])
       with col_opt1:
         remember = st.checkbox("Recordar", value=True)
       with col_opt2:
