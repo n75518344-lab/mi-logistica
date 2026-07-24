@@ -25,7 +25,7 @@ if "usuario_actual" not in st.session_state:
     st.session_state.usuario_actual = None
     st.session_state.rol_actual = None
 
-# CSS CON CORRECCIÓN DE PORTALES DE NAVEGADOR
+# CSS GENERAL DEL SISTEMA
 st.markdown(
     """
     <style>
@@ -49,28 +49,43 @@ st.markdown(
         color: #0F172A; 
     }
 
-    /* FIX AGRESIVO PARA MENÚS FLOTANTES DE TABLAS EN EL DOM RAÍZ */
-    div[data-portal-id] *, 
-    [class*="glideDataGrid"] *,
-    div[data-baseweb="popover"] *,
-    [role="tooltip"] * {
+    /* ESTILO PARA LA TABLA FIJA CON SCROLLBAR */
+    .tabla-contenedor {
+        max-height: 210px;
+        overflow-y: auto;
+        border: 1px solid #CBD5E1;
+        border-radius: 8px;
+        background-color: #FFFFFF;
+    }
+    .tabla-usuarios {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+        text-align: left;
+    }
+    .tabla-usuarios th {
+        background-color: #0F382C;
         color: #FFFFFF !important;
-        fill: #FFFFFF !important;
+        padding: 10px 12px;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        font-weight: 700;
+    }
+    .tabla-usuarios td {
+        padding: 10px 12px;
+        border-bottom: 1px solid #E2E8F0;
+        color: #0F172A !important;
+    }
+    .tabla-usuarios tr:hover {
+        background-color: #F1F5F9;
     }
 
-    div[data-portal-id] > div,
-    div[data-baseweb="popover"] > div {
-        background-color: #1E293B !important;
-        border: 1px solid #334155 !important;
-        border-radius: 8px !important;
-    }
-
-    /* MODAL DE TEXTO BLANCO */
+    /* MODAL Y TEXTO BLANCO */
     div[role="dialog"] *, [data-testid="stDialog"] *, [data-testid="stModal"] * {
         color: #FFFFFF !important;
     }
 
-    /* CORRECCIÓN DEL BOTÓN EN EL MODAL */
     div[role="dialog"] button, [data-testid="stDialog"] button, [data-testid="stModal"] button {
         background-color: #0F382C !important;
         border: none !important;
@@ -483,12 +498,39 @@ else:
           if c in st.session_state.usuarios_registrados.columns
       ]
 
-      st.dataframe(
-          st.session_state.usuarios_registrados[cols_existentes],
-          use_container_width=True,
-          hide_index=True,
-          height=210,
-      )
+      # GENERACIÓN DE TABLA HTML CON ALTURA FIJA Y SCROLLBAR NATIVO
+      df_vista = st.session_state.usuarios_registrados[cols_existentes]
+
+      filas_html = ""
+      for _, fila in df_vista.iterrows():
+        filas_html += f"""
+        <tr>
+            <td><b>{fila['USUARIO']}</b></td>
+            <td>{fila['ROL']}</td>
+            <td><span style='color: {"#16A34A" if fila["ESTADO"]=="Activo" else "#DC2626"}; font-weight:700;'>{fila['ESTADO']}</span></td>
+            <td>{fila.get('ÚLTIMA CONEXIÓN', 'Nunca')}</td>
+        </tr>
+        """
+
+      tabla_html = f"""
+      <div class="tabla-contenedor">
+          <table class="tabla-usuarios">
+              <thead>
+                  <tr>
+                      <th>USUARIO</th>
+                      <th>ROL</th>
+                      <th>ESTADO</th>
+                      <th>ÚLTIMA CONEXIÓN</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {filas_html}
+              </tbody>
+          </table>
+      </div>
+      """
+
+      st.markdown(tabla_html, unsafe_allow_html=True)
 
       st.markdown("---")
       st.subheader("⚙️ Gestión de Claves y Accesos")
@@ -562,8 +604,32 @@ else:
 
   with tab2:
     st.subheader("📜 Historial de Seguridad y Movimientos")
-    st.dataframe(
-        st.session_state.historial_acciones,
-        use_container_width=True,
-        hide_index=True,
-    )
+
+    df_logs = st.session_state.historial_acciones
+    filas_logs = ""
+    for _, fila in df_logs.iterrows():
+      filas_logs += f"""
+        <tr>
+            <td>{fila['FECHA Y HORA']}</td>
+            <td><b>{fila['USUARIO']}</b></td>
+            <td>{fila['ACCIÓN']}</td>
+        </tr>
+        """
+
+    tabla_logs_html = f"""
+      <div class="tabla-contenedor" style="max-height: 350px;">
+          <table class="tabla-usuarios">
+              <thead>
+                  <tr>
+                      <th>FECHA Y HORA</th>
+                      <th>USUARIO</th>
+                      <th>ACCIÓN</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {filas_logs}
+              </tbody>
+          </table>
+      </div>
+      """
+    st.markdown(tabla_logs_html, unsafe_allow_html=True)
