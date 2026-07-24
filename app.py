@@ -1,7 +1,6 @@
 import base64
 from datetime import datetime
 import os
-import plotly.express as px
 import pandas as pd
 import streamlit as st
 
@@ -26,22 +25,19 @@ if "usuario_actual" not in st.session_state:
         st.session_state.usuario_actual = None
         st.session_state.rol_actual = None
 
-# CSS GENERAL PARA EL ESTILO APPSHEET IDÉNTICO A LA SEGUNDA IMAGEN
+# CSS PARA MANTENER LA ESTÉTICA DE NUESTRA PLATAFORMA Y QUITAR LOS GRÁFICOS INFERIORES
 st.markdown(
     """
     <style>
-    /* ESTILOS GENERALES Y FONDO CLARO */
     html, body, .stApp { 
         background-color: #F8FAFC !important; 
         color: #0F172A !important; 
     }
 
-    /* OCULTAR HEADER NATIVO DE STREAMLIT PARA PONER EL NUEVO NAVBAR SUPERIOR */
     header[data-testid="stHeader"] {
         display: none !important;
     }
 
-    /* PERSONALIZACIÓN DE LA BARRA LATERAL (SIDEBAR) ESTILO APPSHEET */
     [data-testid="stSidebar"] { 
         background-color: #FFFFFF !important;
         border-right: 1px solid #E2E8F0 !important;
@@ -58,16 +54,6 @@ st.markdown(
         color: #0F172A; 
     }
 
-    /* TARJETAS DE DETALLE */
-    .card-detalle {
-        background-color: #FFFFFF;
-        padding: 15px;
-        border-radius: 8px;
-        border: 1px solid #E2E8F0;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-
-    /* BOTONES DEL MENÚ LATERAL */
     .stButton > button {
         border-radius: 6px !important;
     }
@@ -76,7 +62,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# BASE DE DATOS DE PEDIDOS (Ampliada para mostrar scroll y vista idéntica a imagen 2)
+# BASE DE DATOS DE PEDIDOS
 if "pedidos_db" not in st.session_state:
     st.session_state.pedidos_db = pd.DataFrame([
         {
@@ -96,7 +82,6 @@ if "pedidos_db" not in st.session_state:
             "PESO": 1.00,
             "TIPO_SERVICIO": "SAME-DAY",
             "PLACA": "ABR120",
-            "EVIDENCIA": "https://raw.githubusercontent.com/streamlit/doc-tutorial-do-not-delete/main/file.png",
         },
         {
             "FECHA_REGISTRO": "2026-06-11",
@@ -115,7 +100,6 @@ if "pedidos_db" not in st.session_state:
             "PESO": 0.50,
             "TIPO_SERVICIO": "SAME-DAY",
             "PLACA": "ABR120",
-            "EVIDENCIA": "https://raw.githubusercontent.com/streamlit/doc-tutorial-do-not-delete/main/file.png",
         },
         {
             "FECHA_REGISTRO": "2026-06-13",
@@ -134,7 +118,6 @@ if "pedidos_db" not in st.session_state:
             "PESO": 2.50,
             "TIPO_SERVICIO": "SAME-DAY",
             "PLACA": "ABR120",
-            "EVIDENCIA": "https://raw.githubusercontent.com/streamlit/doc-tutorial-do-not-delete/main/file.png",
         },
         {
             "FECHA_REGISTRO": "2026-06-13",
@@ -143,7 +126,7 @@ if "pedidos_db" not in st.session_state:
             "ESTADO": "ENTREGADO",
             "SUB_ESTADO": "ENTREGA EFECTIVA",
             "NOMBRE": "JUAN CARLOS REYES HAWKINS",
-            "DIRECCION": "AV. PAPARK 450",
+            "DIRECCION": "AV. PARDO 450",
             "DEPARTAMENTO": "LIMA",
             "PROVINCIA": "LIMA",
             "DISTRITO": "MIRAFLORES",
@@ -153,7 +136,6 @@ if "pedidos_db" not in st.session_state:
             "PESO": 0.30,
             "TIPO_SERVICIO": "SAME-DAY",
             "PLACA": "ABR120",
-            "EVIDENCIA": "",
         },
         {
             "FECHA_REGISTRO": "2026-06-13",
@@ -172,7 +154,6 @@ if "pedidos_db" not in st.session_state:
             "PESO": 0.20,
             "TIPO_SERVICIO": "NEXT-DAY",
             "PLACA": "C8X-401",
-            "EVIDENCIA": "",
         },
         {
             "FECHA_REGISTRO": "2026-06-16",
@@ -191,7 +172,6 @@ if "pedidos_db" not in st.session_state:
             "PESO": 1.20,
             "TIPO_SERVICIO": "SAME-DAY",
             "PLACA": "ABR120",
-            "EVIDENCIA": "",
         },
     ])
 
@@ -234,6 +214,64 @@ def mostrar_modal_soporte():
         unsafe_allow_html=True,
     )
     if st.button("Entendido", use_container_width=True):
+        st.rerun()
+
+
+# MODAL PARA AÑADIR NUEVO PEDIDO
+@st.dialog("➕ Añadir Nuevo Pedido / Registro")
+def modal_agregar_pedido():
+    with st.form("form_nuevo_pedido"):
+        f_reg = st.date_input(
+            "Fecha de Registro", value=datetime.today()
+        ).strftime("%Y-%m-%d")
+        c_int = st.text_input("Código Interno")
+        cli = st.text_input("Cliente", value="UNIMARKET")
+        est = st.selectbox("Estado", ["ENTREGADO", "EN TRÁNSITO", "PENDIENTE"])
+        sub_est = st.selectbox(
+            "Sub Estado", ["ENTREGA EFECTIVA", "EN RUTA", "EN ALMACÉN"]
+        )
+        nom = st.text_input("Nombre del Destinatario")
+        dist = st.text_input("Distrito")
+        t_serv = st.selectbox("Tipo de Servicio", ["SAME-DAY", "NEXT-DAY"])
+
+        submit_nuevo = st.form_submit_button("Guardar Pedido")
+        if submit_nuevo:
+            if c_int and nom:
+                nuevo_df = pd.DataFrame([{
+                    "FECHA_REGISTRO": f_reg,
+                    "CODIGO_INTERNO": c_int,
+                    "CLIENTE": cli,
+                    "ESTADO": est,
+                    "SUB_ESTADO": sub_est,
+                    "NOMBRE": nom,
+                    "DIRECCION": "S/N",
+                    "DEPARTAMENTO": "LIMA",
+                    "PROVINCIA": "LIMA",
+                    "DISTRITO": dist,
+                    "DOCUMENTO": "00000000",
+                    "TELEFONO": "999999999",
+                    "DESCRIPCION": "General",
+                    "PESO": 1.0,
+                    "TIPO_SERVICIO": t_serv,
+                    "PLACA": "AUTO-01",
+                }])
+                st.session_state.pedidos_db = pd.concat(
+                    [st.session_state.pedidos_db, nuevo_df], ignore_index=True
+                )
+                st.success("✅ Pedido añadido correctamente.")
+                st.rerun()
+            else:
+                st.warning("Por favor completa los campos obligatorios.")
+
+
+# MODAL DE FILTRADO AVANZADO
+@st.dialog("🎛️ Filtros Avanzados")
+def modal_filtros():
+    estado_filtro = st.selectbox(
+        "Filtrar por Estado", ["TODOS", "ENTREGADO", "EN TRÁNSITO"]
+    )
+    if st.button("Aplicar Filtro", use_container_width=True):
+        st.session_state["filtro_estado_activo"] = estado_filtro
         st.rerun()
 
 
@@ -309,9 +347,9 @@ if st.session_state.usuario_actual is None:
         ):
             mostrar_modal_soporte()
 
-# APLICACIÓN PRINCIPAL CON BARRA SUPERIOR Y MENÚ LATERAL ESTILO APPSHEET EXACTO
+# APLICACIÓN PRINCIPAL CON BARRA SUPERIOR IDÉNTICA A LA IMAGEN 2 Y FUNCIONALIDADES
 else:
-    # BARRA SUPERIOR IDÉNTICA A LA SEGUNDA IMAGEN (Navbar AppSheet)
+    # BARRA SUPERIOR IDÉNTICA A LA IMAGEN 2
     st.markdown(
         """
         <div style="display: flex; align-items: center; justify-content: space-between; background-color: #FFFFFF; border-bottom: 1px solid #E2E8F0; padding: 8px 15px; margin-top: -30px; margin-left: -30px; margin-right: -30px; margin-bottom: 15px;">
@@ -334,7 +372,7 @@ else:
     )
 
     with st.sidebar:
-        # Menú lateral idéntico a la segunda imagen
+        # Menú lateral acorde a nuestra plataforma previa
         menu_seleccion = st.radio(
             "Navegación",
             [
@@ -361,9 +399,8 @@ else:
             st.query_params.clear()
             st.rerun()
 
-    # VISTA: DASHBOARD / DETALLE DE PEDIDOS (Idéntico a Imagen 2)
+    # VISTA: DASHBOARD / DETALLE DE PEDIDOS (EXACTAMENTE COMO EN LA IMAGEN 2, SIN BARRAS ABAJO)
     if "DASHBOARD" in menu_seleccion or "PEDIDOS" in menu_seleccion:
-        # Barra de ruta de vistas estilo AppSheet (Ej: DASHBOARD > Detalle de pedidos)
         col_path, col_actions = st.columns([3, 1])
         with col_path:
             st.markdown(
@@ -374,21 +411,49 @@ else:
             )
 
         with col_actions:
-            # Botones de acción rápida superiores (simulados idénticos a imagen 2)
+            # BOTONES SUPERIORES FUNCIONALES (Subir/Descargar/Añadir/Filtrar)
             act_cols = st.columns(4)
+
             with act_cols[0]:
-                st.button("📥", help="Descargar")
+                # Función de descarga funcional con CSV
+                csv_data = st.session_state.pedidos_db.to_csv(
+                    index=False
+                ).encode("utf-8")
+                st.download_button(
+                    label="📥",
+                    data=csv_data,
+                    file_name="detalle_pedidos.csv",
+                    mime="text/csv",
+                    help="Descargar datos en CSV",
+                )
+
             with act_cols[1]:
-                st.button("🔄", help="Actualizar vista")
+                if st.button("🔄", help="Actualizar vista"):
+                    st.rerun()
+
             with act_cols[2]:
-                st.button("➕ Add", help="Añadir registro")
+                if st.button("➕", help="Añadir registro"):
+                    modal_agregar_pedido()
+
             with act_cols[3]:
-                st.button("🎛️", help="Filtros")
+                if st.button("🎛️", help="Filtros avanzados"):
+                    modal_filtros()
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # TABLA PRINCIPAL EXÁCTAMENTE IGUAL A LA SEGUNDA IMAGEN
-        df_display = st.session_state.pedidos_db[
+        # APLICAR FILTRO SI EXISTE
+        df_to_show = st.session_state.pedidos_db
+        if (
+            "filtro_estado_activo" in st.session_state
+            and st.session_state["filtro_estado_activo"] != "TODOS"
+        ):
+            df_to_show = df_to_show[
+                df_to_show["ESTADO"]
+                == st.session_state["filtro_estado_activo"]
+            ]
+
+        # TABLA PRINCIPAL LIMPIA SIN GRÁFICOS INFERIORES
+        df_display = df_to_show[
             [
                 "FECHA_REGISTRO",
                 "CODIGO_INTERNO",
@@ -402,45 +467,6 @@ else:
         ].copy()
 
         st.dataframe(df_display, use_container_width=True, hide_index=True)
-
-        st.markdown("<br>", unsafe_allow_html=True)
-
-        # SECCIÓN DE GRÁFICOS INFERIORES
-        g_col1, g_col2 = st.columns(2)
-        with g_col1:
-            st.markdown("##### Avance de ruta")
-            fig_pie = px.pie(
-                st.session_state.pedidos_db,
-                names="ESTADO",
-                color="ESTADO",
-                color_discrete_map={
-                    "ENTREGADO": "#1D70B8",
-                    "EN TRÁNSITO": "#F59E0B",
-                },
-                hole=0.4,
-            )
-            fig_pie.update_layout(
-                margin=dict(t=10, b=10, l=10, r=10), height=220
-            )
-            st.plotly_chart(fig_pie, use_container_width=True)
-
-        with g_col2:
-            st.markdown("##### Cantidad de Pedidos")
-            df_counts = (
-                st.session_state.pedidos_db.groupby("FECHA_REGISTRO")
-                .size()
-                .reset_index(name="Count")
-            )
-            fig_bar = px.bar(
-                df_counts,
-                x="FECHA_REGISTRO",
-                y="Count",
-                color_discrete_sequence=["#1D70B8"],
-            )
-            fig_bar.update_layout(
-                margin=dict(t=10, b=10, l=10, r=10), height=220
-            )
-            st.plotly_chart(fig_bar, use_container_width=True)
 
     elif "About" in menu_seleccion:
         st.markdown("### ℹ️ Acerca de Alfa Cargo Express")
