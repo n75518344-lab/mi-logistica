@@ -26,7 +26,7 @@ if "usuario_actual" not in st.session_state:
         st.session_state.usuario_actual = None
         st.session_state.rol_actual = None
 
-# CSS GENERAL DEL SISTEMA (CORRECCIÓN DEFINITIVA DE BOTONES)
+# CSS GENERAL DEL SISTEMA (BOTONES ESTILO CLARO Y UNIFORME)
 st.markdown(
     """
     <style>
@@ -53,11 +53,12 @@ st.markdown(
     }
 
     /* ==========================================================
-       CORRECCIÓN ABSOLUTA DE VISIBILIDAD DE TEXTO E ICONOS EN BOTONES
+       ESTILO UNIFORME PARA TODOS LOS BOTONES (CLARO / LIMPIO)
        ========================================================== */
-    div[data-testid="stButton"] > button { 
-        background-color: #1E293B !important;  
-        border: 1px solid #334155 !important;
+    div[data-testid="stButton"] > button,
+    div[data-testid="stDownloadButton"] > button { 
+        background-color: #FFFFFF !important;  
+        border: 1px solid #CBD5E1 !important;
         border-radius: 8px !important; 
         font-weight: 600 !important; 
         transition: all 0.2s ease;
@@ -66,19 +67,19 @@ st.markdown(
     div[data-testid="stButton"] > button div,
     div[data-testid="stButton"] > button span,
     div[data-testid="stButton"] > button p,
-    div[data-testid="stButton"] > button label {
-        color: #FFFFFF !important;    
-        fill: #FFFFFF !important;     
+    div[data-testid="stButton"] > button label,
+    div[data-testid="stDownloadButton"] > button div,
+    div[data-testid="stDownloadButton"] > button span,
+    div[data-testid="stDownloadButton"] > button p,
+    div[data-testid="stDownloadButton"] > button label {
+        color: #0F172A !important;    
+        fill: #0F172A !important;     
     }
 
-    div[data-testid="stButton"] > button:hover { 
-        background-color: #0F382C !important; 
-        border-color: #0F382C !important; 
-    }
-    div[data-testid="stButton"] > button:hover div,
-    div[data-testid="stButton"] > button:hover span,
-    div[data-testid="stButton"] > button:hover p {
-        color: #FFFFFF !important; 
+    div[data-testid="stButton"] > button:hover,
+    div[data-testid="stDownloadButton"] > button:hover { 
+        background-color: #F1F5F9 !important; 
+        border-color: #94A3B8 !important; 
     }
 
     /* CONTENEDORES CON SCROLL INTELIGENTE PARA TABLAS */
@@ -456,8 +457,8 @@ def modal_add_pedido():
 def modal_upload():
     file = st.file_uploader("Selecciona archivo Excel o CSV", type=["xlsx", "csv"])
     if file and st.button("Procesar y Cargar"):
-        st.success("Data cargada correctamente (Simulación)")
         registrar_log("Subida de archivo masivo")
+        st.rerun()
 
 
 # LOGIN
@@ -547,8 +548,6 @@ if st.session_state.usuario_actual is None:
 
                     registrar_log("Inicio de sesión exitoso")
                     st.rerun()
-                else:
-                    st.error("❌ Credenciales incorrectas.")
 
         st.markdown("<br>", unsafe_allow_html=True)
         if st.button(
@@ -652,7 +651,7 @@ else:
                                 nu
                                 in st.session_state.usuarios_registrados["USUARIO"].values
                             ):
-                                st.error("El nombre de usuario ya existe.")
+                                pass
                             else:
                                 nueva_f = pd.DataFrame([{
                                     "USUARIO": nu,
@@ -666,10 +665,7 @@ else:
                                     ignore_index=True,
                                 )
                                 registrar_log(f"Creó al usuario '{nu}' con rol '{nr}'")
-                                st.success(f"✅ Usuario {nu} creado con éxito")
                                 st.rerun()
-                        else:
-                            st.warning("Completa los campos obligatorios.")
 
             with col_b:
                 st.subheader("📋 Usuarios Registrados")
@@ -740,13 +736,7 @@ else:
                                 registrar_log(
                                     f"Restableció la contraseña del usuario '{usr_gestion}'"
                                 )
-                                st.success(
-                                    f"✅ Contraseña de '{usr_gestion}' actualizada"
-                                    " correctamente."
-                                )
                                 st.rerun()
-                            else:
-                                st.warning("Escribe la nueva clave.")
 
                     col_e1, col_e2 = st.columns(2)
                     with col_e1:
@@ -762,7 +752,6 @@ else:
                                 "ESTADO",
                             ] = "Inactivo"
                             registrar_log(f"Inactivó al usuario '{usr_gestion}'")
-                            st.success(f"Usuario '{usr_gestion}' marcado como Inactivo.")
                             st.rerun()
                         st.markdown("</div>", unsafe_allow_html=True)
 
@@ -780,7 +769,6 @@ else:
                                 ]
                             )
                             registrar_log(f"Eliminó al usuario '{usr_gestion}'")
-                            st.success(f"Usuario '{usr_gestion}' eliminado.")
                             st.rerun()
                         st.markdown("</div>", unsafe_allow_html=True)
                 else:
