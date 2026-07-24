@@ -89,37 +89,6 @@ st.markdown(
         color: #FFFFFF !important; 
     }
 
-    /* FORZAR FONDO BLANCO Y TEXTO OSCURO EN LOS MENÚS FLOTANTES DE LOS DATAFRAMES */
-    div[data-baseweb="popover"] div, 
-    div[data-baseweb="menu"] div,
-    ul[data-baseweb="menu"] li,
-    div[role="menu"] *, 
-    div[role="tooltip"] * {
-        background-color: #FFFFFF !important;
-        color: #0F172A !important;
-        fill: #0F172A !important;
-    }
-
-    /* EFECTO HOVER AL PASAR EL MOUSE POR LAS OPCIONES DEL MENÚ */
-    div[role="menu"] div:hover, 
-    div[data-baseweb="menu"] li:hover {
-        background-color: #F1F5F9 !important;
-        color: #0F382C !important;
-    }
-
-    /* OCULTAR TODAS LAS OPCIONES EXCEPTO ORDENAR (SORT ASCENDING / DESCENDING) DE FORMA ESTRICTA */
-    div[role="menu"] li, div[role="menu"] div, ul[data-baseweb="menu"] li {
-        display: none !important;
-    }
-    
-    /* MOSTRAR UNICAMENTE LAS OPCIONES DE ORDENAMIENTO */
-    div[role="menu"] div:has-text("Sort"),
-    div[role="menu"] div:has-text("Ordenar"),
-    ul[data-baseweb="menu"] li:has-text("Sort"),
-    ul[data-baseweb="menu"] li:has-text("Ordenar") {
-        display: flex !important;
-    }
-
     /* CONTENEDORES CON SCROLL INTELIGENTE PARA TABLAS */
     .tabla-contenedor, .tabla-contenedor-logs {
         max-height: 450px;
@@ -631,7 +600,7 @@ else:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # TABLA INTERACTIVA NATIVA CON MENÚ SIMPLIFICADO (SOLO ORDENAMIENTO)
+        # TABLA INTERACTIVA NATIVA CON FUNCIONALIDADES NATIVAS COMPLETAS
         st.dataframe(
             st.session_state.df_pedidos,
             use_container_width=True,
