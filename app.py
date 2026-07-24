@@ -31,14 +31,12 @@ if "usuario_actual" not in st.session_state:
 st.markdown(
     """
     <style>
-    /* OCULTAR SCROLLBAR GLOBAL DE LA VENTANA */
     html, body, .stApp { 
         overflow: hidden !important; 
         background-color: #F8FAFC !important; 
         color: #0F172A !important; 
     }
 
-    /* OCULTAR SIDEBAR Y CABECERA DE STREAMLIT */
     [data-testid="stSidebar"], [data-testid="collapsedControl"], header[data-testid="stHeader"] { 
         display: none !important; 
     }
@@ -53,7 +51,6 @@ st.markdown(
         color: #0F172A; 
     }
 
-    /* ESTILO OSCURO Y ELEGANTE FIJO PARA TODOS LOS BOTONES */
     div[data-testid="stButton"] > button,
     div[data-testid="stDownloadButton"] > button { 
         background-color: #1E293B !important;  
@@ -80,7 +77,6 @@ st.markdown(
         border-color: #0F382C !important; 
     }
 
-    /* CONTENEDORES PARA TABLAS HTML ADICIONALES */
     .tabla-contenedor, .tabla-contenedor-logs {
         max-height: 450px;
         height: fit-content;
@@ -214,7 +210,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# DATOS EN SESIÓN
 if "usuarios_registrados" not in st.session_state:
     st.session_state.usuarios_registrados = pd.DataFrame([
         {
@@ -263,7 +258,6 @@ if "historial_acciones" not in st.session_state:
         }
     ])
 
-
 def registrar_log(accion):
     nuevo_log = pd.DataFrame([{
         "FECHA Y HORA": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -274,15 +268,12 @@ def registrar_log(accion):
         [nuevo_log, st.session_state.historial_acciones], ignore_index=True
     )
 
-
 def obtener_imagen_github(nombre_archivo="alfa_warehouse.jpg"):
     if os.path.exists(nombre_archivo):
         with open(nombre_archivo, "rb") as f:
             return base64.b64encode(f.read()).decode("utf-8")
     return None
 
-
-# MODAL DE SOPORTE
 @st.dialog("📌 Soporte y Recuperación de Credenciales")
 def mostrar_modal_soporte():
     st.markdown(
@@ -304,7 +295,6 @@ def mostrar_modal_soporte():
     if st.button("Entendido", use_container_width=True):
         st.rerun()
 
-# MODALES PARA OPERARIO
 @st.dialog("➕ Añadir Registro de Pedido")
 def modal_add_pedido():
     with st.form("add_p"):
@@ -326,8 +316,6 @@ def modal_upload():
         registrar_log("Subida de archivo masivo")
         st.rerun()
 
-
-# LOGIN
 if st.session_state.usuario_actual is None:
     st.markdown(
         """
@@ -405,7 +393,6 @@ if st.session_state.usuario_actual is None:
         if st.button("❓ ¿Necesitas ayuda con tu acceso o contraseña?", use_container_width=True):
             mostrar_modal_soporte()
 
-# DASHBOARD
 else:
     col_nav1, col_nav2 = st.columns([5, 1])
     with col_nav1:
@@ -428,9 +415,6 @@ else:
 
     st.divider()
 
-    # ==========================================
-    # VISTA 1: PORTAL OPERARIO (CON ORDENAMIENTO Y SET FILTER + BUSCADOR INTERNO)
-    # ==========================================
     if st.session_state.rol_actual == "🛠️ Operario":
         col_tit, col_btns = st.columns([3, 2])
         
@@ -446,18 +430,17 @@ else:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # Configuración avanzada de columnas con ordenamiento y buscador interno en cada filtro
         gb = GridOptionsBuilder.from_dataframe(st.session_state.df_pedidos)
         
         gb.configure_default_column(
             editable=False,
-            sortable=True,        # Ordenamiento ascendente y descendente al hacer clic en cabeceras
+            sortable=True,
             resizable=True,
             filterable=True,
+            floatingFilter=True,  # <--- BARRAS DE BÚSQUEDA VISIBLES EN CADA COLUMNA
             flex=1
         )
         
-        # Activamos el Set Filter en las columnas clave (Incluye cajita de búsqueda tipo Excel por columna)
         gb.configure_column("FECHA_REGISTRO", filter="agSetColumnFilter", sortable=True)
         gb.configure_column("CODIGO INTERNO", filter="agSetColumnFilter", sortable=True)
         gb.configure_column("CLIENTE", filter="agSetColumnFilter", sortable=True)
@@ -467,7 +450,6 @@ else:
         gb.configure_pagination(paginationAutoPageSize=False, paginationPageSize=10)
         grid_options = gb.build()
 
-        # Renderizar la tabla interactiva
         AgGrid(
             st.session_state.df_pedidos,
             gridOptions=grid_options,
@@ -476,9 +458,6 @@ else:
             use_container_width=True
         )
 
-    # ==========================================
-    # VISTA 2: PORTAL ADMINISTRADOR
-    # ==========================================
     else:
         tab1, tab2 = st.tabs(["Usuarios y Claves", "Auditoría (Logs)"])
 
