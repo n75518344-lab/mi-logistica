@@ -59,6 +59,19 @@ st.markdown(
         background-color: #FFFFFF;
         margin-bottom: 8px !important;
     }
+
+    /* TABLA DE AUDITORÍA AMPLIADA PARA COMPLETAR LA PANTALLA */
+    .tabla-contenedor-logs {
+        max-height: 520px;
+        min-height: 420px;
+        overflow-y: auto;
+        border: 1px solid #CBD5E1;
+        border-radius: 10px;
+        background-color: #FFFFFF;
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03);
+        margin-top: 15px !important;
+    }
+
     .tabla-usuarios {
         width: 100%;
         border-collapse: collapse;
@@ -68,14 +81,14 @@ st.markdown(
     .tabla-usuarios th {
         background-color: #0F382C;
         color: #FFFFFF !important;
-        padding: 10px 12px;
+        padding: 12px 14px;
         position: sticky;
         top: 0;
         z-index: 1;
         font-weight: 700;
     }
     .tabla-usuarios td {
-        padding: 10px 12px;
+        padding: 10px 14px;
         border-bottom: 1px solid #E2E8F0;
         color: #0F172A !important;
     }
@@ -221,20 +234,22 @@ st.markdown(
     }
     #btn_eliminar button p { color: #991B1B !important; font-weight: 700 !important; }
 
-    /* PESTAÑAS MINIMALISTAS */
+    /* PESTAÑAS Y BARRA CONTENEDORA MINIMALISTA COMPLETA */
     .stTabs [data-baseweb="tab-list"] { 
         background-color: transparent !important; 
-        gap: 24px !important; 
-        border-bottom: 1px solid #E2E8F0 !important;
-        margin-top: 0px !important; 
+        gap: 28px !important; 
+        border-bottom: 2px solid #CBD5E1 !important; /* Línea divisoria completa que cruza la ventana */
+        margin-top: 10px !important; 
         padding-bottom: 0px !important;
+        width: 100% !important;
     }
     .stTabs [data-baseweb="tab"] { 
         background-color: transparent !important; 
         border: none !important;
         border-bottom: 3px solid transparent !important;
-        padding: 8px 4px 12px 4px !important; 
+        padding: 10px 4px 12px 4px !important; 
         border-radius: 0px !important;
+        margin-bottom: -2px !important; /* Enlace directo con la línea contenedora */
     }
     .stTabs [data-baseweb="tab"] p { 
         color: #64748B !important; 
@@ -463,7 +478,7 @@ else:
       st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
-  # PESTAÑAS CON NOMBRES MINIMALISTAS Y LIMPIOS
+  # PESTAÑAS MINIMALISTAS
   tab1, tab2 = st.tabs(["Usuarios y Claves", "Auditoría (Logs)"])
 
   with tab1:
@@ -549,6 +564,7 @@ else:
 
       st.subheader("⚙️ Gestión de Claves y Accesos")
 
+      # EXCLUSIÓN DEL USUARIO ACTUAL DE LA LISTA DE GESTIÓN
       lista_usuarios_gestion = st.session_state.usuarios_registrados[
           st.session_state.usuarios_registrados["USUARIO"]
           != st.session_state.usuario_actual
@@ -625,7 +641,7 @@ else:
         st.info("ℹ️ No hay otros usuarios registrados para gestionar.")
 
   with tab2:
-    st.subheader("📜 Historial de Seguridad y Movimientos")
+    st.subheader("Historial de Seguridad y Movimientos")
 
     df_logs = st.session_state.historial_acciones
     filas_logs = ""
@@ -633,7 +649,7 @@ else:
       filas_logs += f"<tr><td>{fila['FECHA Y HORA']}</td><td><b>{fila['USUARIO']}</b></td><td>{fila['ACCIÓN']}</td></tr>"
 
     tabla_logs_html = textwrap.dedent(f"""
-        <div class="tabla-contenedor" style="max-height: 350px;">
+        <div class="tabla-contenedor-logs">
             <table class="tabla-usuarios">
                 <thead>
                     <tr>
