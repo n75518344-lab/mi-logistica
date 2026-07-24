@@ -130,8 +130,11 @@ st.markdown(
         background-color: #F1F5F9;
     }
 
-    /* CORRECCIÓN DEFINITIVA Y LIMPIA PARA EL CALENDARIO DE BASEWEB */
-    div[data-baseweb="popover"], div[data-baseweb="calendar"] {
+    /* CORRECCIÓN TOTAL Y DEFINITIVA PARA EL CALENDARIO DE BASEWEB */
+    div[data-baseweb="popover"], 
+    div[data-baseweb="calendar"], 
+    div[data-baseweb="calendar"] > div,
+    div[data-baseweb="calendar"] section {
         background-color: #FFFFFF !important;
         color: #0F172A !important;
     }
@@ -140,14 +143,27 @@ st.markdown(
         color: #0F172A !important;
     }
 
-    /* Cabecera del calendario (mes y año en negro) */
-    div[data-baseweb="calendar"] [data-testid="stMarkdownContainer"] p,
+    /* Cabecera superior, selectores de mes y año */
+    div[data-baseweb="calendar"] div[class*="ast"],
+    div[data-baseweb="calendar"] button,
     div[data-baseweb="calendar"] svg {
         color: #0F172A !important;
         fill: #0F172A !important;
     }
 
+    /* Forzar fondo blanco en los dropdowns de selección de mes y año */
+    div[data-baseweb="menu"], ul[role="listbox"], li[role="option"] {
+        background-color: #FFFFFF !important;
+        color: #0F172A !important;
+    }
+
+    li[role="option"]:hover {
+        background-color: #F1F5F9 !important;
+        color: #0F382C !important;
+    }
+
     /* Todos los botones de días por defecto */
+    div[data-baseweb="calendar"] button[role="gridcell"],
     div[data-baseweb="calendar"] button {
         background-color: #FFFFFF !important;
         color: #0F172A !important;
@@ -155,7 +171,7 @@ st.markdown(
         border: none !important;
     }
 
-    div[data-baseweb="calendar"] button:hover {
+    div[data-baseweb="calendar"] button[role="gridcell"]:hover {
         background-color: #F1F5F9 !important;
         color: #0F382C !important;
     }
@@ -171,7 +187,7 @@ st.markdown(
         visibility: hidden !important;
     }
 
-    /* Fecha seleccionada: Fondo blanco con borde naranja puro (sin relleno oscuro) */
+    /* Fecha seleccionada: Fondo blanco con borde naranja puro y texto visible */
     div[data-baseweb="calendar"] button[aria-selected="true"] {
         background-color: #FFFFFF !important;
         background: #FFFFFF !important;
@@ -179,15 +195,6 @@ st.markdown(
         color: #0F172A !important;
         font-weight: 700 !important;
         box-shadow: none !important;
-    }
-
-    li[role="option"] {
-        background-color: #FFFFFF !important;
-        color: #0F172A !important;
-    }
-    li[role="option"]:hover {
-        background-color: #F1F5F9 !important;
-        color: #0F382C !important;
     }
 
     [data-testid="stExpander"] {
