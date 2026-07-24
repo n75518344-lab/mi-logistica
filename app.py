@@ -162,23 +162,23 @@ st.markdown(
     }
 
     /* ESTILO ESPECÍFICO PARA LOS 3 BOTONES SUPERIORES (Descargar, Subir, Añadir) */
-    #btn_accion_custom button {
+    .contenedor-btn-custom button {
         background-color: #FFFFFF !important;
         border: 1.5px solid #0F382C !important;
         border-radius: 8px !important;
     }
-    #btn_accion_custom button div,
-    #btn_accion_custom button span,
-    #btn_accion_custom button p {
+    .contenedor-btn-custom button div,
+    .contenedor-btn-custom button span,
+    .contenedor-btn-custom button p {
         color: #0F382C !important;
         font-weight: 700 !important;
     }
-    #btn_accion_custom button:hover {
+    .contenedor-btn-custom button:hover {
         background-color: #0F382C !important;
     }
-    #btn_accion_custom button:hover div,
-    #btn_accion_custom button:hover span,
-    #btn_accion_custom button:hover p {
+    .contenedor-btn-custom button:hover div,
+    .contenedor-btn-custom button:hover span,
+    .contenedor-btn-custom button:hover p {
         color: #FFFFFF !important;
     }
 
@@ -514,16 +514,16 @@ else:
         with col_tit:
             st.markdown("<h3 style='margin:0; padding:0; line-height: 1.0;'>Gestión de Envíos</h3>", unsafe_allow_html=True)
         with col_b1:
-            st.markdown('<div id="btn_accion_custom">', unsafe_allow_html=True)
-            st.download_button("📥", data=csv, file_name="pedidos.csv", use_container_width=True, help="Descargar CSV")
+            st.markdown('<div class="contenedor-btn-custom">', unsafe_allow_html=True)
+            st.download_button("📥", data=csv, file_name="pedidos.csv", use_container_width=True)
             st.markdown('</div>', unsafe_allow_html=True)
         with col_b2:
-            st.markdown('<div id="btn_accion_custom">', unsafe_allow_html=True)
-            if st.button("📤", use_container_width=True, help="Subir Data"): modal_upload()
+            st.markdown('<div class="contenedor-btn-custom">', unsafe_allow_html=True)
+            if st.button("📤", use_container_width=True): modal_upload()
             st.markdown('</div>', unsafe_allow_html=True)
         with col_b3:
-            st.markdown('<div id="btn_accion_custom">', unsafe_allow_html=True)
-            if st.button("➕", use_container_width=True, help="Nuevo Pedido"): modal_add_pedido()
+            st.markdown('<div class="contenedor-btn-custom">', unsafe_allow_html=True)
+            if st.button("➕", use_container_width=True): modal_add_pedido()
             st.markdown('</div>', unsafe_allow_html=True)
 
         st.markdown("<div style='margin-top: 8px;'></div>", unsafe_allow_html=True)
