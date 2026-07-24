@@ -26,7 +26,7 @@ if "usuario_actual" not in st.session_state:
         st.session_state.usuario_actual = None
         st.session_state.rol_actual = None
 
-# CSS GENERAL DEL SISTEMA
+# CSS GENERAL DEL SISTEMA (CON CORRECCIÓN PARA CALENDARIOS Y MÁRGENES)
 st.markdown(
     """
     <style>
@@ -130,12 +130,22 @@ st.markdown(
         background-color: #F1F5F9;
     }
 
-    div[data-baseweb="popover"], div[data-baseweb="menu"], ul[role="listbox"] {
+    /* CORRECCIÓN EXCLUSIVA PARA EL CALENDARIO Y POPOVERS DE FECHAS */
+    div[data-baseweb="popover"], div[data-baseweb="calendar"] {
         background-color: #FFFFFF !important;
-    }
-    div[data-baseweb="popover"] * {
         color: #0F172A !important;
     }
+    div[data-baseweb="popover"] *, div[data-baseweb="calendar"] * {
+        color: #0F172A !important;
+    }
+    div[data-baseweb="calendar"] button {
+        color: #0F172A !important;
+    }
+    div[data-baseweb="calendar"] button:hover {
+        background-color: #F1F5F9 !important;
+        color: #0F382C !important;
+    }
+
     li[role="option"] {
         background-color: #FFFFFF !important;
         color: #0F172A !important;
@@ -470,12 +480,10 @@ else:
             
             with dc1:
                 st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>FECHA_INICIAL:</p>", unsafe_allow_html=True)
-                # Selector de fecha inicial con minicalendario (por defecto vacío o inicio del mes actual)
                 fecha_inicio = st.date_input("Fecha Inicial", value=None, format="DD/MM/YYYY", label_visibility="collapsed")
 
             with dc2:
                 st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>FECHA_FINAL:</p>", unsafe_allow_html=True)
-                # Selector de fecha final con minicalendario
                 fecha_fin = st.date_input("Fecha Final", value=None, format="DD/MM/YYYY", label_visibility="collapsed")
 
             st.markdown("<hr style='margin: 15px 0px; border-color: #E2E8F0;'>", unsafe_allow_html=True)
@@ -523,7 +531,6 @@ else:
         # APLICAR FILTROS (INCLUYENDO RANGO DE FECHAS)
         df_filtrado = st.session_state.df_pedidos.copy()
 
-        # Conversión de la columna de texto a fecha real de Pandas para comparar rangos con seguridad
         if "FECHA_REGISTRO" in df_filtrado.columns:
             df_filtrado["_fecha_temp"] = pd.to_datetime(df_filtrado["FECHA_REGISTRO"], format="%d/%m/%Y", errors="coerce")
             
