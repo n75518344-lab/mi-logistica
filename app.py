@@ -26,7 +26,7 @@ if "usuario_actual" not in st.session_state:
         st.session_state.usuario_actual = None
         st.session_state.rol_actual = None
 
-# CSS GENERAL DEL SISTEMA (BOTONES ESTILO CLARO Y UNIFORME)
+# CSS GENERAL DEL SISTEMA
 st.markdown(
     """
     <style>
@@ -53,12 +53,12 @@ st.markdown(
     }
 
     /* ==========================================================
-       ESTILO UNIFORME PARA TODOS LOS BOTONES (CLARO / LIMPIO)
+       ESTILO OSCURO Y ELEGANTE PARA BOTONES (COMO EL SELECTBOX)
        ========================================================== */
     div[data-testid="stButton"] > button,
     div[data-testid="stDownloadButton"] > button { 
-        background-color: #FFFFFF !important;  
-        border: 1px solid #CBD5E1 !important;
+        background-color: #1E293B !important;  
+        border: 1px solid #334155 !important;
         border-radius: 8px !important; 
         font-weight: 600 !important; 
         transition: all 0.2s ease;
@@ -72,14 +72,22 @@ st.markdown(
     div[data-testid="stDownloadButton"] > button span,
     div[data-testid="stDownloadButton"] > button p,
     div[data-testid="stDownloadButton"] > button label {
-        color: #0F172A !important;    
-        fill: #0F172A !important;     
+        color: #FFFFFF !important;    
+        fill: #FFFFFF !important;     
     }
 
     div[data-testid="stButton"] > button:hover,
     div[data-testid="stDownloadButton"] > button:hover { 
-        background-color: #F1F5F9 !important; 
-        border-color: #94A3B8 !important; 
+        background-color: #0F382C !important; 
+        border-color: #0F382C !important; 
+    }
+    div[data-testid="stButton"] > button:hover div,
+    div[data-testid="stButton"] > button:hover span,
+    div[data-testid="stButton"] > button:hover p,
+    div[data-testid="stDownloadButton"] > button:hover div,
+    div[data-testid="stDownloadButton"] > button:hover span,
+    div[data-testid="stDownloadButton"] > button:hover p {
+        color: #FFFFFF !important; 
     }
 
     /* CONTENEDORES CON SCROLL INTELIGENTE PARA TABLAS */
