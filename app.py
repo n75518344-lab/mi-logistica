@@ -53,7 +53,7 @@ st.markdown(
     }
 
     /* ==========================================================
-       ESTILO OSCURO Y ELEGANTE PARA BOTONES (COMO EL SELECTBOX)
+       ESTILO OSCURO Y ELEGANTE FIJO PARA TODOS LOS BOTONES
        ========================================================== */
     div[data-testid="stButton"] > button,
     div[data-testid="stDownloadButton"] > button { 
@@ -61,7 +61,6 @@ st.markdown(
         border: 1px solid #334155 !important;
         border-radius: 8px !important; 
         font-weight: 600 !important; 
-        transition: all 0.2s ease;
     }
     
     div[data-testid="stButton"] > button div,
@@ -599,10 +598,10 @@ else:
         with col_btns:
             b1, b2, b3, b4 = st.columns(4)
             csv = st.session_state.df_pedidos.to_csv(index=False).encode('utf-8')
-            b1.download_button("📥 Descargar", data=csv, file_name="pedidos.csv", help="Descargar CSV")
-            if b2.button("📤 Subir", help="Subir Excel"): modal_upload()
-            if b3.button("➕ Nuevo", help="Nuevo Pedido"): modal_add_pedido()
-            btn_filtro = b4.toggle("🔍", help="Ver Filtros")
+            b1.download_button("📥 Descargar", data=csv, file_name="pedidos.csv")
+            if b2.button("📤 Subir"): modal_upload()
+            if b3.button("➕ Nuevo"): modal_add_pedido()
+            btn_filtro = b4.toggle("🔍", help="")
 
         df_final = st.session_state.df_pedidos.copy()
         if btn_filtro:
