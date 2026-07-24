@@ -26,7 +26,7 @@ if "usuario_actual" not in st.session_state:
         st.session_state.usuario_actual = None
         st.session_state.rol_actual = None
 
-# CSS GENERAL DEL SISTEMA (CON CORRECCIÓN TOTAL DE EXPANDER)
+# CSS GENERAL DEL SISTEMA (CON OCULTAMIENTO DE BARRA FLOTANTE DE TABLA)
 st.markdown(
     """
     <style>
@@ -38,6 +38,11 @@ st.markdown(
 
     [data-testid="stSidebar"], [data-testid="collapsedControl"], header[data-testid="stHeader"] { 
         display: none !important; 
+    }
+
+    /* OCULTAR LA BARRA FLOTANTE DE HERRAMIENTAS DE LAS TABLAS */
+    [data-testid="stElementToolbar"] {
+        display: none !important;
     }
     
     .block-container { 
