@@ -52,6 +52,13 @@ st.markdown(
         color: #0F172A; 
     }
 
+    /* CORRECCIÓN DE VISIBILIDAD DE TEXTO EN BOTONES DE ACCIÓN DEL OPERARIO */
+    div[data-testid="stButton"] > button p, 
+    div[data-testid="stButton"] > button span,
+    div[data-testid="stButton"] > button {
+        color: #FFFFFF !important;
+    }
+
     /* CONTENEDORES CON SCROLL INTELIGENTE PARA TABLAS */
     .tabla-contenedor, .tabla-contenedor-logs, .tabla-contenedor-pedidos {
         max-height: 450px;
@@ -259,9 +266,9 @@ st.markdown(
 
     /* BOTONES */
     div[data-testid="stButton"] > button { 
-        background-color: #FFFFFF !important; 
-        color: #0F172A !important;
-        border: 1px solid #CBD5E1 !important; 
+        background-color: #0F382C !important; 
+        color: #FFFFFF !important;
+        border: 1px solid #0F382C !important; 
         border-radius: 8px !important; 
         font-weight: 600 !important;
     }
@@ -571,9 +578,9 @@ else:
         with col_btns:
             b1, b2, b3, b4 = st.columns(4)
             csv = st.session_state.df_pedidos.to_csv(index=False).encode('utf-8')
-            b1.download_button("📥", data=csv, file_name="pedidos.csv", help="Descargar CSV")
-            if b2.button("📤", help="Subir Excel"): modal_upload()
-            if b3.button("➕ Add", help="Nuevo Pedido"): modal_add_pedido()
+            b1.download_button("📥 Descargar", data=csv, file_name="pedidos.csv", help="Descargar CSV")
+            if b2.button("📤 Subir", help="Subir Excel"): modal_upload()
+            if b3.button("➕ Nuevo", help="Nuevo Pedido"): modal_add_pedido()
             btn_filtro = b4.toggle("🔍", help="Ver Filtros")
 
         df_final = st.session_state.df_pedidos.copy()
@@ -602,7 +609,7 @@ else:
         """, unsafe_allow_html=True)
 
     # ==========================================
-    # VISTA 2: PORTAL ADMINISTRADOR (Tu código original intacto)
+    # VISTA 2: PORTAL ADMINISTRADOR
     # ==========================================
     else:
         tab1, tab2 = st.tabs(["Usuarios y Claves", "Auditoría (Logs)"])
