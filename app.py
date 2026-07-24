@@ -4,6 +4,7 @@ import os
 import textwrap
 import pandas as pd
 import streamlit as st
+from st_aggrid import AgGrid, GridOptionsBuilder
 
 # 1. CONFIGURACIÓN DE PÁGINA
 st.set_page_config(
@@ -80,14 +81,6 @@ st.markdown(
         background-color: #0F382C !important; 
         border-color: #0F382C !important; 
     }
-    div[data-testid="stButton"] > button:hover div,
-    div[data-testid="stButton"] > button:hover span,
-    div[data-testid="stButton"] > button:hover p,
-    div[data-testid="stDownloadButton"] > button:hover div,
-    div[data-testid="stDownloadButton"] > button:hover span,
-    div[data-testid="stDownloadButton"] > button:hover p {
-        color: #FFFFFF !important; 
-    }
 
     /* CONTENEDORES CON SCROLL INTELIGENTE PARA TABLAS */
     .tabla-contenedor, .tabla-contenedor-logs {
@@ -106,29 +99,18 @@ st.markdown(
         margin-top: 15px !important;
     }
 
-    /* BARRA DE SCROLL MODERNA Y FINITA PARA TABLAS */
+    /* BARRA DE SCROLL MODERNA Y FINITA */
     .tabla-contenedor::-webkit-scrollbar,
     .tabla-contenedor-logs::-webkit-scrollbar {
         width: 6px !important;
     }
-
-    .tabla-contenedor::-webkit-scrollbar-track,
-    .tabla-contenedor-logs::-webkit-scrollbar-track {
-        background: transparent !important;
-    }
-
     .tabla-contenedor::-webkit-scrollbar-thumb,
     .tabla-contenedor-logs::-webkit-scrollbar-thumb {
         background-color: #CBD5E1 !important;
         border-radius: 10px !important;
     }
 
-    .tabla-contenedor::-webkit-scrollbar-thumb:hover,
-    .tabla-contenedor-logs::-webkit-scrollbar-thumb:hover {
-        background-color: #94A3B8 !important;
-    }
-
-    /* ESTILOS DE TABLA */
+    /* ESTILOS DE TABLA HTML */
     .tabla-usuarios {
         width: 100% !important;
         border-collapse: collapse;
@@ -149,57 +131,28 @@ st.markdown(
         border-bottom: 1px solid #E2E8F0;
         color: #0F172A !important;
     }
-    .tabla-usuarios tr:last-child td {
-        border-bottom: none;
-    }
     .tabla-usuarios tr:hover {
         background-color: #F1F5F9;
     }
 
-    /* LIMITAR ALTURA Y SCROLLBAR PARA MENÚS DESPLEGABLES (SELECTBOX) */
+    /* SELECTBOX Y MENÚS DESPLEGABLES */
     ul[role="listbox"] {
         max-height: 200px !important;
         overflow-y: auto !important;
     }
 
-    ul[role="listbox"]::-webkit-scrollbar {
-        width: 6px !important;
-    }
-
-    ul[role="listbox"]::-webkit-scrollbar-track {
-        background: transparent !important;
-    }
-
-    ul[role="listbox"]::-webkit-scrollbar-thumb {
-        background-color: #CBD5E1 !important;
-        border-radius: 10px !important;
-    }
-
-    ul[role="listbox"]::-webkit-scrollbar-thumb:hover {
-        background-color: #94A3B8 !important;
-    }
-
-    /* MODAL Y TEXTO BLANCO */
+    /* MODAL */
     div[role="dialog"] *, [data-testid="stDialog"] *, [data-testid="stModal"] * {
         color: #FFFFFF !important;
     }
-
-    div[role="dialog"] button, [data-testid="stDialog"] button, [data-testid="stModal"] button {
+    div[role="dialog"] button, [data-testid="stDialog"] button {
         background-color: #0F382C !important;
         border: none !important;
         border-radius: 8px !important;
         padding: 10px 16px !important;
     }
-    div[role="dialog"] button *, [data-testid="stDialog"] button *, [data-testid="stModal"] button * {
-        color: #FFFFFF !important;
-        font-weight: 700 !important;
-        font-size: 14px !important;
-    }
-    div[role="dialog"] button:hover, [data-testid="stDialog"] button:hover, [data-testid="stModal"] button:hover {
-        background-color: #15803D !important;
-    }
 
-    /* FORMULARIO DE LOGIN */
+    /* FORMULARIOS E INPUTS */
     [data-testid="stForm"] { 
         background-color: #FFFFFF !important; 
         border-radius: 14px !important; 
@@ -208,55 +161,12 @@ st.markdown(
         padding: 28px !important; 
         border-top: 6px solid #0F382C !important; 
     }
-
-    /* INPUTS */
     .stTextInput input { 
         background-color: #FFFFFF !important; 
         color: #0F172A !important; 
         border: 1px solid #CBD5E1 !important; 
         border-radius: 8px !important; 
         padding: 10px 12px !important;
-        font-size: 14px !important;
-    }
-    .stTextInput input::placeholder { color: #94A3B8 !important; }
-
-    /* CONTRASEÑA */
-    div[data-baseweb="input"] {
-        background-color: #FFFFFF !important;
-        border: 1px solid #CBD5E1 !important;
-        border-radius: 8px !important;
-        overflow: hidden !important;
-    }
-    div[data-baseweb="input"] > div {
-        background-color: #FFFFFF !important;
-    }
-    div[data-baseweb="input"] input {
-        background-color: #FFFFFF !important;
-        border: none !important;
-    }
-    button[aria-label="Show password"], button[aria-label="Hide password"] {
-        background-color: #FFFFFF !important;
-        border: none !important;
-    }
-    button[aria-label="Show password"] svg, button[aria-label="Hide password"] svg {
-        fill: #0F382C !important;
-    }
-
-    /* EXPANDER */
-    [data-testid="stExpander"] {
-        background-color: #FFFFFF !important;
-        border: 1px solid #E2E8F0 !important;
-        border-radius: 8px !important;
-        overflow: hidden !important;
-    }
-    [data-testid="stExpander"] details summary {
-        background-color: #F8FAFC !important;
-        color: #0F172A !important;
-        border-bottom: 1px solid #E2E8F0 !important;
-    }
-    [data-testid="stExpander"] details summary * {
-        color: #0F172A !important;
-        font-weight: 600 !important;
     }
 
     /* BOTÓN SUBMIT */
@@ -272,22 +182,6 @@ st.markdown(
     div[data-testid="stFormSubmitButton"] > button span { 
         color: #FFFFFF !important; 
         font-weight: 700 !important; 
-    }
-
-    /* SELECTBOX ESTILOS GENERALES */
-    div[data-baseweb="select"] > div {
-        background-color: #FFFFFF !important;
-        color: #0F172A !important;
-        border: 1px solid #CBD5E1 !important;
-        border-radius: 8px !important;
-    }
-    div[data-baseweb="select"] * {
-        color: #0F172A !important;
-        background-color: transparent !important;
-    }
-    li[role="option"], div[role="option"] {
-        background-color: #FFFFFF !important;
-        color: #0F172A !important;
     }
 
     /* BOTONES ESPECIALES */
@@ -309,31 +203,17 @@ st.markdown(
     }
     #btn_eliminar button p, #btn_eliminar button span { color: #991B1B !important; font-weight: 700 !important; }
 
-    /* PESTAÑAS MINIMALISTAS */
+    /* PESTAÑAS */
     .stTabs [data-baseweb="tab-list"] { 
         background-color: transparent !important; 
         gap: 28px !important; 
         border-bottom: 2px solid #CBD5E1 !important; 
         margin-top: 5px !important; 
-        padding-bottom: 0px !important;
-        width: 100% !important;
-    }
-    .stTabs [data-baseweb="tab"] { 
-        background-color: transparent !important; 
-        border: none !important;
-        border-bottom: 3px solid transparent !important;
-        padding: 8px 4px 10px 4px !important; 
-        border-radius: 0px !important;
-        margin-bottom: -2px !important;
     }
     .stTabs [data-baseweb="tab"] p { 
         color: #64748B !important; 
         font-weight: 500 !important; 
         font-size: 15px !important;
-    }
-    .stTabs [aria-selected="true"] { 
-        background-color: transparent !important; 
-        border-bottom: 3px solid #0F382C !important; 
     }
     .stTabs [aria-selected="true"] p { 
         color: #0F382C !important; 
@@ -384,12 +264,6 @@ if "df_pedidos" not in st.session_state:
         {"FECHA_REGISTRO": "22/07/2026", "CODIGO INTERNO": "BLC2-5014", "CLIENTE": "UNIMARKET", "ESTADO": "ENTREGADO", "SUB_ESTADO": "ENTREGA EFECTIVA", "NOMBRE": "JUAN REYES", "DISTRITO": "MIRAFLORES", "TIPO_SERVICIO": "SAME-DAY"}
     ])
 
-if (
-    "ÚLTIMA CONEXIÓN"
-    not in st.session_state.usuarios_registrados.columns
-):
-    st.session_state.usuarios_registrados["ÚLTIMA CONEXIÓN"] = "Nunca"
-
 if "historial_acciones" not in st.session_state:
     st.session_state.historial_acciones = pd.DataFrame([
         {
@@ -437,7 +311,6 @@ def mostrar_modal_soporte():
     """,
         unsafe_allow_html=True,
     )
-
     if st.button("Entendido", use_container_width=True):
         st.rerun()
 
@@ -511,18 +384,9 @@ if st.session_state.usuario_actual is None:
                 ' margin-bottom: 20px;">Bienvenido</h3>',
                 unsafe_allow_html=True,
             )
-            input_user = st.text_input(
-                "Usuario", placeholder="Ingresa tu usuario", key="u_login"
-            )
-            input_pass = st.text_input(
-                "Contraseña",
-                type="password",
-                placeholder="Ingresa tu contraseña",
-                key="p_login",
-            )
-
+            input_user = st.text_input("Usuario", placeholder="Ingresa tu usuario", key="u_login")
+            input_pass = st.text_input("Contraseña", type="password", placeholder="Ingresa tu contraseña", key="p_login")
             remember = st.checkbox("Recordar inicio de sesión", value=True)
-
             submit_btn = st.form_submit_button("Ingresar al Portal")
 
             if submit_btn:
@@ -535,15 +399,10 @@ if st.session_state.usuario_actual is None:
                 if not user_match.empty:
                     st.session_state.usuario_actual = input_user
                     st.session_state.rol_actual = user_match.iloc[0]["ROL"]
-
-                    if (
-                        "ÚLTIMA CONEXIÓN"
-                        in st.session_state.usuarios_registrados.columns
-                    ):
-                        st.session_state.usuarios_registrados.loc[
-                            st.session_state.usuarios_registrados["USUARIO"] == input_user,
-                            "ÚLTIMA CONEXIÓN",
-                        ] = datetime.now().strftime("%Y-%m-%d %H:%M")
+                    st.session_state.usuarios_registrados.loc[
+                        st.session_state.usuarios_registrados["USUARIO"] == input_user,
+                        "ÚLTIMA CONEXIÓN",
+                    ] = datetime.now().strftime("%Y-%m-%d %H:%M")
 
                     if remember:
                         st.query_params["saved_user"] = input_user
@@ -553,10 +412,7 @@ if st.session_state.usuario_actual is None:
                     st.rerun()
 
         st.markdown("<br>", unsafe_allow_html=True)
-        if st.button(
-            "❓ ¿Necesitas ayuda con tu acceso o contraseña?",
-            use_container_width=True,
-        ):
+        if st.button("❓ ¿Necesitas ayuda con tu acceso o contraseña?", use_container_width=True):
             mostrar_modal_soporte()
 
 # DASHBOARD
@@ -583,7 +439,7 @@ else:
     st.divider()
 
     # ==========================================
-    # VISTA 1: PORTAL OPERARIO
+    # VISTA 1: PORTAL OPERARIO (CON AGGRID SIN MENÚS MOLESTOS)
     # ==========================================
     if st.session_state.rol_actual == "🛠️ Operario":
         col_tit, col_btns = st.columns([3, 2])
@@ -600,12 +456,25 @@ else:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # TABLA INTERACTIVA NATIVA CON FUNCIONALIDADES NATIVAS COMPLETAS
-        st.dataframe(
+        # CONFIGURACIÓN DE AGGRID PARA BLOQUEAR MENÚS Y DEJAR SÓLO LO NECESARIO
+        gb = GridOptionsBuilder.from_dataframe(st.session_state.df_pedidos)
+        gb.configure_default_column(
+            sortable=True, 
+            filter=False, 
+            resizable=True,
+            menuTabs=[] # Elimina por completo las pestañas de menú en las columnas
+        )
+        gb.configure_grid_options(domLayout='normal')
+        grid_options = gb.build()
+
+        # Renderizar tabla limpia y profesional con AgGrid
+        AgGrid(
             st.session_state.df_pedidos,
+            gridOptions=grid_options,
+            height=400,
             use_container_width=True,
-            hide_index=True,
-            height=400
+            fit_columns_on_grid_load=True,
+            theme="alpine" # Estilo limpio y moderno
         )
 
     # ==========================================
@@ -621,25 +490,14 @@ else:
                 st.subheader("➕ Crear Nuevo Usuario")
                 with st.form("form_crear"):
                     nu = st.text_input("Nombre de Usuario", placeholder="Ej: operador_lima")
-                    np = st.text_input(
-                        "Contraseña Inicial", type="password", placeholder="Clave temporal"
-                    )
-
-                    nr = st.selectbox(
-                        "Rol Asignado",
-                        ["🛠️ Operario", "🏢 Cliente", "🛵 Repartidor (App)"],
-                    )
+                    np = st.text_input("Contraseña Inicial", type="password", placeholder="Clave temporal")
+                    nr = st.selectbox("Rol Asignado", ["🛠️ Operario", "🏢 Cliente", "🛵 Repartidor (App)"])
 
                     btn_crear = st.form_submit_button("Guardar Usuario")
 
                     if btn_crear:
                         if nu and np:
-                            if (
-                                nu
-                                in st.session_state.usuarios_registrados["USUARIO"].values
-                            ):
-                                pass
-                            else:
+                            if nu not in st.session_state.usuarios_registrados["USUARIO"].values:
                                 nueva_f = pd.DataFrame([{
                                     "USUARIO": nu,
                                     "PASS": np,
@@ -658,12 +516,7 @@ else:
                 st.subheader("📋 Usuarios Registrados")
 
                 cols_deseadas = ["USUARIO", "ROL", "ESTADO", "ÚLTIMA CONEXIÓN"]
-                cols_existentes = [
-                    c
-                    for c in cols_deseadas
-                    if c in st.session_state.usuarios_registrados.columns
-                ]
-
+                cols_existentes = [c for c in cols_deseadas if c in st.session_state.usuarios_registrados.columns]
                 df_vista = st.session_state.usuarios_registrados[cols_existentes]
 
                 filas_html = ""
@@ -695,16 +548,11 @@ else:
                 st.subheader("⚙️ Gestión de Claves y Accesos")
 
                 lista_usuarios_gestion = st.session_state.usuarios_registrados[
-                    st.session_state.usuarios_registrados["USUARIO"]
-                    != st.session_state.usuario_actual
+                    st.session_state.usuarios_registrados["USUARIO"] != st.session_state.usuario_actual
                 ]["USUARIO"].tolist()
 
                 if lista_usuarios_gestion:
-                    usr_gestion = st.selectbox(
-                        "Selecciona un usuario para gestionar",
-                        lista_usuarios_gestion,
-                        key="select_gestion",
-                    )
+                    usr_gestion = st.selectbox("Selecciona un usuario para gestionar", lista_usuarios_gestion, key="select_gestion")
 
                     with st.expander("🔑 Restablecer Contraseña Directamente"):
                         nueva_pass_admin = st.text_input(
@@ -716,26 +564,18 @@ else:
                         if st.button("🔄 Actualizar Clave Now", use_container_width=True):
                             if nueva_pass_admin:
                                 st.session_state.usuarios_registrados.loc[
-                                    st.session_state.usuarios_registrados["USUARIO"]
-                                    == usr_gestion,
+                                    st.session_state.usuarios_registrados["USUARIO"] == usr_gestion,
                                     "PASS",
                                 ] = nueva_pass_admin
-                                registrar_log(
-                                    f"Restableció la contraseña del usuario '{usr_gestion}'"
-                                )
+                                registrar_log(f"Restableció la contraseña del usuario '{usr_gestion}'")
                                 st.rerun()
 
                     col_e1, col_e2 = st.columns(2)
                     with col_e1:
                         st.markdown('<div id="btn_inactivar">', unsafe_allow_html=True)
-                        if st.button(
-                            "🚫 Dar de Baja / Inactivar",
-                            use_container_width=True,
-                            key="inactivar_btn",
-                        ):
+                        if st.button("🚫 Dar de Baja / Inactivar", use_container_width=True, key="inactivar_btn"):
                             st.session_state.usuarios_registrados.loc[
-                                st.session_state.usuarios_registrados["USUARIO"]
-                                == usr_gestion,
+                                st.session_state.usuarios_registrados["USUARIO"] == usr_gestion,
                                 "ESTADO",
                             ] = "Inactivo"
                             registrar_log(f"Inactivó al usuario '{usr_gestion}'")
@@ -744,15 +584,10 @@ else:
 
                     with col_e2:
                         st.markdown('<div id="btn_eliminar">', unsafe_allow_html=True)
-                        if st.button(
-                            "❌ Eliminar Cuenta",
-                            use_container_width=True,
-                            key="eliminar_btn",
-                        ):
+                        if st.button("❌ Eliminar Cuenta", use_container_width=True, key="eliminar_btn"):
                             st.session_state.usuarios_registrados = (
                                 st.session_state.usuarios_registrados[
-                                    st.session_state.usuarios_registrados["USUARIO"]
-                                    != usr_gestion
+                                    st.session_state.usuarios_registrados["USUARIO"] != usr_gestion
                                 ]
                             )
                             registrar_log(f"Eliminó al usuario '{usr_gestion}'")
