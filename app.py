@@ -26,7 +26,7 @@ if "usuario_actual" not in st.session_state:
         st.session_state.usuario_actual = None
         st.session_state.rol_actual = None
 
-# CSS GENERAL DEL SISTEMA (CON CORRECCIÓN DE COLORES EN DESPLEGABLES)
+# CSS GENERAL DEL SISTEMA (CON CORRECCIÓN DEFINITIVA DE POPUPS Y MULTISELECT)
 st.markdown(
     """
     <style>
@@ -126,14 +126,20 @@ st.markdown(
         background-color: #F1F5F9;
     }
 
-    /* CORRECCIÓN VISIBILIDAD DE LETRAS EN MENÚS DESPLEGABLES (MULTISELECT) */
-    ul[role="listbox"] {
+    /* CORRECCIÓN ABSOLUTA PARA EL MENÚ DESPLEGABLE DE MULTISELECT (POPOVER) */
+    div[data-baseweb="popover"], div[data-baseweb="menu"], ul[role="listbox"] {
         background-color: #FFFFFF !important;
-        max-height: 200px !important;
-        overflow-y: auto !important;
     }
-    ul[role="listbox"] div, ul[role="listbox"] span, ul[role="listbox"] p {
+    div[data-baseweb="popover"] * {
         color: #0F172A !important;
+    }
+    li[role="option"] {
+        background-color: #FFFFFF !important;
+        color: #0F172A !important;
+    }
+    li[role="option"]:hover {
+        background-color: #F1F5F9 !important;
+        color: #0F382C !important;
     }
 
     div[role="dialog"] *, [data-testid="stDialog"] *, [data-testid="stModal"] * {
