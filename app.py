@@ -1,5 +1,5 @@
 import base64
-from datetime import datetime
+from datetime import datetime, date
 import os
 import textwrap
 import pandas as pd
@@ -26,7 +26,7 @@ if "usuario_actual" not in st.session_state:
         st.session_state.usuario_actual = None
         st.session_state.rol_actual = None
 
-# CSS GENERAL DEL SISTEMA (CON MARGEN SUPERIOR REDUCIDO AL MÁXIMO)
+# CSS GENERAL DEL SISTEMA
 st.markdown(
     """
     <style>
@@ -177,7 +177,7 @@ st.markdown(
         padding: 28px !important; 
         border-top: 6px solid #0F382C !important; 
     }
-    .stTextInput input { 
+    .stTextInput input, .stDateInput input { 
         background-color: #FFFFFF !important; 
         color: #0F172A !important; 
         border: 1px solid #CBD5E1 !important; 
@@ -441,11 +441,10 @@ else:
             st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # Línea divisoria muy pegada arriba
     st.markdown("<hr style='margin: 8px 0px 12px 0px; border-color: #CBD5E1;'>", unsafe_allow_html=True)
 
     # ==========================================
-    # VISTA 1: PORTAL OPERARIO (FILTROS Y BUSCADOR DE FECHA)
+    # VISTA 1: PORTAL OPERARIO (CON CALENDARIOS DE RANGO DE FECHAS)
     # ==========================================
     if st.session_state.rol_actual == "🛠️ Operario":
         csv = st.session_state.df_pedidos.to_csv(index=False).encode('utf-8')
@@ -461,12 +460,26 @@ else:
         with col_b3:
             if st.button("➕ Nuevo", use_container_width=True): modal_add_pedido()
 
-        # Espaciador mínimo controlado para separar los botones del panel de filtros
         st.markdown("<div style='margin-top: 6px;'></div>", unsafe_allow_html=True)
 
-        # PANEL EXPANDIBLE DE FILTRADO AVANZADO (CON FILTRO DE FECHA INCLUIDO)
-        with st.expander("🔎 Panel de Filtros Avanzados (Selección múltiple y búsqueda por texto)", expanded=True):
+        # PANEL EXPANDIBLE DE FILTRADO AVANZADO CON CALENDARIOS NATIVOS
+        with st.expander("🔎 Panel de Filtros Avanzados (Selección múltiple, Rango de Fechas y Búsqueda)", expanded=True):
             
+            st.markdown("<p style='font-weight:800; font-size:14px; color:#0F382C; margin-bottom:8px;'>📅 Rango de Fechas (Con Minicalendario):</p>", unsafe_allow_html=True)
+            dc1, dc2 = st.columns(2)
+            
+            with dc1:
+                st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>FECHA_INICIAL:</p>", unsafe_allow_html=True)
+                # Selector de fecha inicial con minicalendario (por defecto vacío o inicio del mes actual)
+                fecha_inicio = st.date_input("Fecha Inicial", value=None, format="DD/MM/YYYY", label_visibility="collapsed")
+
+            with dc2:
+                st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>FECHA_FINAL:</p>", unsafe_allow_html=True)
+                # Selector de fecha final con minicalendario
+                fecha_fin = st.date_input("Fecha Final", value=None, format="DD/MM/YYYY", label_visibility="collapsed")
+
+            st.markdown("<hr style='margin: 15px 0px; border-color: #E2E8F0;'>", unsafe_allow_html=True)
+
             st.markdown("<p style='font-weight:800; font-size:14px; color:#0F382C; margin-bottom:8px;'>📌 Filtros por selección múltiple:</p>", unsafe_allow_html=True)
             fc1, fc2, fc3, fc4 = st.columns(4)
             
@@ -492,27 +505,34 @@ else:
 
             st.markdown("<hr style='margin: 15px 0px; border-color: #E2E8F0;'>", unsafe_allow_html=True)
 
-            st.markdown("<p style='font-weight:800; font-size:14px; color:#0F382C; margin-bottom:8px;'>🔍 Búsqueda por texto (Escribe para filtrar):</p>", unsafe_allow_html=True)
-            ft1, ft2, ft3, ft4 = st.columns(4)
+            st.markdown("<p style='font-weight:800; font-size:14px; color:#0F382C; margin-bottom:8px;'>🔍 Búsqueda por texto:</p>", unsafe_allow_html=True)
+            ft1, ft2, ft3 = st.columns(3)
 
             with ft1:
-                st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>Buscar Fecha:</p>", unsafe_allow_html=True)
-                filtro_fecha_txt = st.text_input("Fecha", label_visibility="collapsed", placeholder="Ej: 24/07/2026")
-
-            with ft2:
                 st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>Buscar Cliente:</p>", unsafe_allow_html=True)
                 filtro_cliente_txt = st.text_input("Cliente", label_visibility="collapsed", placeholder="Ej: Unimarket...")
 
-            with ft3:
+            with ft2:
                 st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>Buscar Código Interno:</p>", unsafe_allow_html=True)
                 filtro_codigo_txt = st.text_input("Código Interno", label_visibility="collapsed", placeholder="Ej: BLC1-480...")
 
-            with ft4:
+            with ft3:
                 st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>Buscar Nombre Destinatario:</p>", unsafe_allow_html=True)
                 filtro_nombre_txt = st.text_input("Nombre", label_visibility="collapsed", placeholder="Ej: Cecilia Loo...")
 
-        # APLICAR FILTROS
+        # APLICAR FILTROS (INCLUYENDO RANGO DE FECHAS)
         df_filtrado = st.session_state.df_pedidos.copy()
+
+        # Conversión de la columna de texto a fecha real de Pandas para comparar rangos con seguridad
+        if "FECHA_REGISTRO" in df_filtrado.columns:
+            df_filtrado["_fecha_temp"] = pd.to_datetime(df_filtrado["FECHA_REGISTRO"], format="%d/%m/%Y", errors="coerce")
+            
+            if fecha_inicio is not None:
+                df_filtrado = df_filtrado[df_filtrado["_fecha_temp"].dt.date >= fecha_inicio]
+            if fecha_fin is not None:
+                df_filtrado = df_filtrado[df_filtrado["_fecha_temp"].dt.date <= fecha_fin]
+                
+            df_filtrado = df_filtrado.drop(columns=["_fecha_temp"])
 
         if filtro_distrito:
             df_filtrado = df_filtrado[df_filtrado["DISTRITO"].astype(str).isin(filtro_distrito)]
@@ -523,8 +543,6 @@ else:
         if filtro_sub_estado:
             df_filtrado = df_filtrado[df_filtrado["SUB_ESTADO"].astype(str).isin(filtro_sub_estado)]
 
-        if filtro_fecha_txt:
-            df_filtrado = df_filtrado[df_filtrado["FECHA_REGISTRO"].astype(str).str.contains(filtro_fecha_txt, case=False, na=False)]
         if filtro_cliente_txt:
             df_filtrado = df_filtrado[df_filtrado["CLIENTE"].astype(str).str.contains(filtro_cliente_txt, case=False, na=False)]
         if filtro_codigo_txt:
@@ -532,7 +550,7 @@ else:
         if filtro_nombre_txt:
             df_filtrado = df_filtrado[df_filtrado["NOMBRE"].astype(str).str.contains(filtro_nombre_txt, case=False, na=False)]
 
-        # RENDERIZAR TABLA LIMPIA EN HTML (ORDENADA POR FECHA AUTOMÁTICAMENTE)
+        # RENDERIZAR TABLA LIMPIA EN HTML
         if "FECHA_REGISTRO" in df_filtrado.columns:
             df_filtrado = df_filtrado.sort_values(by="FECHA_REGISTRO", ascending=False)
 
@@ -555,7 +573,7 @@ else:
                         </tr>
                     </thead>
                     <tbody>
-                        {filas_pedidos_html if not df_filtrado.empty else "<tr><td colspan='100%' style='text-align:center;'>No se encontraron registros</td></tr>"}
+                        {filas_pedidos_html if not df_filtrado.empty else "<tr><td colspan='100%' style='text-align:center;'>No se encontraron registros en este rango de fechas</td></tr>"}
                     </tbody>
                 </table>
             </div>
