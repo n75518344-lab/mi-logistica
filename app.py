@@ -429,7 +429,7 @@ else:
     st.divider()
 
     # ==========================================
-    # VISTA 1: PORTAL OPERARIO (CON FILTROS ESTILO EXCEL / CHECKBOXES)
+    # VISTA 1: PORTAL OPERARIO (CON FILTROS ESTILO EXCEL Y ORDENAMIENTO)
     # ==========================================
     if st.session_state.rol_actual == "🛠️ Operario":
         col_tit, col_btns = st.columns([3, 2])
@@ -446,21 +446,23 @@ else:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # Configuración avanzada de columnas con Set Filter (estilo casillas Excel)
+        # Configuración avanzada de columnas con Set Filter (casillas con buscador y ordenamiento)
         gb = GridOptionsBuilder.from_dataframe(st.session_state.df_pedidos)
         
         gb.configure_default_column(
             editable=False,
-            sortable=True,        # Ordenamiento ascendente y descendente
+            sortable=True,        # Permite ordenar ascendente y descendente haciendo clic en la cabecera
             resizable=True,
+            filterable=True,      # Habilita el filtrado global
             flex=1
         )
         
-        # Aplicamos el filtro de selección múltiple con casillas (Set Filter) a las columnas principales
-        gb.configure_column("CODIGO INTERNO", filter="agSetColumnFilter")
-        gb.configure_column("CLIENTE", filter="agSetColumnFilter")
-        gb.configure_column("ESTADO", filter="agSetColumnFilter")
-        gb.configure_column("DISTRITO", filter="agSetColumnFilter")
+        # Activamos el Set Filter estilo Excel con cajita de búsqueda en cada columna clave
+        gb.configure_column("FECHA_REGISTRO", filter="agSetColumnFilter", sortable=True)
+        gb.configure_column("CODIGO INTERNO", filter="agSetColumnFilter", sortable=True)
+        gb.configure_column("CLIENTE", filter="agSetColumnFilter", sortable=True)
+        gb.configure_column("ESTADO", filter="agSetColumnFilter", sortable=True)
+        gb.configure_column("DISTRITO", filter="agSetColumnFilter", sortable=True)
 
         gb.configure_pagination(paginationAutoPageSize=False, paginationPageSize=10)
         grid_options = gb.build()
