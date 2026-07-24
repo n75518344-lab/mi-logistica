@@ -195,7 +195,7 @@ st.markdown(
 
     .tabla-contenedor-logs {
         max-height: 550px;
-        margin-top: 10px !important;
+        margin-top: 0px !important;
     }
 
     .tabla-usuarios {
@@ -509,10 +509,11 @@ else:
     if st.session_state.rol_actual == "🛠️ Operario":
         csv = st.session_state.df_pedidos.to_csv(index=False).encode('utf-8')
         
-        col_tit, col_b1, col_b2, col_b3 = st.columns([2.4, 0.9, 0.9, 0.9], vertical_alignment="center")
+        # Se sitúan el título y los 3 botones en la misma línea vertical alineados con los elementos
+        col_tit, col_b1, col_b2, col_b3 = st.columns([2.4, 0.9, 0.9, 0.9], vertical_alignment="bottom")
         
         with col_tit:
-            st.markdown("<h3 style='margin:0; padding:0; line-height: 1.0;'>Gestión de Envíos</h3>", unsafe_allow_html=True)
+            st.markdown("<h3 style='margin:0; padding:0; line-height: 1.2;'>Gestión de Envíos</h3>", unsafe_allow_html=True)
         with col_b1:
             st.markdown('<div class="contenedor-btn-custom">', unsafe_allow_html=True)
             st.download_button("📥 Descargar", data=csv, file_name="pedidos.csv", use_container_width=True)
@@ -526,8 +527,8 @@ else:
             if st.button("➕ Nuevo Pedido", use_container_width=True): modal_add_pedido()
             st.markdown('</div>', unsafe_allow_html=True)
 
-        # Margen muy reducido para acercar los botones a la tabla
-        st.markdown("<div style='margin-top: 2px;'></div>", unsafe_allow_html=True)
+        # Margen mínimo para que queden pegados a la cabecera de la tabla
+        st.markdown("<div style='margin-top: 8px;'></div>", unsafe_allow_html=True)
 
         # ------------------------------------------
         # FILTROS EN EL SIDEBAR
@@ -654,7 +655,7 @@ else:
             filas_pedidos_html += "</tr>"
 
         tabla_pedidos_html = textwrap.dedent(f"""
-            <div class="tabla-contenedor-logs" style="max-height: 540px; margin-top: 2px !important;">
+            <div class="tabla-contenedor-logs" style="max-height: 540px; margin-top: 0px !important;">
                 <table class="tabla-usuarios">
                     <thead>
                         <tr>
