@@ -6,12 +6,12 @@ import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
 
-# 1. CONFIGURACIÓN DE PÁGINA
+# 1. CONFIGURACIÓN DE PÁGINA (Sidebar habilitado para los filtros)
 st.set_page_config(
     page_title="Alfa Cargo Express - Admin",
     page_icon="🚚",
     layout="wide",
-    initial_sidebar_state="collapsed",
+    initial_sidebar_state="expanded",
 )
 
 # REVISAR SESIÓN
@@ -32,12 +32,17 @@ st.markdown(
     """
     <style>
     html, body, .stApp { 
-        overflow: hidden !important; 
         background-color: #F8FAFC !important; 
         color: #0F172A !important; 
     }
 
-    [data-testid="stSidebar"], [data-testid="collapsedControl"], header[data-testid="stHeader"] { 
+    /* Mostrar barra lateral estilizada para los filtros */
+    [data-testid="stSidebar"] { 
+        background-color: #FFFFFF !important;
+        border-right: 1px solid #CBD5E1 !important;
+    }
+
+    header[data-testid="stHeader"] { 
         display: none !important; 
     }
 
@@ -46,8 +51,8 @@ st.markdown(
     }
     
     .block-container { 
-        max-width: 88% !important; 
-        padding-top: 0.1rem !important; 
+        max-width: 96% !important; 
+        padding-top: 1rem !important; 
         padding-bottom: 2rem !important; 
     }
     
@@ -82,7 +87,7 @@ st.markdown(
     }
 
     .tabla-contenedor, .tabla-contenedor-logs {
-        max-height: 420px;
+        max-height: 550px;
         height: fit-content;
         overflow-y: auto;
         border: 1px solid #CBD5E1;
@@ -93,7 +98,7 @@ st.markdown(
     }
 
     .tabla-contenedor-logs {
-        max-height: 500px;
+        max-height: 550px;
         margin-top: 10px !important;
     }
 
@@ -110,39 +115,25 @@ st.markdown(
     .tabla-usuarios {
         width: 100% !important;
         border-collapse: collapse;
-        font-size: 14px;
+        font-size: 13px;
         text-align: left;
     }
     .tabla-usuarios th {
         background-color: #0F382C;
         color: #FFFFFF !important;
-        padding: 12px 14px;
+        padding: 10px 12px;
         position: sticky;
         top: 0;
         z-index: 1;
         font-weight: 700;
     }
     .tabla-usuarios td {
-        padding: 10px 14px;
+        padding: 9px 12px;
         border-bottom: 1px solid #E2E8F0;
         color: #0F172A !important;
     }
     .tabla-usuarios tr:hover {
         background-color: #F1F5F9;
-    }
-
-    [data-testid="stExpander"] {
-        background-color: #FFFFFF !important;
-        border: 1px solid #CBD5E1 !important;
-        border-radius: 10px !important;
-    }
-    [data-testid="stExpander"] summary {
-        background-color: #F1F5F9 !important;
-        border-radius: 10px !important;
-    }
-    [data-testid="stExpander"] summary * {
-        color: #0F172A !important;
-        font-weight: 700 !important;
     }
 
     div[role="dialog"] *, [data-testid="stDialog"] *, [data-testid="stModal"] * {
@@ -168,7 +159,7 @@ st.markdown(
         color: #0F172A !important; 
         border: 1px solid #CBD5E1 !important; 
         border-radius: 8px !important; 
-        padding: 10px 12px !important;
+        padding: 8px 10px !important;
     }
 
     div[data-testid="stFormSubmitButton"] > button { 
@@ -435,32 +426,30 @@ else:
     if st.session_state.rol_actual == "🛠️ Operario":
         csv = st.session_state.df_pedidos.to_csv(index=False).encode('utf-8')
         
-        col_tit, col_b1, col_b2, col_b3 = st.columns([3.4, 0.8, 0.8, 0.8], vertical_alignment="center")
+        col_tit, col_b1, col_b2, col_b3 = st.columns([4.2, 0.6, 0.6, 0.6], vertical_alignment="center")
         
         with col_tit:
             st.markdown("<h3 style='margin:0; padding:0; line-height: 1.0;'>Gestión de Envíos</h3>", unsafe_allow_html=True)
         with col_b1:
-            st.download_button("📥 Descargar", data=csv, file_name="pedidos.csv", use_container_width=True)
+            st.download_button("📥", data=csv, file_name="pedidos.csv", use_container_width=True, help="Descargar CSV")
         with col_b2:
-            if st.button("📤 Subir", use_container_width=True): modal_upload()
+            if st.button("📤", use_container_width=True, help="Subir Data"): modal_upload()
         with col_b3:
-            if st.button("➕ Nuevo", use_container_width=True): modal_add_pedido()
+            if st.button("➕", use_container_width=True, help="Nuevo Pedido"): modal_add_pedido()
 
-        st.markdown("<div style='margin-top: 6px;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='margin-top: 8px;'></div>", unsafe_allow_html=True)
 
-        # PANEL EXPANDIBLE DE FILTRADO AVANZADO
-        with st.expander("🔎 Panel de Filtros Avanzados (Selección múltiple, Fechas y Búsqueda)", expanded=True):
-            
-            st.markdown("<p style='font-weight:800; font-size:14px; color:#0F382C; margin-bottom:8px;'>📅 Rango de Fechas (Formato DD/MM/YYYY):</p>", unsafe_allow_html=True)
-            dc1, dc2 = st.columns(2)
-            
-            with dc1:
-                st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>FECHA INICIAL:</p>", unsafe_allow_html=True)
-                txt_fecha_inicio = st.text_input("Fecha Inicial", value="", placeholder="DD/MM/YYYY", label_visibility="collapsed", key="f_ini")
+        # ------------------------------------------
+        # FILTROS EN EL SIDEBAR (LATERAL)
+        # ------------------------------------------
+        with st.sidebar:
+            st.markdown("<h3 style='color: #0F382C; margin-bottom: 5px;'>🔍 Panel de Filtros</h3>", unsafe_allow_html=True)
+            st.markdown("<p style='font-size: 12px; color: #64748B;'>Filtra los registros de envíos de manera rápida.</p>", unsafe_allow_html=True)
+            st.markdown("<hr style='margin: 5px 0px 15px 0px;'>", unsafe_allow_html=True)
 
-            with dc2:
-                st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>FECHA FINAL:</p>", unsafe_allow_html=True)
-                txt_fecha_fin = st.text_input("Fecha Final", value="", placeholder="DD/MM/YYYY", label_visibility="collapsed", key="f_fin")
+            st.markdown("<p style='font-weight:700; font-size:13px; color:#0F382C; margin-bottom:4px;'>📅 Rango de Fechas (DD/MM/YYYY):</p>", unsafe_allow_html=True)
+            txt_fecha_inicio = st.text_input("Fecha Inicial", value="", placeholder="DD/MM/YYYY", key="f_ini")
+            txt_fecha_fin = st.text_input("Fecha Final", value="", placeholder="DD/MM/YYYY", key="f_fin")
 
             # MÁSCARA JS LIMPIA PARA FECHAS
             components.html("""
@@ -508,48 +497,30 @@ else:
                 </script>
             """, height=0)
 
-            st.markdown("<hr style='margin: 15px 0px; border-color: #E2E8F0;'>", unsafe_allow_html=True)
+            st.markdown("<hr style='margin: 15px 0px;'>", unsafe_allow_html=True)
 
-            st.markdown("<p style='font-weight:800; font-size:14px; color:#0F382C; margin-bottom:8px;'>📌 Filtros por selección múltiple:</p>", unsafe_allow_html=True)
-            fc1, fc2, fc3, fc4, fc5 = st.columns(5)
+            st.markdown("<p style='font-weight:700; font-size:13px; color:#0F382C; margin-bottom:4px;'>📌 Selección Múltiple:</p>", unsafe_allow_html=True)
             
-            with fc1:
-                st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>Cliente:</p>", unsafe_allow_html=True)
-                clientes_unicos = sorted(st.session_state.df_pedidos["CLIENTE"].astype(str).unique().tolist())
-                filtro_cliente = st.multiselect("Clientes", options=clientes_unicos, label_visibility="collapsed", placeholder="Todos")
+            clientes_unicos = sorted(st.session_state.df_pedidos["CLIENTE"].astype(str).unique().tolist())
+            filtro_cliente = st.multiselect("Cliente", options=clientes_unicos, placeholder="Todos")
 
-            with fc2:
-                st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>Distrito:</p>", unsafe_allow_html=True)
-                distritos_unicos = sorted(st.session_state.df_pedidos["DISTRITO"].astype(str).unique().tolist())
-                filtro_distrito = st.multiselect("Distritos", options=distritos_unicos, label_visibility="collapsed", placeholder="Todos")
+            distritos_unicos = sorted(st.session_state.df_pedidos["DISTRITO"].astype(str).unique().tolist())
+            filtro_distrito = st.multiselect("Distrito", options=distritos_unicos, placeholder="Todos")
 
-            with fc3:
-                st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>Tipo Servicio:</p>", unsafe_allow_html=True)
-                servicios_unicos = sorted(st.session_state.df_pedidos["TIPO_SERVICIO"].astype(str).unique().tolist())
-                filtro_servicio = st.multiselect("Servicios", options=servicios_unicos, label_visibility="collapsed", placeholder="Todos")
+            servicios_unicos = sorted(st.session_state.df_pedidos["TIPO_SERVICIO"].astype(str).unique().tolist())
+            filtro_servicio = st.multiselect("Tipo de Servicio", options=servicios_unicos, placeholder="Todos")
 
-            with fc4:
-                st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>Estado:</p>", unsafe_allow_html=True)
-                estados_unicos = sorted(st.session_state.df_pedidos["ESTADO"].astype(str).unique().tolist())
-                filtro_estado = st.multiselect("Estados", options=estados_unicos, label_visibility="collapsed", placeholder="Todos")
+            estados_unicos = sorted(st.session_state.df_pedidos["ESTADO"].astype(str).unique().tolist())
+            filtro_estado = st.multiselect("Estado", options=estados_unicos, placeholder="Todos")
 
-            with fc5:
-                st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>Sub Estado:</p>", unsafe_allow_html=True)
-                sub_estados_unicos = sorted(st.session_state.df_pedidos["SUB_ESTADO"].astype(str).unique().tolist())
-                filtro_sub_estado = st.multiselect("Sub Estados", options=sub_estados_unicos, label_visibility="collapsed", placeholder="Todos")
+            sub_estados_unicos = sorted(st.session_state.df_pedidos["SUB_ESTADO"].astype(str).unique().tolist())
+            filtro_sub_estado = st.multiselect("Sub Estado", options=sub_estados_unicos, placeholder="Todos")
 
-            st.markdown("<hr style='margin: 15px 0px; border-color: #E2E8F0;'>", unsafe_allow_html=True)
+            st.markdown("<hr style='margin: 15px 0px;'>", unsafe_allow_html=True)
 
-            st.markdown("<p style='font-weight:800; font-size:14px; color:#0F382C; margin-bottom:8px;'>🔍 Búsqueda por texto:</p>", unsafe_allow_html=True)
-            ft1, ft2 = st.columns(2)
-
-            with ft1:
-                st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>Buscar Código Interno:</p>", unsafe_allow_html=True)
-                filtro_codigo_txt = st.text_input("Código Interno", label_visibility="collapsed", placeholder="Ej: BLC1-480...", key="b_cod")
-
-            with ft2:
-                st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>Buscar Nombre Destinatario:</p>", unsafe_allow_html=True)
-                filtro_nombre_txt = st.text_input("Nombre", label_visibility="collapsed", placeholder="Ej: Cecilia Loo...", key="b_nom")
+            st.markdown("<p style='font-weight:700; font-size:13px; color:#0F382C; margin-bottom:4px;'>🔍 Búsqueda por Texto:</p>", unsafe_allow_html=True)
+            filtro_codigo_txt = st.text_input("Código Interno", placeholder="Ej: BLC1-480...", key="b_cod")
+            filtro_nombre_txt = st.text_input("Nombre Destinatario", placeholder="Ej: Cecilia Loo...", key="b_nom")
 
         # APLICAR FILTROS
         df_filtrado = st.session_state.df_pedidos.copy()
@@ -611,7 +582,7 @@ else:
             filas_pedidos_html += "</tr>"
 
         tabla_pedidos_html = textwrap.dedent(f"""
-            <div class="tabla-contenedor-logs" style="max-height: 420px; margin-top: 6px !important;">
+            <div class="tabla-contenedor-logs" style="max-height: 540px; margin-top: 4px !important;">
                 <table class="tabla-usuarios">
                     <thead>
                         <tr>
@@ -619,7 +590,7 @@ else:
                         </tr>
                     </thead>
                     <tbody>
-                        {filas_pedidos_html if not df_filtrado.empty else "<tr><td colspan='100%' style='text-align:center;'>No se encontraron registros en este filtro de fechas</td></tr>"}
+                        {filas_pedidos_html if not df_filtrado.empty else "<tr><td colspan='100%' style='text-align:center;'>No se encontraron registros en este filtro</td></tr>"}
                     </tbody>
                 </table>
             </div>
