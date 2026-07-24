@@ -1,5 +1,5 @@
 import base64
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import os
 import textwrap
 import pandas as pd
@@ -377,6 +377,16 @@ if "df_pedidos" not in st.session_state:
         {"FECHA_REGISTRO": "21/07/2026", "CODIGO INTERNO": "BLC2-5015", "CLIENTE": "GLORIA", "ESTADO": "PENDIENTE", "SUB_ESTADO": "PENDIENTE", "NOMBRE": "MARIA PEREZ", "DISTRITO": "LA MOLINA", "TIPO_SERVICIO": "NEXT-DAY"}
     ])
 
+# POLÍTICA DE ELIMINACIÓN AUTOMÁTICA (MANTENER MÁXIMO 90 DÍAS)
+if not st.session_state.df_pedidos.empty and "FECHA_REGISTRO" in st.session_state.df_pedidos.columns:
+    st.session_state.df_pedidos["_fecha_dt"] = pd.to_datetime(
+        st.session_state.df_pedidos["FECHA_REGISTRO"], format="%d/%m/%Y", errors="coerce"
+    )
+    limite_90_dias = datetime.now() - timedelta(days=90)
+    st.session_state.df_pedidos = st.session_state.df_pedidos[
+        st.session_state.df_pedidos["_fecha_dt"] >= limite_90_dias
+    ].drop(columns=["_fecha_dt"])
+
 if "historial_acciones" not in st.session_state:
     st.session_state.historial_acciones = pd.DataFrame([
         {
@@ -682,10 +692,28 @@ else:
         if "FECHA_REGISTRO" in df_filtrado.columns:
             df_filtrado = df_filtrado.sort_values(by="FECHA_REGISTRO", ascending=False)
 
-        columnas_pedidos = df_filtrado.columns.tolist()
+        # ==========================================
+        # LÓGICA DE PAGINACIÓN (BLOQUES DE 50)
+        # ==========================================
+        TAMANO_PAGINA = 50
+        total_registros = len(df_filtrado)
+        total_paginas = max(1, (total_registros + TAMANO_PAGINA - 1) // TAMANO_PAGINA)
+
+        col_pag1, col_pag2 = st.columns([3, 1])
+        with col_pag1:
+            st.markdown(f"<p style='color: #475569; font-size: 14px; margin-top: 8px;'>Mostrando bloques de 50 registros. Total encontrados: <b>{total_registros}</b>.</p>", unsafe_allow_html=True)
+        with col_pag2:
+            pagina_actual = st.number_input("Página", min_value=1, max_value=total_paginas, value=1, step=1, label_visibility="collapsed")
+
+        # Cortar el DataFrame según la página seleccionada
+        inicio_idx = (pagina_actual - 1) * TAMANO_PAGINA
+        fin_idx = inicio_idx + TAMANO_PAGINA
+        df_paginado = df_filtrado.iloc[inicio_idx:fin_idx]
+
+        columnas_pedidos = df_paginado.columns.tolist()
 
         filas_pedidos_html = ""
-        for _, fila in df_filtrado.iterrows():
+        for _, fila in df_paginado.iterrows():
             filas_pedidos_html += "<tr>"
             for col in columnas_pedidos:
                 filas_pedidos_html += f"<td>{fila[col]}</td>"
@@ -700,7 +728,7 @@ else:
                         </tr>
                     </thead>
                     <tbody>
-                        {filas_pedidos_html if not df_filtrado.empty else "<tr><td colspan='100%' style='text-align:center;'>No se encontraron registros en este filtro</td></tr>"}
+                        {filas_pedidos_html if not df_paginado.empty else "<tr><td colspan='100%' style='text-align:center;'>No se encontraron registros en este filtro</td></tr>"}
                     </tbody>
                 </table>
             </div>
