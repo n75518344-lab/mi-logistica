@@ -57,7 +57,7 @@ st.markdown(
         border: 1px solid #CBD5E1;
         border-radius: 8px;
         background-color: #FFFFFF;
-        margin-bottom: 1rem;
+        margin-bottom: 8px !important;
     }
     .tabla-usuarios {
         width: 100%;
@@ -528,7 +528,7 @@ else:
 
       st.markdown(tabla_html, unsafe_allow_html=True)
 
-      st.markdown("---")
+      # SECCIÓN DE GESTIÓN DE CLAVES (SE ELIMINÓ EL st.markdown("---") PARA ACERCARLA)
       st.subheader("⚙️ Gestión de Claves y Accesos")
       usr_gestion = st.selectbox(
           "Selecciona un usuario para gestionar",
