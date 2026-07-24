@@ -416,7 +416,7 @@ else:
     st.divider()
 
     # ==========================================
-    # VISTA 1: PORTAL OPERARIO (FILTROS MULTI-COLUMNA Y MULTI-VALOR)
+    # VISTA 1: PORTAL OPERARIO (FILTROS HíBRIDOS)
     # ==========================================
     if st.session_state.rol_actual == "🛠️ Operario":
         col_tit, col_btns = st.columns([3, 2])
@@ -433,39 +433,71 @@ else:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # PANEL EXPANDIBLE DE FILTRADO MULTI-COLUMNA
-        with st.expander("🔎 Panel de Filtros Avanzados (Filtrar por varias columnas a la vez)", expanded=True):
-            fc1, fc2, fc3 = st.columns(3)
+        # PANEL EXPANDIBLE DE FILTRADO AVANZADO (MULTISELECT + BÚSQUEDA LIBRE)
+        with st.expander("🔎 Panel de Filtros Avanzados (Múltiples columnas y búsqueda por texto)", expanded=True):
             
-            # Filtro 1: Distrito (Múltiple)
+            # FILA 1: Componentes Limitados (Multiselect múltiple)
+            st.markdown("<p style='font-weight:800; font-size:14px; color:#0F382C; margin-bottom:8px;'>📌 Filtros por selección múltiple:</p>", unsafe_allow_html=True)
+            fc1, fc2, fc3, fc4 = st.columns(4)
+            
             with fc1:
-                st.markdown("<p style='font-weight:700; font-size:13px; margin-bottom:2px;'>Filtrar por Distrito(s):</p>", unsafe_allow_html=True)
+                st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>Distrito:</p>", unsafe_allow_html=True)
                 distritos_unicos = sorted(st.session_state.df_pedidos["DISTRITO"].astype(str).unique().tolist())
-                filtro_distrito = st.multiselect("Distritos", options=distritos_unicos, label_visibility="collapsed", placeholder="Todos los distritos")
+                filtro_distrito = st.multiselect("Distritos", options=distritos_unicos, label_visibility="collapsed", placeholder="Todos")
 
-            # Filtro 2: Tipo de Servicio (Múltiple)
             with fc2:
-                st.markdown("<p style='font-weight:700; font-size:13px; margin-bottom:2px;'>Filtrar por Tipo de Servicio:</p>", unsafe_allow_html=True)
+                st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>Tipo Servicio:</p>", unsafe_allow_html=True)
                 servicios_unicos = sorted(st.session_state.df_pedidos["TIPO_SERVICIO"].astype(str).unique().tolist())
-                filtro_servicio = st.multiselect("Servicios", options=servicios_unicos, label_visibility="collapsed", placeholder="Todos los servicios")
+                filtro_servicio = st.multiselect("Servicios", options=servicios_unicos, label_visibility="collapsed", placeholder="Todos")
 
-            # Filtro 3: Estado (Múltiple)
             with fc3:
-                st.markdown("<p style='font-weight:700; font-size:13px; margin-bottom:2px;'>Filtrar por Estado:</p>", unsafe_allow_html=True)
+                st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>Estado:</p>", unsafe_allow_html=True)
                 estados_unicos = sorted(st.session_state.df_pedidos["ESTADO"].astype(str).unique().tolist())
-                filtro_estado = st.multiselect("Estados", options=estados_unicos, label_visibility="collapsed", placeholder="Todos los estados")
+                filtro_estado = st.multiselect("Estados", options=estados_unicos, label_visibility="collapsed", placeholder="Todos")
 
-        # APLICAR LOS FILTROS COMBINADOS DE MANERA DINÁMICA
+            with fc4:
+                st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>Sub Estado:</p>", unsafe_allow_html=True)
+                sub_estados_unicos = sorted(st.session_state.df_pedidos["SUB_ESTADO"].astype(str).unique().tolist())
+                filtro_sub_estado = st.multiselect("Sub Estados", options=sub_estados_unicos, label_visibility="collapsed", placeholder="Todos")
+
+            st.markdown("<hr style='margin: 15px 0px; border-color: #E2E8F0;'>", unsafe_allow_html=True)
+
+            # FILA 2: Componentes Extensos (Barras de búsqueda por tipeo)
+            st.markdown("<p style='font-weight:800; font-size:14px; color:#0F382C; margin-bottom:8px;'>🔍 Búsqueda por texto (Escribe para filtrar):</p>", unsafe_allow_html=True)
+            ft1, ft2, ft3 = st.columns(3)
+
+            with ft1:
+                st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>Buscar Cliente:</p>", unsafe_allow_html=True)
+                filtro_cliente_txt = st.text_input("Cliente", label_visibility="collapsed", placeholder="Ej: Unimarket, Alicorp...")
+
+            with ft2:
+                st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>Buscar Código Interno:</p>", unsafe_allow_html=True)
+                filtro_codigo_txt = st.text_input("Código Interno", label_visibility="collapsed", placeholder="Ej: BLC1-480...")
+
+            with ft3:
+                st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>Buscar Nombre Destinatario:</p>", unsafe_allow_html=True)
+                filtro_nombre_txt = st.text_input("Nombre", label_visibility="collapsed", placeholder="Ej: Cecilia Loo...")
+
+        # APLICAR TODOS LOS FILTROS COMBINADOS DE MANERA DINÁMICA
         df_filtrado = st.session_state.df_pedidos.copy()
 
+        # Filtros Multiselect
         if filtro_distrito:
             df_filtrado = df_filtrado[df_filtrado["DISTRITO"].astype(str).isin(filtro_distrito)]
-            
         if filtro_servicio:
             df_filtrado = df_filtrado[df_filtrado["TIPO_SERVICIO"].astype(str).isin(filtro_servicio)]
-            
         if filtro_estado:
             df_filtrado = df_filtrado[df_filtrado["ESTADO"].astype(str).isin(filtro_estado)]
+        if filtro_sub_estado:
+            df_filtrado = df_filtrado[df_filtrado["SUB_ESTADO"].astype(str).isin(filtro_sub_estado)]
+
+        # Filtros de Búsqueda por Texto (case-insensitive)
+        if filtro_cliente_txt:
+            df_filtrado = df_filtrado[df_filtrado["CLIENTE"].astype(str).str.contains(filtro_cliente_txt, case=False, na=False)]
+        if filtro_codigo_txt:
+            df_filtrado = df_filtrado[df_filtrado["CODIGO INTERNO"].astype(str).str.contains(filtro_codigo_txt, case=False, na=False)]
+        if filtro_nombre_txt:
+            df_filtrado = df_filtrado[df_filtrado["NOMBRE"].astype(str).str.contains(filtro_nombre_txt, case=False, na=False)]
 
         # Mostrar tabla limpia resultante
         st.dataframe(
