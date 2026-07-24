@@ -245,7 +245,8 @@ if "df_pedidos" not in st.session_state:
     st.session_state.df_pedidos = pd.DataFrame([
         {"FECHA_REGISTRO": "24/07/2026", "CODIGO INTERNO": "BLC1-48039", "CLIENTE": "UNIMARKET", "ESTADO": "ENTREGADO", "SUB_ESTADO": "ENTREGA EFECTIVA", "NOMBRE": "CECILIA LOO", "DISTRITO": "ATE", "TIPO_SERVICIO": "SAME-DAY"},
         {"FECHA_REGISTRO": "23/07/2026", "CODIGO INTERNO": "SIN NUMERO", "CLIENTE": "ALICORP", "ESTADO": "EN RUTA", "SUB_ESTADO": "PENDIENTE", "NOMBRE": "LUIS LLOSA", "DISTRITO": "SAN ISIDRO", "TIPO_SERVICIO": "SAME-DAY"},
-        {"FECHA_REGISTRO": "22/07/2026", "CODIGO INTERNO": "BLC2-5014", "CLIENTE": "UNIMARKET", "ESTADO": "ENTREGADO", "SUB_ESTADO": "ENTREGA EFECTIVA", "NOMBRE": "JUAN REYES", "DISTRITO": "MIRAFLORES", "TIPO_SERVICIO": "SAME-DAY"}
+        {"FECHA_REGISTRO": "22/07/2026", "CODIGO INTERNO": "BLC2-5014", "CLIENTE": "UNIMARKET", "ESTADO": "ENTREGADO", "SUB_ESTADO": "ENTREGA EFECTIVA", "NOMBRE": "JUAN REYES", "DISTRITO": "MIRAFLORES", "TIPO_SERVICIO": "SAME-DAY"},
+        {"FECHA_REGISTRO": "21/07/2026", "CODIGO INTERNO": "BLC2-5015", "CLIENTE": "GLORIA", "ESTADO": "PENDIENTE", "SUB_ESTADO": "PENDIENTE", "NOMBRE": "MARIA PEREZ", "DISTRITO": "LA MOLINA", "TIPO_SERVICIO": "NEXT-DAY"}
     ])
 
 if "historial_acciones" not in st.session_state:
@@ -415,7 +416,7 @@ else:
     st.divider()
 
     # ==========================================
-    # VISTA 1: PORTAL OPERARIO (BÚSQUEDA DINÁMICA POR COLUMNA)
+    # VISTA 1: PORTAL OPERARIO (BÚSQUEDA MULTI-SELECCIÓN)
     # ==========================================
     if st.session_state.rol_actual == "🛠️ Operario":
         col_tit, col_btns = st.columns([3, 2])
@@ -432,22 +433,32 @@ else:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # SELECTOR DE COLUMNA Y CAMPO DE BÚSQUEDA DINÁMICO
-        st.markdown("<p style='font-weight:700; margin-bottom: 5px;'>🔍 Filtrar por columna:</p>", unsafe_allow_html=True)
-        c_columna, c_texto = st.columns([1, 2])
+        # SELECTOR DE COLUMNA Y MULTI-SELECCIÓN DE VALORES
+        st.markdown("<p style='font-weight:700; margin-bottom: 5px;'>🔍 Filtrado múltiple por columna:</p>", unsafe_allow_html=True)
+        c_columna, c_valores = st.columns([1, 2])
         
         columnas_disponibles = list(st.session_state.df_pedidos.columns)
         columna_seleccionada = c_columna.selectbox("Elige la columna", columnas_disponibles, label_visibility="collapsed")
-        texto_busqueda = c_texto.text_input("Escribe lo que quieres buscar", placeholder=f"Buscar en {columna_seleccionada}...", label_visibility="collapsed")
+        
+        # Extraer los valores únicos disponibles en esa columna (ordenados alfabéticamente)
+        valores_unicos = sorted(st.session_state.df_pedidos[columna_seleccionada].astype(str).unique().tolist())
+        
+        # st.multiselect permite elegir 1 o varios distritos/valores a la vez (ej. Miraflores, La Molina)
+        valores_seleccionados = c_valores.multiselect(
+            "Selecciona los valores",
+            options=valores_unicos,
+            placeholder=f"Selecciona uno o varios de {columna_seleccionada}...",
+            label_visibility="collapsed"
+        )
 
-        # Aplicar el filtro de forma dinámica
+        # Aplicar el filtro dinámico múltiple
         df_filtrado = st.session_state.df_pedidos.copy()
         
-        if texto_busqueda:
-            # Convertimos a string para evitar errores si la columna tiene números u otros tipos
-            df_filtrado = df_filtrado[df_filtrado[columna_seleccionada].astype(str).str.contains(texto_busqueda, case=False, na=False)]
+        if valores_seleccionados:
+            # Filtra las filas donde el valor de la columna esté dentro de la lista seleccionada
+            df_filtrado = df_filtrado[df_filtrado[columna_seleccionada].astype(str).isin(valores_seleccionados)]
 
-        # Mostrar tabla nativa limpia (sin índices automáticos extraños)
+        # Mostrar tabla limpia
         st.dataframe(
             df_filtrado,
             use_container_width=True,
@@ -466,7 +477,7 @@ else:
 
             with col_a:
                 st.subheader("➕ Crear Nuevo Usuario")
-                with st.form("form_crear"):
+                with st.form("form_creار"):
                     nu = st.text_input("Nombre de Usuario", placeholder="Ej: operador_lima")
                     np = st.text_input("Contraseña Inicial", type="password", placeholder="Clave temporal")
                     nr = st.selectbox("Rol Asignado", ["🛠️ Operario", "🏢 Cliente", "🛵 Repartidor (App)"])
