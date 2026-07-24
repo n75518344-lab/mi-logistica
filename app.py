@@ -161,7 +161,7 @@ st.markdown(
         fill: #FFFFFF !important;
     }
 
-    /* ESTILO ESPECÍFICO PARA LOS 3 BOTONES SUPERIORES (Descargar, Subir, Añadir) */
+    /* ESTILO ESPECÍFICO PARA LOS 3 BOTONES SUPERIORES */
     .contenedor-btn-custom button {
         background-color: #FFFFFF !important;
         border: 1.5px solid #0F382C !important;
@@ -509,21 +509,21 @@ else:
     if st.session_state.rol_actual == "🛠️ Operario":
         csv = st.session_state.df_pedidos.to_csv(index=False).encode('utf-8')
         
-        col_tit, col_b1, col_b2, col_b3 = st.columns([4.2, 0.6, 0.6, 0.6], vertical_alignment="center")
+        col_tit, col_b1, col_b2, col_b3 = st.columns([2.4, 0.9, 0.9, 0.9], vertical_alignment="center")
         
         with col_tit:
             st.markdown("<h3 style='margin:0; padding:0; line-height: 1.0;'>Gestión de Envíos</h3>", unsafe_allow_html=True)
         with col_b1:
             st.markdown('<div class="contenedor-btn-custom">', unsafe_allow_html=True)
-            st.download_button("📥", data=csv, file_name="pedidos.csv", use_container_width=True)
+            st.download_button("📥 Descargar", data=csv, file_name="pedidos.csv", use_container_width=True)
             st.markdown('</div>', unsafe_allow_html=True)
         with col_b2:
             st.markdown('<div class="contenedor-btn-custom">', unsafe_allow_html=True)
-            if st.button("📤", use_container_width=True): modal_upload()
+            if st.button("📤 Cargar Data", use_container_width=True): modal_upload()
             st.markdown('</div>', unsafe_allow_html=True)
         with col_b3:
             st.markdown('<div class="contenedor-btn-custom">', unsafe_allow_html=True)
-            if st.button("➕", use_container_width=True): modal_add_pedido()
+            if st.button("➕ Nuevo Pedido", use_container_width=True): modal_add_pedido()
             st.markdown('</div>', unsafe_allow_html=True)
 
         st.markdown("<div style='margin-top: 8px;'></div>", unsafe_allow_html=True)
