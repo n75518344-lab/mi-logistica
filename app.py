@@ -69,8 +69,8 @@ st.markdown(
     }
 
     /* =========================================================
-       ESTILOS ABSOLUTOS PARA SELECTS, MULTISELECTS Y MENÚS FLOTANTES
-       ========================================================= */
+        ESTILOS ABSOLUTOS PARA SELECTS, MULTISELECTS Y MENÚS FLOTANTES
+        ========================================================= */
        
     div[data-baseweb="select"] > div {
         background-color: #FFFFFF !important;
@@ -748,26 +748,95 @@ else:
                         </tr>
                     </thead>
                     <tbody>
-                        {filas_pedidos_html if not df_paginado.empty else "<tr><td colspan='100%' style='text-align:center;'>No se encontraron registros en este filtro</td></tr>"}
+                        {filas_pedidos_html}
                     </tbody>
                 </table>
             </div>
-            """).strip()
-
+        """)
         st.markdown(tabla_pedidos_html, unsafe_allow_html=True)
 
     # ==========================================
     # VISTA 2: PORTAL ADMINISTRADOR
     # ==========================================
-    else:
-        tab1, tab2 = st.tabs(["Usuarios y Claves", "Auditoría (Logs)"])
+    elif st.session_state.rol_actual == "👨‍💼 Portal Administrador":
+        tab_users, tab_logs = st.tabs(["👥 Gestión de Usuarios y Roles", "📋 Auditoría y Registros (Logs)"])
 
-        with tab1:
-            col_a, col_b = st.columns([1, 1.3], gap="large")
+        with tab_users:
+            st.markdown("<h3 style='margin-top: 0px; margin-bottom: 12px;'>Panel de Control de Accesos</h3>", unsafe_allow_html=True)
+            
+            with st.form("form_crear_usuario"):
+                st.markdown("<b>Registrar Nuevo Usuario / Personalizar Rol</b>", unsafe_allow_html=True)
+                col_u1, col_u2, col_u3 = st.columns(3)
+                nuevo_usuario = col_u1.text_input("Nombre de Usuario")
+                nuevo_pass = col_u2.text_input("Contraseña Temporal", type="password")
+                
+                # --- LÍNEA CORREGIDA ---
+                nr = st.selectbox("Rol Asignado", options=["👨‍💼 Portal Administrador", "🛠️ Operario", "🛵 Repartidor (App)", "🏢 Cliente"])
+                
+                if st.form_submit_button("Crear / Actualizar Usuario", use_container_width=True):
+                    if nuevo_usuario.strip() and nuevo_pass.strip():
+                        df_u = st.session_state.usuarios_registrados
+                        if nuevo_usuario in df_u["USUARIO"].values:
+                            st.session_state.usuarios_registrados.loc[df_u["USUARIO"] == nuevo_usuario, "PASS"] = nuevo_pass
+                            st.session_state.usuarios_registrados.loc[df_u["USUARIO"] == nuevo_usuario, "ROL"] = nr
+                            registrar_log(f"Actualizó credenciales/rol para: {nuevo_usuario}")
+                            st.success(f"¡Usuario '{nuevo_usuario}' actualizado correctamente!")
+                        else:
+                            nuevo_reg = pd.DataFrame([{
+                                "USUARIO": nuevo_usuario,
+                                "PASS": nuevo_pass,
+                                "ROL": nr,
+                                "ESTADO": "Activo",
+                                "ÚLTIMA CONEXIÓN": "Nunca"
+                            }])
+                            st.session_state.usuarios_registrados = pd.concat([df_u, nuevo_reg], ignore_index=True)
+                            registrar_log(f"Creó nuevo usuario: {nuevo_usuario}")
+                            st.success(f"¡Usuario '{nuevo_usuario}' creado exitosamente!")
+                        st.rerun()
+                    else:
+                        st.error("Por favor completa el usuario y la contraseña.")
 
-            with col_a:
-                st.subheader("➕ Crear Nuevo Usuario")
-                with st.form("form_crear"):
-                    nu = st.text_input("Nombre de Usuario", placeholder="Ej: operador_lima")
-                    np = st.text_input("Contraseña Inicial", type="password", placeholder="Clave temporal")
-                    nr = st.selectbox("Rol Asig
+            st.markdown("<br>", unsafe_allow_html=True)
+            st.markdown("<b>Usuarios Registrados en el Sistema</b>", unsafe_allow_html=True)
+            
+            df_usuarios_view = st.session_state.usuarios_registrados.copy()
+            
+            filas_u_html = ""
+            for _, fila in df_usuarios_view.iterrows():
+                filas_u_html += f"<tr><td>{fila['USUARIO']}</td><td>{fila['ROL']}</td><td>{fila['ESTADO']}</td><td>{fila['ÚLTIMA CONEXIÓN']}</td></tr>"
+
+            tabla_u_html = f"""
+                <div class="tabla-contenedor">
+                    <table class="tabla-usuarios">
+                        <thead>
+                            <tr><th>USUARIO</th><th>ROL</th><th>ESTADO</th><th>ÚLTIMA CONEXIÓN</th></tr>
+                        </thead>
+                        <tbody>
+                            {filas_u_html}
+                        </tbody>
+                    </table>
+                </div>
+            """
+            st.markdown(tabla_u_html, unsafe_allow_html=True)
+
+        with tab_logs:
+            st.markdown("<h3 style='margin-top: 0px; margin-bottom: 12px;'>Registro de Auditoría y Acciones</h3>", unsafe_allow_html=True)
+            
+            df_logs = st.session_state.historial_acciones.copy()
+            filas_l_html = ""
+            for _, fila in df_logs.iterrows():
+                filas_l_html += f"<tr><td>{fila['FECHA Y HORA']}</td><td>{fila['USUARIO']}</td><td>{fila['ACCIÓN']}</td></tr>"
+
+            tabla_l_html = f"""
+                <div class="tabla-contenedor-logs">
+                    <table class="tabla-usuarios">
+                        <thead>
+                            <tr><th>FECHA Y HORA</th><th>USUARIO</th><th>ACCIÓN</th></tr>
+                        </thead>
+                        <tbody>
+                            {filas_l_html}
+                        </tbody>
+                    </table>
+                </div>
+            """
+            st.markdown(tabla_l_html, unsafe_allow_html=True)
