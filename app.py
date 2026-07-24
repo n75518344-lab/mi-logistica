@@ -26,7 +26,7 @@ if "usuario_actual" not in st.session_state:
         st.session_state.usuario_actual = None
         st.session_state.rol_actual = None
 
-# CSS GENERAL DEL SISTEMA (CON OCULTAMIENTO DE BARRA FLOTANTE DE TABLA)
+# CSS GENERAL DEL SISTEMA (CON OCULTAMIENTO DE LOS TRES PUNTOS EN ENCABEZADOS)
 st.markdown(
     """
     <style>
@@ -40,8 +40,15 @@ st.markdown(
         display: none !important; 
     }
 
-    /* OCULTAR LA BARRA FLOTANTE DE HERRAMIENTAS DE LAS TABLAS */
     [data-testid="stElementToolbar"] {
+        display: none !important;
+    }
+
+    /* OCULTAR EL MENÚ DE LOS TRES PUNTOS EN LOS ENCABEZADOS DE LAS TABLAS */
+    .stDataFrame [data-testid="stDataFrameResizable"] div[class*="header-menu-button"],
+    th .material-symbols-outlined,
+    [class*="glideDataEditor"] canvas + div,
+    button[aria-label="Menu"] {
         display: none !important;
     }
     
@@ -131,7 +138,6 @@ st.markdown(
         background-color: #F1F5F9;
     }
 
-    /* CORRECCIÓN ABSOLUTA PARA EL MENÚ DESPLEGABLE DE MULTISELECT (POPOVER) */
     div[data-baseweb="popover"], div[data-baseweb="menu"], ul[role="listbox"] {
         background-color: #FFFFFF !important;
     }
@@ -147,7 +153,6 @@ st.markdown(
         color: #0F382C !important;
     }
 
-    /* CORRECCIÓN FORZADA PARA EL ST.EXPANDER (FONDO CLARO Y TEXTO VISIBLE) */
     [data-testid="stExpander"] {
         background-color: #FFFFFF !important;
         border: 1px solid #CBD5E1 !important;
