@@ -221,12 +221,34 @@ st.markdown(
     }
     #btn_eliminar button p { color: #991B1B !important; font-weight: 700 !important; }
 
-    /* PESTAÑAS */
-    .stTabs [data-baseweb="tab-list"] { background-color: transparent !important; gap: 8px; margin-top: 0px !important; }
-    .stTabs [data-baseweb="tab"] { background-color: #E2E8F0 !important; border-radius: 8px 8px 0px 0px !important; padding: 8px 16px !important; }
-    .stTabs [data-baseweb="tab"] p { color: #334155 !important; font-weight: 700 !important; }
-    .stTabs [aria-selected="true"] { background-color: #0F382C !important; }
-    .stTabs [aria-selected="true"] p { color: #FFFFFF !important; font-weight: 800 !important; }
+    /* PESTAÑAS MINIMALISTAS */
+    .stTabs [data-baseweb="tab-list"] { 
+        background-color: transparent !important; 
+        gap: 24px !important; 
+        border-bottom: 1px solid #E2E8F0 !important;
+        margin-top: 0px !important; 
+        padding-bottom: 0px !important;
+    }
+    .stTabs [data-baseweb="tab"] { 
+        background-color: transparent !important; 
+        border: none !important;
+        border-bottom: 3px solid transparent !important;
+        padding: 8px 4px 12px 4px !important; 
+        border-radius: 0px !important;
+    }
+    .stTabs [data-baseweb="tab"] p { 
+        color: #64748B !important; 
+        font-weight: 500 !important; 
+        font-size: 15px !important;
+    }
+    .stTabs [aria-selected="true"] { 
+        background-color: transparent !important; 
+        border-bottom: 3px solid #0F382C !important; 
+    }
+    .stTabs [aria-selected="true"] p { 
+        color: #0F382C !important; 
+        font-weight: 700 !important; 
+    }
     </style>
 """,
     unsafe_allow_html=True,
@@ -441,9 +463,8 @@ else:
       st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
-  tab1, tab2 = st.tabs(
-      ["👥 Control de Usuarios y Claves", "📜 Registro de Auditoría (Logs)"]
-  )
+  # PESTAÑAS CON NOMBRES MINIMALISTAS Y LIMPIOS
+  tab1, tab2 = st.tabs(["Usuarios y Claves", "Auditoría (Logs)"])
 
   with tab1:
     col_a, col_b = st.columns([1, 1.3], gap="large")
@@ -528,7 +549,6 @@ else:
 
       st.subheader("⚙️ Gestión de Claves y Accesos")
 
-      # EXCLUIR AL USUARIO DE LA SESIÓN ACTIVA DEL DESPLEGABLE
       lista_usuarios_gestion = st.session_state.usuarios_registrados[
           st.session_state.usuarios_registrados["USUARIO"]
           != st.session_state.usuario_actual
