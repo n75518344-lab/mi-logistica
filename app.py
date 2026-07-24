@@ -463,14 +463,11 @@ else:
         np = st.text_input(
             "Contraseña Inicial", type="password", placeholder="Clave temporal"
         )
+
+        # SE EXCLUYÓ '👨‍💼 Portal Administrador' PARA EVITAR CREAR MÁS ADMINS
         nr = st.selectbox(
             "Rol Asignado",
-            [
-                "🛠️ Operario",
-                "🏢 Cliente",
-                "🛵 Repartidor (App)",
-                "👨‍💼 Portal Administrador",
-            ],
+            ["🛠️ Operario", "🏢 Cliente", "🛵 Repartidor (App)"],
         )
 
         btn_crear = st.form_submit_button("Guardar Usuario")
