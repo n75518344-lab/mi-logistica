@@ -27,7 +27,7 @@ if "usuario_actual" not in st.session_state:
         st.session_state.usuario_actual = None
         st.session_state.rol_actual = None
 
-# CSS GENERAL DEL SISTEMA Y CORRECCIÓN DE BORDES Y BOTONES
+# CSS GENERAL DEL SISTEMA Y CORRECCIÓN DE BORDES Y TEXTOS OSCUROS EN MENÚS DESPLEGABLES
 st.markdown(
     """
     <style>
@@ -54,7 +54,6 @@ st.markdown(
         display: none !important;
     }
     
-    /* Espaciado limpio y profesional para los elementos del sidebar */
     [data-testid="stSidebar"] div.stVerticalBlock {
         gap: 0.6rem !important;
     }
@@ -70,7 +69,7 @@ st.markdown(
     }
 
     /* =========================================================
-       ESTILOS PARA INPUTS, SELECTS Y BORDES VERDE OSCURO (2px)
+       ESTILOS PARA INPUTS, SELECTS Y MENÚS DESPLEGABLES (TEXTO VISIBLE)
        ========================================================= */
        
     div[data-baseweb="select"] > div {
@@ -85,10 +84,13 @@ st.markdown(
         box-shadow: 0 0 0 1px #0F382C !important;
     }
     
+    /* Forzar color oscuro y legible en el texto seleccionado y elementos internos */
     div[data-baseweb="select"] *,
-    div[data-baseweb="select"] input {
+    div[data-baseweb="select"] input,
+    div[data-baseweb="select"] span {
         color: #0F172A !important;
         fill: #0F172A !important;
+        -webkit-text-fill-color: #0F172A !important;
     }
     
     span[data-baseweb="tag"] {
@@ -97,29 +99,39 @@ st.markdown(
     }
     span[data-baseweb="tag"] * {
         color: #0F172A !important;
+        -webkit-text-fill-color: #0F172A !important;
     }
     
+    /* Contenedor flotante de las opciones del select / multiselect */
     div[data-baseweb="popover"] > div, 
     ul[role="listbox"],
-    div[data-baseweb="popover"] ul {
+    div[data-baseweb="popover"] ul,
+    div[data-baseweb="menu"] {
         background-color: #FFFFFF !important;
         border: 1px solid #CBD5E1 !important;
     }
     
+    /* Opciones individuales de la lista desplegable */
     li[role="option"] {
         background-color: #FFFFFF !important;
-        color: #0F172A !important;
     }
     
+    li[role="option"] *,
     li[role="option"] span,
     li[role="option"] div {
         color: #0F172A !important;
+        -webkit-text-fill-color: #0F172A !important;
     }
     
     li[role="option"]:hover,
     li[role="option"][aria-selected="true"] {
         background-color: #E2E8F0 !important;
+    }
+    
+    li[role="option"]:hover *,
+    li[role="option"][aria-selected="true"] * {
         color: #0F382C !important;
+        -webkit-text-fill-color: #0F382C !important;
     }
 
     .stTextInput input { 
@@ -527,10 +539,8 @@ else:
     if st.session_state.rol_actual == "🛠️ Operario":
         csv = st.session_state.df_pedidos.to_csv(index=False).encode('utf-8')
         
-        # Título "Gestión de Envíos" solo en su propia línea arriba a la izquierda
         st.markdown("<h3 style='margin:0 0 8px 0; padding:0; line-height: 1.2;'>Gestión de Envíos</h3>", unsafe_allow_html=True)
         
-        # Fila exclusiva para los 3 botones alineados a la derecha justo encima de la tabla
         _, col_b1, col_b2, col_b3 = st.columns([2.5, 0.9, 0.9, 0.9])
         
         with col_b1:
@@ -546,18 +556,16 @@ else:
             if st.button("➕ Nuevo Pedido", use_container_width=True): modal_add_pedido()
             st.markdown('</div>', unsafe_allow_html=True)
 
-        # Margen mínimo para separar los botones de la cabecera de la tabla
         st.markdown("<div style='margin-top: 2px;'></div>", unsafe_allow_html=True)
 
         # ------------------------------------------
-        # FILTROS EN EL SIDEBAR (ORDENADOS Y LIMPIOS)
+        # FILTROS EN EL SIDEBAR
         # ------------------------------------------
         with st.sidebar:
             st.markdown("<h2 style='color: #0F382C; margin: 0px 0px 4px 0px; padding: 0px; white-space: nowrap; font-size: 22px; font-weight: 800;'>🌲 ALFA EXPRESS</h2>", unsafe_allow_html=True)
             st.markdown("<p style='font-size: 13px; color: #64748B; margin-top: 0px; margin-bottom: 14px; line-height: 1.4;'>Filtra los registros de envíos de manera rápida.</p>", unsafe_allow_html=True)
             st.markdown("<hr style='margin: 0px 0px 14px 0px;'>", unsafe_allow_html=True)
 
-            # 1. RANGO DE FECHAS
             st.markdown("<p style='font-weight:700; font-size:14px; color:#0F382C; margin:0 0 6px 0;'>📅 Rango de Fechas (DD/MM/YYYY):</p>", unsafe_allow_html=True)
             txt_fecha_inicio = st.text_input("Fecha Inicial", value="", placeholder="DD/MM/YYYY", key="f_ini")
             txt_fecha_fin = st.text_input("Fecha Final", value="", placeholder="DD/MM/YYYY", key="f_fin")
@@ -599,14 +607,12 @@ else:
 
             st.markdown("<hr style='margin: 14px 0px;'>", unsafe_allow_html=True)
 
-            # 2. BÚSQUEDA POR TEXTO
             st.markdown("<p style='font-weight:700; font-size:14px; color:#0F382C; margin:0 0 6px 0;'>🔍 Búsqueda por Texto:</p>", unsafe_allow_html=True)
             filtro_codigo_txt = st.text_input("Código Interno", placeholder="Ej: BLC1-480...", key="b_cod")
             filtro_nombre_txt = st.text_input("Nombre Destinatario", placeholder="Ej: Cecilia Loo...", key="b_nom")
 
             st.markdown("<hr style='margin: 14px 0px;'>", unsafe_allow_html=True)
 
-            # 3. SELECCIÓN MÚLTIPLE
             st.markdown("<p style='font-weight:700; font-size:14px; color:#0F382C; margin:0 0 6px 0;'>📌 Selección Múltiple:</p>", unsafe_allow_html=True)
             
             clientes_unicos = sorted(st.session_state.df_pedidos["CLIENTE"].astype(str).unique().tolist())
@@ -663,8 +669,9 @@ else:
         if filtro_codigo_txt: df_filtrado = df_filtrado[df_filtrado["CODIGO INTERNO"].astype(str).str.contains(filtro_codigo_txt, case=False, na=False)]
         if filtro_nombre_txt: df_filtrado = df_filtrado[df_filtrado["NOMBRE"].astype(str).str.contains(filtro_nombre_txt, case=False, na=False)]
 
+        # Corrección exacta de la columna de ordenamiento sin errores de KeyError
         if "FECHA_REGISTRO" in df_filtrado.columns:
-            df_filtrado = df_filtrado.sort_values(by="FECHA_REGIST_RO", ascending=False) if "FECHA_REGISTRO" in df_filtrado.columns else df_filtrado
+            df_filtrado = df_filtrado.sort_values(by="FECHA_REGISTRO", ascending=False)
 
         columnas_pedidos = df_filtrado.columns.tolist()
 
