@@ -54,7 +54,7 @@ st.markdown(
         color: #FFFFFF !important;
     }
 
-    /* CORRECCIÓN DEL BOTÓN EN EL MODAL (BOTÓN VERDE CON TEXTO BLANCO VISIBLE) */
+    /* CORRECCIÓN DEL BOTÓN EN EL MODAL */
     div[role="dialog"] button, [data-testid="stDialog"] button, [data-testid="stModal"] button {
         background-color: #0F382C !important;
         border: none !important;
@@ -70,7 +70,7 @@ st.markdown(
         background-color: #15803D !important;
     }
 
-    /* CONTENEDOR DE FORMULARIO DE LOGIN (TARJETA DERECHA) */
+    /* CONTENEDOR DE FORMULARIO DE LOGIN */
     [data-testid="stForm"] { 
         background-color: #FFFFFF !important; 
         border-radius: 14px !important; 
@@ -247,40 +247,12 @@ st.markdown(
         color: #FFFFFF !important; 
         font-weight: 800 !important; 
     }
-
-    /* TABLAS COMPACTAS */
-    .stTable, [data-testid="stTable"] {
-        background-color: #FFFFFF !important;
-        border-radius: 8px !important;
-        overflow: hidden !important;
-        border: 1px solid #E2E8F0 !important;
-    }
-    .stTable th, [data-testid="stTable"] th { 
-        background-color: #0F382C !important; 
-        padding: 8px 12px !important; 
-        border: none !important;
-    }
-    .stTable th *, [data-testid="stTable"] th * { 
-        color: #FFFFFF !important; 
-        font-weight: 700 !important; 
-        font-size: 13px !important;
-        background-color: transparent !important;
-        border: none !important;
-        padding: 0 !important;
-    }
-    .stTable td, [data-testid="stTable"] td { 
-        color: #1E293B !important; 
-        background-color: #FFFFFF !important; 
-        padding: 8px 12px !important;
-        border-bottom: 1px solid #F1F5F9 !important;
-        font-size: 13.5px !important;
-    }
     </style>
 """,
     unsafe_allow_html=True,
 )
 
-# DATOS EN SESIÓN
+# DATOS EN SESIÓN CON COLUMNA 'ÚLTIMA CONEXIÓN'
 if "usuarios_registrados" not in st.session_state:
   st.session_state.usuarios_registrados = pd.DataFrame([
       {
@@ -288,24 +260,28 @@ if "usuarios_registrados" not in st.session_state:
           "PASS": "admin123",
           "ROL": "👨‍💼 Portal Administrador",
           "ESTADO": "Activo",
+          "ÚLTIMA CONEXIÓN": datetime.now().strftime("%Y-%m-%d %H:%M"),
       },
       {
           "USUARIO": "operador1",
           "PASS": "123",
           "ROL": "🛠️ Operario",
           "ESTADO": "Activo",
+          "ÚLTIMA CONEXIÓN": "Nunca",
       },
       {
           "USUARIO": "juan_repartidor",
           "PASS": "123",
           "ROL": "🛵 Repartidor (App)",
           "ESTADO": "Activo",
+          "ÚLTIMA CONEXIÓN": "Nunca",
       },
       {
           "USUARIO": "cliente_global",
           "PASS": "123",
           "ROL": "🏢 Cliente",
           "ESTADO": "Activo",
+          "ÚLTIMA CONEXIÓN": "Nunca",
       },
   ])
 
@@ -337,7 +313,7 @@ def obtener_imagen_github(nombre_archivo="alfa_warehouse.jpg"):
   return None
 
 
-# MODAL / VENTANA EMERGENTE DE SOPORTE PARA CLAVES
+# MODAL DE SOPORTE
 @st.dialog("📌 Soporte y Recuperación de Credenciales")
 def mostrar_modal_soporte():
   st.markdown(
@@ -433,6 +409,12 @@ if st.session_state.usuario_actual is None:
           st.session_state.usuario_actual = input_user
           st.session_state.rol_actual = user_match.iloc[0]["ROL"]
 
+          # ACTUALIZAR ÚLTIMA CONEXIÓN DEL USUARIO
+          st.session_state.usuarios_registrados.loc[
+              st.session_state.usuarios_registrados["USUARIO"] == input_user,
+              "ÚLTIMA CONEXIÓN",
+          ] = datetime.now().strftime("%Y-%m-%d %H:%M")
+
           if remember:
             st.query_params["saved_user"] = input_user
             st.query_params["saved_rol"] = st.session_state.rol_actual
@@ -442,7 +424,6 @@ if st.session_state.usuario_actual is None:
         else:
           st.error("❌ Credenciales incorrectas.")
 
-    # ENLACE DE SOPORTE
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button(
         "❓ ¿Necesitas ayuda con tu acceso o contraseña?",
@@ -504,9 +485,13 @@ else:
             ):
               st.error("El nombre de usuario ya existe.")
             else:
-              nueva_f = pd.DataFrame(
-                  [{"USUARIO": nu, "PASS": np, "ROL": nr, "ESTADO": "Activo"}]
-              )
+              nueva_f = pd.DataFrame([{
+                  "USUARIO": nu,
+                  "PASS": np,
+                  "ROL": nr,
+                  "ESTADO": "Activo",
+                  "ÚLTIMA CONEXIÓN": "Nunca",
+              }])
               st.session_state.usuarios_registrados = pd.concat(
                   [st.session_state.usuarios_registrados, nueva_f],
                   ignore_index=True,
@@ -519,8 +504,15 @@ else:
 
     with col_b:
       st.subheader("📋 Usuarios Registrados")
-      st.table(
-          st.session_state.usuarios_registrados[["USUARIO", "ROL", "ESTADO"]]
+
+      # TABLA CON ALTURA FIJA Y SCROLLBAR (MUESTRA 4-5 Y EL RESTO CON SCROLL)
+      st.dataframe(
+          st.session_state.usuarios_registrados[
+              ["USUARIO", "ROL", "ESTADO", "ÚLTIMA CONEXIÓN"]
+          ],
+          use_container_width=True,
+          hide_index=True,
+          height=210,
       )
 
       st.markdown("---")
@@ -596,4 +588,8 @@ else:
   # TAB 2: AUDITORÍA
   with tab2:
     st.subheader("📜 Historial de Seguridad y Movimientos")
-    st.table(st.session_state.historial_acciones)
+    st.dataframe(
+        st.session_state.historial_acciones,
+        use_container_width=True,
+        hide_index=True,
+    )
