@@ -4,7 +4,6 @@ import os
 import textwrap
 import pandas as pd
 import streamlit as st
-from st_aggrid import AgGrid, GridOptionsBuilder
 
 # 1. CONFIGURACIÓN DE PÁGINA
 st.set_page_config(
@@ -80,7 +79,7 @@ st.markdown(
         border-color: #0F382C !important; 
     }
 
-    /* CONTENEDORES PARA TABLAS HTML ADICIONALES */
+    /* CONTENEDORES CON SCROLL INTELIGENTE PARA TABLAS */
     .tabla-contenedor, .tabla-contenedor-logs {
         max-height: 450px;
         height: fit-content;
@@ -107,6 +106,7 @@ st.markdown(
         border-radius: 10px !important;
     }
 
+    /* ESTILOS DE TABLA HTML */
     .tabla-usuarios {
         width: 100% !important;
         border-collapse: collapse;
@@ -429,7 +429,7 @@ else:
     st.divider()
 
     # ==========================================
-    # VISTA 1: PORTAL OPERARIO (CON AGGRID / FILTROS ESTILO EXCEL)
+    # VISTA 1: PORTAL OPERARIO (CON FILTROS Y ORDENAMIENTO TIPO EXCEL)
     # ==========================================
     if st.session_state.rol_actual == "🛠️ Operario":
         col_tit, col_btns = st.columns([3, 2])
@@ -446,25 +446,62 @@ else:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # Configuración de AgGrid para incluir filtros, menú contextual y ordenamiento por columnas estilo Excel
-        gb = GridOptionsBuilder.from_dataframe(st.session_state.df_pedidos)
-        gb.configure_default_column(
-            editable=False,
-            sortable=True,
-            filter=True,
-            resizable=True,
-            flex=1
-        )
-        gb.configure_pagination(paginationAutoPageSize=False, paginationPageSize=10)
-        grid_options = gb.build()
+        # --- CONTROLES DE FILTRADO Y ORDENAMIENTO ESTILO EXCEL ---
+        df_filtrado = st.session_state.df_pedidos.copy()
 
-        AgGrid(
-            st.session_state.df_pedidos,
-            gridOptions=grid_options,
-            height=400,
-            theme="alpine",
-            use_container_width=True
-        )
+        with st.expander("🔍 Opciones de Filtro y Ordenamiento", expanded=True):
+            fc1, fc2, fc3 = st.columns(3)
+            
+            with fc1:
+                col_a_ordenar = st.selectbox("Ordenar columna", df_filtrado.columns.tolist())
+                tipo_orden = st.radio("Criterio", ["Ascendente (A-Z / Menor a Mayor)", "Descendente (Z-A / Mayor a Menor)"], horizontal=True)
+            
+            with fc2:
+                clientes_disponibles = df_filtrado["CLIENTE"].unique().tolist()
+                clientes_seleccionados = st.multiselect("Filtrar por Cliente", options=clientes_disponibles, default=clientes_disponibles)
+            
+            with fc3:
+                estados_disponibles = df_filtrado["ESTADO"].unique().tolist()
+                estados_seleccionados = st.multiselect("Filtrar por Estado", options=estados_disponibles, default=estados_disponibles)
+
+        # Aplicar filtros de selección
+        if clientes_seleccionados:
+            df_filtrado = df_filtrado[df_filtrado["CLIENTE"].isin(clientes_seleccionados)]
+        if estados_seleccionados:
+            df_filtrado = df_filtrado[df_filtrado["ESTADO"].isin(estados_seleccionados)]
+
+        # Aplicar ordenamiento
+        ascending_bool = True if "Ascendente" in tipo_orden else False
+        df_filtrado = df_filtrado.sort_values(by=col_a_ordenar, ascending=ascending_bool)
+
+        # Renderizar la tabla HTML limpia con los datos filtrados y ordenados
+        filas_pedidos = ""
+        for _, fila in df_filtrado.iterrows():
+            filas_pedidos += f"<tr><td>{fila['FECHA_REGISTRO']}</td><td><b>{fila['CODIGO INTERNO']}</b></td><td>{fila['CLIENTE']}</td><td><span style='color: #0F382C; font-weight:700;'>{fila['ESTADO']}</span></td><td>{fila['SUB_ESTADO']}</td><td>{fila['NOMBRE']}</td><td>{fila['DISTRITO']}</td><td>{fila['TIPO_SERVICIO']}</td></tr>"
+
+        tabla_pedidos_html = textwrap.dedent(f"""
+            <div class="tabla-contenedor" style="max-height: 400px;">
+                <table class="tabla-usuarios">
+                    <thead>
+                        <tr>
+                            <th>FECHA_REGISTRO</th>
+                            <th>CODIGO INTERNO</th>
+                            <th>CLIENTE</th>
+                            <th>ESTADO</th>
+                            <th>SUB_ESTADO</th>
+                            <th>NOMBRE</th>
+                            <th>DISTRITO</th>
+                            <th>TIPO_SERVICIO</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {filas_pedidos}
+                    </tbody>
+                </table>
+            </div>
+            """).strip()
+
+        st.markdown(tabla_pedidos_html, unsafe_allow_html=True)
 
     # ==========================================
     # VISTA 2: PORTAL ADMINISTRADOR
