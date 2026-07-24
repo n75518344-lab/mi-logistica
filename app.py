@@ -26,7 +26,7 @@ if "usuario_actual" not in st.session_state:
         st.session_state.usuario_actual = None
         st.session_state.rol_actual = None
 
-# CSS GENERAL DEL SISTEMA (Tu diseño original intacto)
+# CSS GENERAL DEL SISTEMA (CORRECCIÓN DEFINITIVA DE BOTONES Y TEXTOS)
 st.markdown(
     """
     <style>
@@ -52,11 +52,25 @@ st.markdown(
         color: #0F172A; 
     }
 
-    /* CORRECCIÓN DE VISIBILIDAD DE TEXTO EN BOTONES DE ACCIÓN DEL OPERARIO */
-    div[data-testid="stButton"] > button p, 
-    div[data-testid="stButton"] > button span,
-    div[data-testid="stButton"] > button {
+    /* ==========================================================
+       CORRECCIÓN ABSOLUTA DE VISIBILIDAD DE TEXTO EN BOTONES
+       ================================================---------- */
+    div[data-testid="stButton"] > button, 
+    div[data-testid="stButton"] > button * {
         color: #FFFFFF !important;
+        fill: #FFFFFF !important;
+    }
+    
+    div[data-testid="stButton"] > button {
+        background-color: #1E293B !important;
+        border: 1px solid #334155 !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+    }
+    
+    div[data-testid="stButton"] > button:hover {
+        background-color: #0F382C !important;
+        border-color: #0F382C !important;
     }
 
     /* CONTENEDORES CON SCROLL INTELIGENTE PARA TABLAS */
@@ -264,32 +278,24 @@ st.markdown(
         color: #0F172A !important;
     }
 
-    /* BOTONES */
-    div[data-testid="stButton"] > button { 
-        background-color: #0F382C !important; 
-        color: #FFFFFF !important;
-        border: 1px solid #0F382C !important; 
-        border-radius: 8px !important; 
-        font-weight: 600 !important;
-    }
-
+    /* BOTONES ESPECIALES */
     #logout_btn button {
         background-color: #FEE2E2 !important;
         border: 1px solid #FCA5A5 !important;
     }
-    #logout_btn button p { color: #991B1B !important; font-weight: 700 !important; }
+    #logout_btn button p, #logout_btn button span { color: #991B1B !important; font-weight: 700 !important; }
 
     #btn_inactivar button {
         background-color: #FEF3C7 !important;
         border: 1px solid #FCD34D !important;
     }
-    #btn_inactivar button p { color: #92400E !important; font-weight: 700 !important; }
+    #btn_inactivar button p, #btn_inactivar button span { color: #92400E !important; font-weight: 700 !important; }
 
     #btn_eliminar button {
         background-color: #FEE2E2 !important;
         border: 1px solid #FCA5A5 !important;
     }
-    #btn_eliminar button p { color: #991B1B !important; font-weight: 700 !important; }
+    #btn_eliminar button p, #btn_eliminar button span { color: #991B1B !important; font-weight: 700 !important; }
 
     /* PESTAÑAS MINIMALISTAS */
     .stTabs [data-baseweb="tab-list"] { 
