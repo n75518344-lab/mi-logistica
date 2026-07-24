@@ -26,7 +26,7 @@ if "usuario_actual" not in st.session_state:
         st.session_state.usuario_actual = None
         st.session_state.rol_actual = None
 
-# CSS GENERAL DEL SISTEMA (CORRECCIÓN INFALIBLE DE BOTONES)
+# CSS GENERAL DEL SISTEMA (CORRECCIÓN DEFINITIVA DE BOTONES)
 st.markdown(
     """
     <style>
@@ -63,8 +63,10 @@ st.markdown(
         transition: all 0.2s ease;
     }
     
+    div[data-testid="stButton"] > button div,
+    div[data-testid="stButton"] > button span,
     div[data-testid="stButton"] > button p,
-    div[data-testid="stButton"] > button span {
+    div[data-testid="stButton"] > button label {
         color: #FFFFFF !important;    
         fill: #FFFFFF !important;     
     }
@@ -73,8 +75,9 @@ st.markdown(
         background-color: #0F382C !important; 
         border-color: #0F382C !important; 
     }
-    div[data-testid="stButton"] > button:hover p,
-    div[data-testid="stButton"] > button:hover span {
+    div[data-testid="stButton"] > button:hover div,
+    div[data-testid="stButton"] > button:hover span,
+    div[data-testid="stButton"] > button:hover p {
         color: #FFFFFF !important; 
     }
 
