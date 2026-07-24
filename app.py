@@ -447,17 +447,18 @@ else:
     # VISTA 1: PORTAL OPERARIO (FILTROS Y BUSCADOR DE FECHA)
     # ==========================================
     if st.session_state.rol_actual == "🛠️ Operario":
-        col_tit, col_btns = st.columns([3, 2])
+        col_tit, col_b1, col_b2, col_b3 = st.columns([2.6, 0.8, 0.8, 0.8])
         
         with col_tit:
-            st.markdown("<h3 style='margin:0;'>DASHBOARD > Detalle de pedidos</h3>", unsafe_allow_html=True)
+            st.markdown("<h3 style='margin:0;'>DASHBOARD > Gestión de Envíos</h3>", unsafe_allow_html=True)
         
-        with col_btns:
-            b1, b2, b3 = st.columns(3)
-            csv = st.session_state.df_pedidos.to_csv(index=False).encode('utf-8')
-            b1.download_button("📥 Descargar", data=csv, file_name="pedidos.csv")
-            if b2.button("📤 Subir"): modal_upload()
-            if b3.button("➕ Nuevo"): modal_add_pedido()
+        csv = st.session_state.df_pedidos.to_csv(index=False).encode('utf-8')
+        with col_b1:
+            st.download_button("📥 Descargar", data=csv, file_name="pedidos.csv", use_container_width=True)
+        with col_b2:
+            if st.button("📤 Subir", use_container_width=True): modal_upload()
+        with col_b3:
+            if st.button("➕ Nuevo", use_container_width=True): modal_add_pedido()
 
         st.markdown("<br>", unsafe_allow_html=True)
 
