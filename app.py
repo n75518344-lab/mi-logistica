@@ -30,7 +30,7 @@ if "usuario_actual" not in st.session_state:
 st.markdown(
     """
     <style>
-    /* OCULTAR SIDEBAR Y CABECERA */
+    /* OCULTAR SIDEBAR Y CABECERA DE STREAMLIT */
     [data-testid="stSidebar"], [data-testid="collapsedControl"], header[data-testid="stHeader"] { 
         display: none !important; 
     }
@@ -50,30 +50,34 @@ st.markdown(
         color: #0F172A; 
     }
 
-    /* ESTILO PARA LA TABLA FIJA CON SCROLLBAR */
-    .tabla-contenedor {
-        max-height: 220px;
-        overflow-y: auto;
-        border: 1px solid #CBD5E1;
-        border-radius: 8px;
-        background-color: #FFFFFF;
-        margin-bottom: 8px !important;
-    }
-
-    /* TABLA DE AUDITORÍA AMPLIADA PARA COMPLETAR LA PANTALLA */
-    .tabla-contenedor-logs {
-        max-height: 520px;
-        min-height: 420px;
+    /* CONTENEDORES SIN EL HUECO BLANCO DEL SCROLLBAR LATERAL */
+    .tabla-contenedor, .tabla-contenedor-logs {
+        max-height: 280px;
+        height: fit-content;
         overflow-y: auto;
         border: 1px solid #CBD5E1;
         border-radius: 10px;
         background-color: #FFFFFF;
-        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03);
+        box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.04);
+        margin-bottom: 15px !important;
+        scrollbar-width: none; /* Oculta scrollbar en Firefox */
+    }
+
+    .tabla-contenedor-logs {
+        max-height: 520px;
         margin-top: 15px !important;
     }
 
+    /* Oculta la barra reservada en Chrome, Safari y Edge para eliminar la brecha blanca */
+    .tabla-contenedor::-webkit-scrollbar,
+    .tabla-contenedor-logs::-webkit-scrollbar {
+        display: none;
+        width: 0px;
+    }
+
+    /* ESTILOS DE TABLA Y CABECERA PEGADA AL BORDE */
     .tabla-usuarios {
-        width: 100%;
+        width: 100% !important;
         border-collapse: collapse;
         font-size: 14px;
         text-align: left;
@@ -91,6 +95,9 @@ st.markdown(
         padding: 10px 14px;
         border-bottom: 1px solid #E2E8F0;
         color: #0F172A !important;
+    }
+    .tabla-usuarios tr:last-child td {
+        border-bottom: none; /* Elimina la línea inferior en la última fila */
     }
     .tabla-usuarios tr:hover {
         background-color: #F1F5F9;
@@ -207,7 +214,7 @@ st.markdown(
         color: #0F172A !important;
     }
 
-    /* BOTONES */
+    /* BOTONES ACCIÓN */
     div[data-testid="stButton"] > button { 
         background-color: #FFFFFF !important; 
         color: #0F172A !important;
@@ -234,11 +241,11 @@ st.markdown(
     }
     #btn_eliminar button p { color: #991B1B !important; font-weight: 700 !important; }
 
-    /* PESTAÑAS Y BARRA CONTENEDORA MINIMALISTA COMPLETA */
+    /* PESTAÑAS Y BARRA CONTENEDORA MINIMALISTA */
     .stTabs [data-baseweb="tab-list"] { 
         background-color: transparent !important; 
         gap: 28px !important; 
-        border-bottom: 2px solid #CBD5E1 !important; /* Línea divisoria completa que cruza la ventana */
+        border-bottom: 2px solid #CBD5E1 !important; 
         margin-top: 10px !important; 
         padding-bottom: 0px !important;
         width: 100% !important;
@@ -249,7 +256,7 @@ st.markdown(
         border-bottom: 3px solid transparent !important;
         padding: 10px 4px 12px 4px !important; 
         border-radius: 0px !important;
-        margin-bottom: -2px !important; /* Enlace directo con la línea contenedora */
+        margin-bottom: -2px !important;
     }
     .stTabs [data-baseweb="tab"] p { 
         color: #64748B !important; 
@@ -564,7 +571,7 @@ else:
 
       st.subheader("⚙️ Gestión de Claves y Accesos")
 
-      # EXCLUSIÓN DEL USUARIO ACTUAL DE LA LISTA DE GESTIÓN
+      # EXCLUSIÓN DEL USUARIO ACTUAL
       lista_usuarios_gestion = st.session_state.usuarios_registrados[
           st.session_state.usuarios_registrados["USUARIO"]
           != st.session_state.usuario_actual
@@ -641,7 +648,7 @@ else:
         st.info("ℹ️ No hay otros usuarios registrados para gestionar.")
 
   with tab2:
-    st.subheader("Historial de Seguridad y Movimientos")
+    st.subheader("📜 Historial de Seguridad y Movimientos")
 
     df_logs = st.session_state.historial_acciones
     filas_logs = ""
