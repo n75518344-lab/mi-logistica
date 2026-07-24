@@ -6,7 +6,7 @@ import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
 
-# 1. CONFIGURACIÓN DE PÁGINA (Sidebar habilitado para los filtros)
+# 1. CONFIGURACIÓN DE PÁGINA
 st.set_page_config(
     page_title="Alfa Cargo Express - Admin",
     page_icon="🚚",
@@ -27,62 +27,96 @@ if "usuario_actual" not in st.session_state:
         st.session_state.usuario_actual = None
         st.session_state.rol_actual = None
 
-# CSS GENERAL DEL SISTEMA
+# CSS GENERAL DEL SISTEMA Y CORRECCIÓN DEFINITIVA DE DROPDOWNS
 st.markdown(
     """
     <style>
+    /* Estructura general */
     html, body, .stApp { 
         background-color: #F8FAFC !important; 
         color: #0F172A !important; 
     }
 
-    /* Mostrar barra lateral estilizada para los filtros con padding equilibrado */
+    /* Sidebar */
     [data-testid="stSidebar"] { 
         background-color: #FFFFFF !important;
         border-right: 1px solid #CBD5E1 !important;
     }
-    
     [data-testid="stSidebar"] > div:first-child {
         padding-top: 1rem !important;
         padding-bottom: 1rem !important;
     }
-
-    /* Reducir espacios internos de los elementos del sidebar de forma armónica */
     [data-testid="stSidebar"] .stTextInput, 
     [data-testid="stSidebar"] .stMultiSelect {
         margin-bottom: -10px !important;
     }
 
-    /* Corrección de colores y visibilidad de textos en los multiselect del Sidebar */
-    [data-testid="stSidebar"] div[data-baseweb="select"] div,
-    [data-testid="stSidebar"] .stMultiSelect span,
-    [data-testid="stSidebar"] .stMultiSelect p {
-        color: #0F172A !important;
-    }
-
-    /* Forzar fondo blanco y texto oscuro en el menú desplegable (dropdown) de BaseWeb */
-    div[data-baseweb="popover"], div[data-baseweb="menu"], ul[data-baseweb="menu"] {
+    /* =========================================================
+       CORRECCIÓN DEFINITIVA: INPUTS, SELECTS Y DROPDOWNS
+       ========================================================= */
+       
+    /* 1. Fondo del cuadro principal del select/multiselect */
+    div[data-baseweb="select"] > div {
         background-color: #FFFFFF !important;
+        border-color: #CBD5E1 !important;
     }
-    div[data-baseweb="popover"] * {
+    
+    /* 2. Textos, iconos (flechas) y placeholder dentro del cuadro principal */
+    div[data-baseweb="select"] *,
+    div[data-baseweb="select"] input {
+        color: #0F172A !important;
+        fill: #0F172A !important;
+    }
+    
+    /* 3. Etiquetas (tags) de opciones ya seleccionadas */
+    span[data-baseweb="tag"] {
+        background-color: #F1F5F9 !important;
+        border: 1px solid #CBD5E1 !important;
+    }
+    span[data-baseweb="tag"] * {
         color: #0F172A !important;
     }
     
-    [data-testid="stSidebar"] div[data-baseweb="tag"] {
-        background-color: #E2E8F0 !important;
-        border-radius: 6px !important;
+    /* 4. Menú desplegable (popover/listbox) - SE RENDERIZA FUERA DEL SIDEBAR */
+    div[data-baseweb="popover"] > div, 
+    ul[role="listbox"],
+    div[data-baseweb="popover"] ul {
+        background-color: #FFFFFF !important;
+        border: 1px solid #CBD5E1 !important;
     }
-    [data-testid="stSidebar"] div[data-baseweb="tag"] span {
+    
+    /* 5. Fondo y color de cada opción de la lista */
+    li[role="option"] {
+        background-color: #FFFFFF !important;
         color: #0F172A !important;
     }
-
-    header[data-testid="stHeader"] { 
-        display: none !important; 
+    
+    /* 6. Asegurar que cualquier span/div dentro de la opción sea oscuro */
+    li[role="option"] span,
+    li[role="option"] div {
+        color: #0F172A !important;
+    }
+    
+    /* 7. Hover o selección sobre las opciones */
+    li[role="option"]:hover,
+    li[role="option"][aria-selected="true"] {
+        background-color: #E2E8F0 !important;
+        color: #0F382C !important;
     }
 
-    [data-testid="stElementToolbar"] {
-        display: none !important;
+    /* Text inputs generales */
+    .stTextInput input { 
+        background-color: #FFFFFF !important; 
+        color: #0F172A !important; 
+        border: 1px solid #CBD5E1 !important; 
+        border-radius: 8px !important; 
+        padding: 8px 10px !important;
     }
+
+    /* ========================================================= */
+
+    header[data-testid="stHeader"] { display: none !important; }
+    [data-testid="stElementToolbar"] { display: none !important; }
     
     .block-container { 
         max-width: 96% !important; 
@@ -90,9 +124,7 @@ st.markdown(
         padding-bottom: 2rem !important; 
     }
     
-    h1, h2, h3, h4, h5, h6, p, label, span, div { 
-        color: #0F172A; 
-    }
+    h1, h2, h3, h4, h5, h6, p, label, span, div { color: #0F172A; }
 
     div[data-testid="stButton"] > button,
     div[data-testid="stDownloadButton"] > button { 
@@ -136,16 +168,6 @@ st.markdown(
         margin-top: 10px !important;
     }
 
-    .tabla-contenedor::-webkit-scrollbar,
-    .tabla-contenedor-logs::-webkit-scrollbar {
-        width: 6px !important;
-    }
-    .tabla-contenedor::-webkit-scrollbar-thumb,
-    .tabla-contenedor-logs::-webkit-scrollbar-thumb {
-        background-color: #CBD5E1 !important;
-        border-radius: 10px !important;
-    }
-
     .tabla-usuarios {
         width: 100% !important;
         border-collapse: collapse;
@@ -187,13 +209,6 @@ st.markdown(
         box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.05) !important; 
         padding: 28px !important; 
         border-top: 6px solid #0F382C !important; 
-    }
-    .stTextInput input { 
-        background-color: #FFFFFF !important; 
-        color: #0F172A !important; 
-        border: 1px solid #CBD5E1 !important; 
-        border-radius: 8px !important; 
-        padding: 8px 10px !important;
     }
 
     div[data-testid="stFormSubmitButton"] > button { 
@@ -248,6 +263,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+# INICIALIZACIÓN DE DATOS (Mocks)
 if "usuarios_registrados" not in st.session_state:
     st.session_state.usuarios_registrados = pd.DataFrame([
         {
@@ -474,7 +490,7 @@ else:
         st.markdown("<div style='margin-top: 8px;'></div>", unsafe_allow_html=True)
 
         # ------------------------------------------
-        # FILTROS EN EL SIDEBAR (LATERAL) - ESPACIADO ÓPTIMO Y EQUILIBRADO
+        # FILTROS EN EL SIDEBAR
         # ------------------------------------------
         with st.sidebar:
             st.markdown("<h3 style='color: #0F382C; margin-bottom: 0px;'>🔍 Panel de Filtros</h3>", unsafe_allow_html=True)
@@ -485,11 +501,9 @@ else:
             txt_fecha_inicio = st.text_input("Fecha Inicial", value="", placeholder="DD/MM/YYYY", key="f_ini")
             txt_fecha_fin = st.text_input("Fecha Final", value="", placeholder="DD/MM/YYYY", key="f_fin")
 
-            # MÁSCARA JS LIMPIA PARA FECHAS
             components.html("""
                 <script>
                 const doc = window.parent.document;
-
                 function aplicarMascaraLimpia(input) {
                     if (!input.dataset.masked) {
                         input.dataset.masked = "true";
@@ -500,15 +514,9 @@ else:
                             if (val.length > 8) val = val.slice(0, 8);
                             
                             let res = "";
-                            if (val.length > 0) {
-                                res += val.substring(0, 2);
-                            }
-                            if (val.length >= 3) {
-                                res += "/" + val.substring(2, 4);
-                            }
-                            if (val.length >= 5) {
-                                res += "/" + val.substring(4, 8);
-                            }
+                            if (val.length > 0) res += val.substring(0, 2);
+                            if (val.length >= 3) res += "/" + val.substring(2, 4);
+                            if (val.length >= 5) res += "/" + val.substring(4, 8);
 
                             if (this.value !== res) {
                                 this.value = res;
@@ -517,16 +525,13 @@ else:
                         });
                     }
                 }
-
                 function observarInputs() {
                     doc.querySelectorAll('input').forEach(input => {
-                        const placeholder = input.getAttribute('placeholder');
-                        if (placeholder === 'DD/MM/YYYY') {
+                        if (input.getAttribute('placeholder') === 'DD/MM/YYYY') {
                             aplicarMascaraLimpia(input);
                         }
                     });
                 }
-
                 setInterval(observarInputs, 300);
                 </script>
             """, height=0)
@@ -586,21 +591,14 @@ else:
 
             df_filtrado = df_filtrado.drop(columns=["_fecha_temp"])
 
-        if filtro_cliente:
-            df_filtrado = df_filtrado[df_filtrado["CLIENTE"].astype(str).isin(filtro_cliente)]
-        if filtro_distrito:
-            df_filtrado = df_filtrado[df_filtrado["DISTRITO"].astype(str).isin(filtro_distrito)]
-        if filtro_servicio:
-            df_filtrado = df_filtrado[df_filtrado["TIPO_SERVICIO"].astype(str).isin(filtro_servicio)]
-        if filtro_estado:
-            df_filtrado = df_filtrado[df_filtrado["ESTADO"].astype(str).isin(filtro_estado)]
-        if filtro_sub_estado:
-            df_filtrado = df_filtrado[df_filtrado["SUB_ESTADO"].astype(str).isin(filtro_sub_estado)]
+        if filtro_cliente: df_filtrado = df_filtrado[df_filtrado["CLIENTE"].astype(str).isin(filtro_cliente)]
+        if filtro_distrito: df_filtrado = df_filtrado[df_filtrado["DISTRITO"].astype(str).isin(filtro_distrito)]
+        if filtro_servicio: df_filtrado = df_filtrado[df_filtrado["TIPO_SERVICIO"].astype(str).isin(filtro_servicio)]
+        if filtro_estado: df_filtrado = df_filtrado[df_filtrado["ESTADO"].astype(str).isin(filtro_estado)]
+        if filtro_sub_estado: df_filtrado = df_filtrado[df_filtrado["SUB_ESTADO"].astype(str).isin(filtro_sub_estado)]
 
-        if filtro_codigo_txt:
-            df_filtrado = df_filtrado[df_filtrado["CODIGO INTERNO"].astype(str).str.contains(filtro_codigo_txt, case=False, na=False)]
-        if filtro_nombre_txt:
-            df_filtrado = df_filtrado[df_filtrado["NOMBRE"].astype(str).str.contains(filtro_nombre_txt, case=False, na=False)]
+        if filtro_codigo_txt: df_filtrado = df_filtrado[df_filtrado["CODIGO INTERNO"].astype(str).str.contains(filtro_codigo_txt, case=False, na=False)]
+        if filtro_nombre_txt: df_filtrado = df_filtrado[df_filtrado["NOMBRE"].astype(str).str.contains(filtro_nombre_txt, case=False, na=False)]
 
         if "FECHA_REGISTRO" in df_filtrado.columns:
             df_filtrado = df_filtrado.sort_values(by="FECHA_REGISTRO", ascending=False)
