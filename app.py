@@ -55,28 +55,24 @@ st.markdown(
        ESTILOS PARA INPUTS, SELECTS Y BORDES VERDE OSCURO
        ========================================================= */
        
-    /* 1. Fondo y borde verde oscuro del cuadro principal del select/multiselect */
     div[data-baseweb="select"] > div {
         background-color: #FFFFFF !important;
         border-color: #0F382C !important;
         border-width: 1.5px !important;
     }
     
-    /* Forzar borde verde oscuro también al estar enfocados o seleccionados */
     div[data-baseweb="select"] > div:focus-within,
     div[data-baseweb="select"] > div:hover {
         border-color: #0F382C !important;
         box-shadow: 0 0 0 1px #0F382C !important;
     }
     
-    /* 2. Textos, iconos (flechas) y placeholder dentro del cuadro principal */
     div[data-baseweb="select"] *,
     div[data-baseweb="select"] input {
         color: #0F172A !important;
         fill: #0F172A !important;
     }
     
-    /* 3. Etiquetas (tags) de opciones ya seleccionadas */
     span[data-baseweb="tag"] {
         background-color: #F1F5F9 !important;
         border: 1px solid #CBD5E1 !important;
@@ -85,7 +81,6 @@ st.markdown(
         color: #0F172A !important;
     }
     
-    /* 4. Menú desplegable (popover/listbox) - FUERA DEL SIDEBAR */
     div[data-baseweb="popover"] > div, 
     ul[role="listbox"],
     div[data-baseweb="popover"] ul {
@@ -93,7 +88,6 @@ st.markdown(
         border: 1px solid #CBD5E1 !important;
     }
     
-    /* 5. Fondo y color de cada opción de la lista */
     li[role="option"] {
         background-color: #FFFFFF !important;
         color: #0F172A !important;
@@ -104,14 +98,12 @@ st.markdown(
         color: #0F172A !important;
     }
     
-    /* 6. Hover o selección sobre las opciones */
     li[role="option"]:hover,
     li[role="option"][aria-selected="true"] {
         background-color: #E2E8F0 !important;
         color: #0F382C !important;
     }
 
-    /* Text inputs generales */
     .stTextInput input { 
         background-color: #FFFFFF !important; 
         color: #0F172A !important; 
@@ -167,6 +159,27 @@ st.markdown(
     div[data-testid="stButton"] > button:hover label {
         color: #FFFFFF !important;
         fill: #FFFFFF !important;
+    }
+
+    /* ESTILO ESPECÍFICO PARA LOS 3 BOTONES SUPERIORES (Descargar, Subir, Añadir) */
+    #btn_accion_custom button {
+        background-color: #FFFFFF !important;
+        border: 1.5px solid #0F382C !important;
+        border-radius: 8px !important;
+    }
+    #btn_accion_custom button div,
+    #btn_accion_custom button span,
+    #btn_accion_custom button p {
+        color: #0F382C !important;
+        font-weight: 700 !important;
+    }
+    #btn_accion_custom button:hover {
+        background-color: #0F382C !important;
+    }
+    #btn_accion_custom button:hover div,
+    #btn_accion_custom button:hover span,
+    #btn_accion_custom button:hover p {
+        color: #FFFFFF !important;
     }
 
     .tabla-contenedor, .tabla-contenedor-logs {
@@ -243,10 +256,13 @@ st.markdown(
     }
 
     #logout_btn button {
-        background-color: #FEE2E2 !important;
-        border: 1px solid #FCA5A5 !important;
+        background-color: #FFFFFF !important;
+        border: 1.5px solid #0F382C !important;
+        border-radius: 8px !important;
     }
-    #logout_btn button p, #logout_btn button span { color: #991B1B !important; font-weight: 700 !important; }
+    #logout_btn button p, #logout_btn button span { color: #0F382C !important; font-weight: 700 !important; }
+    #logout_btn button:hover { background-color: #0F382C !important; }
+    #logout_btn button:hover p, #logout_btn button:hover span { color: #FFFFFF !important; }
 
     #btn_inactivar button {
         background-color: #FEF3C7 !important;
@@ -498,11 +514,17 @@ else:
         with col_tit:
             st.markdown("<h3 style='margin:0; padding:0; line-height: 1.0;'>Gestión de Envíos</h3>", unsafe_allow_html=True)
         with col_b1:
+            st.markdown('<div id="btn_accion_custom">', unsafe_allow_html=True)
             st.download_button("📥", data=csv, file_name="pedidos.csv", use_container_width=True, help="Descargar CSV")
+            st.markdown('</div>', unsafe_allow_html=True)
         with col_b2:
+            st.markdown('<div id="btn_accion_custom">', unsafe_allow_html=True)
             if st.button("📤", use_container_width=True, help="Subir Data"): modal_upload()
+            st.markdown('</div>', unsafe_allow_html=True)
         with col_b3:
+            st.markdown('<div id="btn_accion_custom">', unsafe_allow_html=True)
             if st.button("➕", use_container_width=True, help="Nuevo Pedido"): modal_add_pedido()
+            st.markdown('</div>', unsafe_allow_html=True)
 
         st.markdown("<div style='margin-top: 8px;'></div>", unsafe_allow_html=True)
 
