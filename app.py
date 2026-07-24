@@ -26,7 +26,7 @@ if "usuario_actual" not in st.session_state:
         st.session_state.usuario_actual = None
         st.session_state.rol_actual = None
 
-# CSS GENERAL DEL SISTEMA (CON CALENDARIO 100% CORREGIDO)
+# CSS GENERAL DEL SISTEMA
 st.markdown(
     """
     <style>
@@ -130,73 +130,6 @@ st.markdown(
         background-color: #F1F5F9;
     }
 
-    /* CORRECCIÓN TOTAL Y DEFINITIVA PARA EL CALENDARIO DE BASEWEB */
-    div[data-baseweb="popover"], 
-    div[data-baseweb="calendar"], 
-    div[data-baseweb="calendar"] > div,
-    div[data-baseweb="calendar"] section {
-        background-color: #FFFFFF !important;
-        color: #0F172A !important;
-    }
-    
-    div[data-baseweb="calendar"] * {
-        color: #0F172A !important;
-    }
-
-    /* Cabecera superior, selectores de mes y año */
-    div[data-baseweb="calendar"] div[class*="ast"],
-    div[data-baseweb="calendar"] button,
-    div[data-baseweb="calendar"] svg {
-        color: #0F172A !important;
-        fill: #0F172A !important;
-    }
-
-    /* Forzar fondo blanco en los dropdowns de selección de mes y año */
-    div[data-baseweb="menu"], ul[role="listbox"], li[role="option"] {
-        background-color: #FFFFFF !important;
-        color: #0F172A !important;
-    }
-
-    li[role="option"]:hover {
-        background-color: #F1F5F9 !important;
-        color: #0F382C !important;
-    }
-
-    /* Todos los botones de días por defecto */
-    div[data-baseweb="calendar"] button[role="gridcell"],
-    div[data-baseweb="calendar"] button {
-        background-color: #FFFFFF !important;
-        color: #0F172A !important;
-        border-radius: 50% !important;
-        border: none !important;
-    }
-
-    div[data-baseweb="calendar"] button[role="gridcell"]:hover {
-        background-color: #F1F5F9 !important;
-        color: #0F382C !important;
-    }
-
-    /* Días de otros meses (fuera de rango): ocultarlos totalmente */
-    div[data-baseweb="calendar"] button[aria-disabled="true"],
-    div[data-baseweb="calendar"] div[aria-disabled="true"] {
-        background-color: #FFFFFF !important;
-        color: #FFFFFF !important;
-        border: none !important;
-        opacity: 0 !important;
-        pointer-events: none !important;
-        visibility: hidden !important;
-    }
-
-    /* Fecha seleccionada: Fondo blanco con borde naranja puro y texto visible */
-    div[data-baseweb="calendar"] button[aria-selected="true"] {
-        background-color: #FFFFFF !important;
-        background: #FFFFFF !important;
-        border: 2px solid #F97316 !important;
-        color: #0F172A !important;
-        font-weight: 700 !important;
-        box-shadow: none !important;
-    }
-
     [data-testid="stExpander"] {
         background-color: #FFFFFF !important;
         border: 1px solid #CBD5E1 !important;
@@ -229,7 +162,7 @@ st.markdown(
         padding: 28px !important; 
         border-top: 6px solid #0F382C !important; 
     }
-    .stTextInput input, .stDateInput input { 
+    .stTextInput input { 
         background-color: #FFFFFF !important; 
         color: #0F172A !important; 
         border: 1px solid #CBD5E1 !important; 
@@ -496,7 +429,7 @@ else:
     st.markdown("<hr style='margin: 8px 0px 12px 0px; border-color: #CBD5E1;'>", unsafe_allow_html=True)
 
     # ==========================================
-    # VISTA 1: PORTAL OPERARIO (CON CALENDARIOS DE RANGO DE FECHAS)
+    # VISTA 1: PORTAL OPERARIO (CON FILTROS DE FECHA POR TEXTO SEGURO)
     # ==========================================
     if st.session_state.rol_actual == "🛠️ Operario":
         csv = st.session_state.df_pedidos.to_csv(index=False).encode('utf-8')
@@ -514,19 +447,19 @@ else:
 
         st.markdown("<div style='margin-top: 6px;'></div>", unsafe_allow_html=True)
 
-        # PANEL EXPANDIBLE DE FILTRADO AVANZADO CON CALENDARIOS NATIVOS
-        with st.expander("🔎 Panel de Filtros Avanzados (Selección múltiple, Rango de Fechas y Búsqueda)", expanded=True):
+        # PANEL EXPANDIBLE DE FILTRADO AVANZADO CON CAMPOS DE TEXTO PARA FECHAS
+        with st.expander("🔎 Panel de Filtros Avanzados (Selección múltiple, Fechas y Búsqueda)", expanded=True):
             
-            st.markdown("<p style='font-weight:800; font-size:14px; color:#0F382C; margin-bottom:8px;'>📅 Rango de Fechas (Con Minicalendario):</p>", unsafe_allow_html=True)
+            st.markdown("<p style='font-weight:800; font-size:14px; color:#0F382C; margin-bottom:8px;'>📅 Rango de Fechas (Formato DD/MM/YYYY):</p>", unsafe_allow_html=True)
             dc1, dc2 = st.columns(2)
             
             with dc1:
-                st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>FECHA_INICIAL:</p>", unsafe_allow_html=True)
-                fecha_inicio = st.date_input("Fecha Inicial", value=None, format="DD/MM/YYYY", label_visibility="collapsed")
+                st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>FECHA INICIAL:</p>", unsafe_allow_html=True)
+                txt_fecha_inicio = st.text_input("Fecha Inicial", value="", placeholder="Ej: 21/07/2026", label_visibility="collapsed", key="f_ini")
 
             with dc2:
-                st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>FECHA_FINAL:</p>", unsafe_allow_html=True)
-                fecha_fin = st.date_input("Fecha Final", value=None, format="DD/MM/YYYY", label_visibility="collapsed")
+                st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>FECHA FINAL:</p>", unsafe_allow_html=True)
+                txt_fecha_fin = st.text_input("Fecha Final", value="", placeholder="Ej: 24/07/2026", label_visibility="collapsed", key="f_fin")
 
             st.markdown("<hr style='margin: 15px 0px; border-color: #E2E8F0;'>", unsafe_allow_html=True)
 
@@ -560,27 +493,36 @@ else:
 
             with ft1:
                 st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>Buscar Cliente:</p>", unsafe_allow_html=True)
-                filtro_cliente_txt = st.text_input("Cliente", label_visibility="collapsed", placeholder="Ej: Unimarket...")
+                filtro_cliente_txt = st.text_input("Cliente", label_visibility="collapsed", placeholder="Ej: Unimarket...", key="b_cli")
 
             with ft2:
                 st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>Buscar Código Interno:</p>", unsafe_allow_html=True)
-                filtro_codigo_txt = st.text_input("Código Interno", label_visibility="collapsed", placeholder="Ej: BLC1-480...")
+                filtro_codigo_txt = st.text_input("Código Interno", label_visibility="collapsed", placeholder="Ej: BLC1-480...", key="b_cod")
 
             with ft3:
                 st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>Buscar Nombre Destinatario:</p>", unsafe_allow_html=True)
-                filtro_nombre_txt = st.text_input("Nombre", label_visibility="collapsed", placeholder="Ej: Cecilia Loo...")
+                filtro_nombre_txt = st.text_input("Nombre", label_visibility="collapsed", placeholder="Ej: Cecilia Loo...", key="b_nom")
 
-        # APLICAR FILTROS (INCLUYENDO RANGO DE FECHAS)
+        # APLICAR FILTROS (CON VALIDACIÓN SEGURA DE FECHAS EN TEXTO)
         df_filtrado = st.session_state.df_pedidos.copy()
 
         if "FECHA_REGISTRO" in df_filtrado.columns:
             df_filtrado["_fecha_temp"] = pd.to_datetime(df_filtrado["FECHA_REGISTRO"], format="%d/%m/%Y", errors="coerce")
             
-            if fecha_inicio is not None:
-                df_filtrado = df_filtrado[df_filtrado["_fecha_temp"].dt.date >= fecha_inicio]
-            if fecha_fin is not None:
-                df_filtrado = df_filtrado[df_filtrado["_fecha_temp"].dt.date <= fecha_fin]
-                
+            if txt_fecha_inicio.strip():
+                try:
+                    f_ini_parsed = datetime.strptime(txt_fecha_inicio.strip(), "%d/%m/%Y").date()
+                    df_filtrado = df_filtrado[df_filtrado["_fecha_temp"].dt.date >= f_ini_parsed]
+                except ValueError:
+                    pass  # Si escribe mal el formato temporalmente, no rompe la app
+
+            if txt_fecha_fin.strip():
+                try:
+                    f_fin_parsed = datetime.strptime(txt_fecha_fin.strip(), "%d/%m/%Y").date()
+                    df_filtrado = df_filtrado[df_filtrado["_fecha_temp"].dt.date <= f_fin_parsed]
+                except ValueError:
+                    pass
+
             df_filtrado = df_filtrado.drop(columns=["_fecha_temp"])
 
         if filtro_distrito:
@@ -622,7 +564,7 @@ else:
                         </tr>
                     </thead>
                     <tbody>
-                        {filas_pedidos_html if not df_filtrado.empty else "<tr><td colspan='100%' style='text-align:center;'>No se encontraron registros en este rango de fechas</td></tr>"}
+                        {filas_pedidos_html if not df_filtrado.empty else "<tr><td colspan='100%' style='text-align:center;'>No se encontraron registros en este filtro de fechas</td></tr>"}
                     </tbody>
                 </table>
             </div>
