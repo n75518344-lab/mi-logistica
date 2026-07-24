@@ -107,6 +107,18 @@ st.markdown(
         color: #0F382C !important;
     }
 
+    /* OCULTAR OPCIONES NO DESEADAS DEL MENÚ DE LA TABLA (STATISTICS, AUTOSIZE, PIN, HIDE) */
+    div[role="menu"] div:has-text("Statistics"),
+    div[role="menu"] div:has-text("Autosize"),
+    div[role="menu"] div:has-text("Pin column"),
+    div[role="menu"] div:has-text("Hide column"),
+    ul[data-baseweb="menu"] li:has-text("Statistics"),
+    ul[data-baseweb="menu"] li:has-text("Autosize"),
+    ul[data-baseweb="menu"] li:has-text("Pin column"),
+    ul[data-baseweb="menu"] li:has-text("Hide column") {
+        display: none !important;
+    }
+
     /* CONTENEDORES CON SCROLL INTELIGENTE PARA TABLAS */
     .tabla-contenedor, .tabla-contenedor-logs {
         max-height: 450px;
@@ -618,7 +630,7 @@ else:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # TABLA INTERACTIVA NATIVA ESTILO EXCEL (CON MENÚS VISIBLES)
+        # TABLA INTERACTIVA NATIVA CON MENÚ SIMPLIFICADO (ORDENAR, BUSCAR Y FILTRAR)
         st.dataframe(
             st.session_state.df_pedidos,
             use_container_width=True,
