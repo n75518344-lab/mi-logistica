@@ -483,7 +483,6 @@ else:
                             if (v.length >= 3) {
                                 formatted += "/" + v.substring(2, 4);
                             } else if (v.length === 2 && e.inputType === "deleteContentBackward") {
-                                // Manejo limpio al borrar
                                 formatted = v;
                             }
                             if (v.length >= 5) {
@@ -492,7 +491,6 @@ else:
 
                             if (this.value !== formatted) {
                                 this.value = formatted;
-                                // Forzar notificación de cambio a Streamlit
                                 this.dispatchEvent(new Event('input', { bubbles: true }));
                             }
                         });
@@ -561,19 +559,27 @@ else:
         if "FECHA_REGISTRO" in df_filtrado.columns:
             df_filtrado["_fecha_temp"] = pd.to_datetime(df_filtrado["FECHA_REGISTRO"], format="%d/%m/%Y", errors="coerce")
             
+            f_ini_parsed = None
+            f_fin_parsed = None
+
             if txt_fecha_inicio.strip():
                 try:
                     f_ini_parsed = datetime.strptime(txt_fecha_inicio.strip(), "%d/%m/%Y").date()
-                    df_filtrado = df_filtrado[df_filtrado["_fecha_temp"].dt.date >= f_ini_parsed]
                 except ValueError:
                     pass
 
             if txt_fecha_fin.strip():
                 try:
                     f_fin_parsed = datetime.strptime(txt_fecha_fin.strip(), "%d/%m/%Y").date()
-                    df_filtrado = df_filtrado[df_filtrado["_fecha_temp"].dt.date <= f_fin_parsed]
                 except ValueError:
                     pass
+
+            if f_ini_parsed and f_fin_parsed:
+                df_filtrado = df_filtrado[(df_filtrado["_fecha_temp"].dt.date >= f_ini_parsed) & (df_filtrado["_fecha_temp"].dt.date <= f_fin_parsed)]
+            elif f_ini_parsed and not f_fin_parsed:
+                df_filtrado = df_filtrado[df_filtrado["_fecha_temp"].dt.date == f_ini_parsed]
+            elif not f_ini_parsed and f_fin_parsed:
+                df_filtrado = df_filtrado[df_filtrado["_fecha_temp"].dt.date <= f_fin_parsed]
 
             df_filtrado = df_filtrado.drop(columns=["_fecha_temp"])
 
