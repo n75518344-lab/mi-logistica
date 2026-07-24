@@ -89,6 +89,24 @@ st.markdown(
         color: #FFFFFF !important; 
     }
 
+    /* FORZAR FONDO BLANCO Y TEXTO OSCURO EN LOS MENÚS FLOTANTES DE LOS DATAFRAMES */
+    div[data-baseweb="popover"] div, 
+    div[data-baseweb="menu"] div,
+    ul[data-baseweb="menu"] li,
+    div[role="menu"] *, 
+    div[role="tooltip"] * {
+        background-color: #FFFFFF !important;
+        color: #0F172A !important;
+        fill: #0F172A !important;
+    }
+
+    /* EFECTO HOVER AL PASAR EL MOUSE POR LAS OPCIONES DEL MENÚ */
+    div[role="menu"] div:hover, 
+    div[data-baseweb="menu"] li:hover {
+        background-color: #F1F5F9 !important;
+        color: #0F382C !important;
+    }
+
     /* CONTENEDORES CON SCROLL INTELIGENTE PARA TABLAS */
     .tabla-contenedor, .tabla-contenedor-logs {
         max-height: 450px;
@@ -600,7 +618,7 @@ else:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # TABLA INTERACTIVA NATIVA ESTILO EXCEL (CON FILTROS Y BÚSQUEDA EN CADA COLUMNA)
+        # TABLA INTERACTIVA NATIVA ESTILO EXCEL (CON MENÚS VISIBLES)
         st.dataframe(
             st.session_state.df_pedidos,
             use_container_width=True,
