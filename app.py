@@ -51,11 +51,12 @@ st.markdown(
 
     /* ESTILO PARA LA TABLA FIJA CON SCROLLBAR */
     .tabla-contenedor {
-        max-height: 210px;
+        max-height: 220px;
         overflow-y: auto;
         border: 1px solid #CBD5E1;
         border-radius: 8px;
         background-color: #FFFFFF;
+        margin-bottom: 1rem;
     }
     .tabla-usuarios {
         width: 100%;
@@ -302,18 +303,18 @@ def obtener_imagen_github(nombre_archivo="alfa_warehouse.jpg"):
 def mostrar_modal_soporte():
   st.markdown(
       """
-        <div style="color: #FFFFFF !important; line-height: 1.6;">
-            <p style="color: #FFFFFF !important; font-size: 15px; margin-bottom: 15px;">
-                Por motivos de seguridad corporativa, la asignación y restablecimiento de contraseñas es gestionada de manera directa por el área de Administración.
-            </p>
-            <p style="color: #FFFFFF !important; font-weight: bold; font-size: 15px; margin-bottom: 10px;">
-                Canales de atención:
-            </p>
-            <div style="color: #FFFFFF !important; font-size: 14px; margin-bottom: 8px;">💬 <b>WhatsApp Soporte:</b> +51 987 654 321</div>
-            <div style="color: #FFFFFF !important; font-size: 14px; margin-bottom: 8px;">✉️ <b>Correo Institucional:</b> <a href="mailto:soporte@alfacargo.pe" style="color: #38BDF8 !important; text-decoration: underline;">soporte@alfacargo.pe</a></div>
-            <div style="color: #FFFFFF !important; font-size: 14px; margin-bottom: 20px;">🕒 <b>Horario de Atención:</b> Lun a Vie de 8:00 am a 6:00 pm</div>
-        </div>
-    """,
+<div style="color: #FFFFFF !important; line-height: 1.6;">
+    <p style="color: #FFFFFF !important; font-size: 15px; margin-bottom: 15px;">
+        Por motivos de seguridad corporativa, la asignación y restablecimiento de contraseñas es gestionada de manera directa por el área de Administración.
+    </p>
+    <p style="color: #FFFFFF !important; font-weight: bold; font-size: 15px; margin-bottom: 10px;">
+        Canales de atención:
+    </p>
+    <div style="color: #FFFFFF !important; font-size: 14px; margin-bottom: 8px;">💬 <b>WhatsApp Soporte:</b> +51 987 654 321</div>
+    <div style="color: #FFFFFF !important; font-size: 14px; margin-bottom: 8px;">✉️ <b>Correo Institucional:</b> <a href="mailto:soporte@alfacargo.pe" style="color: #38BDF8 !important; text-decoration: underline;">soporte@alfacargo.pe</a></div>
+    <div style="color: #FFFFFF !important; font-size: 14px; margin-bottom: 20px;">🕒 <b>Horario de Atención:</b> Lun a Vie de 8:00 am a 6:00 pm</div>
+</div>
+""",
       unsafe_allow_html=True,
   )
 
@@ -325,11 +326,11 @@ def mostrar_modal_soporte():
 if st.session_state.usuario_actual is None:
   st.markdown(
       """
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-            <div style="font-size: 28px; font-weight: 900; color: #0F382C;">🌲 ALFA CARGO EXPRESS</div>
-            <div style='color: #64748B; font-size: 14px; font-weight: 600;'>🌐 Central Lima, Perú</div>
-        </div>
-    """,
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+    <div style="font-size: 28px; font-weight: 900; color: #0F382C;">🌲 ALFA CARGO EXPRESS</div>
+    <div style='color: #64748B; font-size: 14px; font-weight: 600;'>🌐 Central Lima, Perú</div>
+</div>
+""",
       unsafe_allow_html=True,
   )
 
@@ -343,13 +344,13 @@ if st.session_state.usuario_actual is None:
     )
     st.markdown(
         """
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
-                <div style="color: #334155; font-weight: 600; font-size: 14px;">▌ Control de Accesos y Roles</div>
-                <div style="color: #334155; font-weight: 600; font-size: 14px;">▌ Gestión de Claves Directa</div>
-                <div style="color: #334155; font-weight: 600; font-size: 14px;">▌ Auditoría y Registros (Logs)</div>
-                <div style="color: #334155; font-weight: 600; font-size: 14px;">▌ Seguridad Operativa</div>
-            </div>
-        """,
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+    <div style="color: #334155; font-weight: 600; font-size: 14px;">▌ Control de Accesos y Roles</div>
+    <div style="color: #334155; font-weight: 600; font-size: 14px;">▌ Gestión de Claves Directa</div>
+    <div style="color: #334155; font-weight: 600; font-size: 14px;">▌ Auditoría y Registros (Logs)</div>
+    <div style="color: #334155; font-weight: 600; font-size: 14px;">▌ Seguridad Operativa</div>
+</div>
+""",
         unsafe_allow_html=True,
     )
 
@@ -424,9 +425,9 @@ else:
   with col_nav1:
     st.markdown(
         f"""
-            <div style="font-size: 24px; font-weight: 800; color: #0F382C;">🌲 ALFA CARGO EXPRESS — Portal Administrador</div>
-            <div style="font-size: 14px; color: #475569; font-weight: 600;">Admin activo: <strong>{st.session_state.usuario_actual}</strong></div>
-        """,
+<div style="font-size: 24px; font-weight: 800; color: #0F382C;">🌲 ALFA CARGO EXPRESS — Portal Administrador</div>
+<div style="font-size: 14px; color: #475569; font-weight: 600;">Admin activo: <strong>{st.session_state.usuario_actual}</strong></div>
+""",
         unsafe_allow_html=True,
     )
   with col_nav2:
@@ -498,37 +499,24 @@ else:
           if c in st.session_state.usuarios_registrados.columns
       ]
 
-      # GENERACIÓN DE TABLA HTML CON ALTURA FIJA Y SCROLLBAR NATIVO
+      # CONSTRUCCIÓN DEL HTML TOTALMENTE SIN INDENTACIÓN INTERNA
       df_vista = st.session_state.usuarios_registrados[cols_existentes]
 
       filas_html = ""
       for _, fila in df_vista.iterrows():
-        filas_html += f"""
-        <tr>
-            <td><b>{fila['USUARIO']}</b></td>
-            <td>{fila['ROL']}</td>
-            <td><span style='color: {"#16A34A" if fila["ESTADO"]=="Activo" else "#DC2626"}; font-weight:700;'>{fila['ESTADO']}</span></td>
-            <td>{fila.get('ÚLTIMA CONEXIÓN', 'Nunca')}</td>
-        </tr>
-        """
+        color_estado = "#16A34A" if fila["ESTADO"] == "Activo" else "#DC2626"
+        filas_html += (
+            f"<tr><td><b>{fila['USUARIO']}</b></td><td>{fila['ROL']}</td><td><span"
+            f" style='color: {color_estado};"
+            f" font-weight:700;'>{fila['ESTADO']}</span></td><td>{fila.get('ÚLTIMA"
+            " CONEXIÓN', 'Nunca')}</td></tr>"
+        )
 
-      tabla_html = f"""
-      <div class="tabla-contenedor">
-          <table class="tabla-usuarios">
-              <thead>
-                  <tr>
-                      <th>USUARIO</th>
-                      <th>ROL</th>
-                      <th>ESTADO</th>
-                      <th>ÚLTIMA CONEXIÓN</th>
-                  </tr>
-              </thead>
-              <tbody>
-                  {filas_html}
-              </tbody>
-          </table>
-      </div>
-      """
+      tabla_html = (
+          '<div class="tabla-contenedor"><table'
+          " class="tabla-usuarios"><thead><tr><th>USUARIO</th><th>ROL</th><th>ESTADO</th><th>ÚLTIMA"
+          f" CONEXIÓN</th></tr></thead><tbody>{filas_html}</tbody></table></div>"
+      )
 
       st.markdown(tabla_html, unsafe_allow_html=True)
 
@@ -608,28 +596,12 @@ else:
     df_logs = st.session_state.historial_acciones
     filas_logs = ""
     for _, fila in df_logs.iterrows():
-      filas_logs += f"""
-        <tr>
-            <td>{fila['FECHA Y HORA']}</td>
-            <td><b>{fila['USUARIO']}</b></td>
-            <td>{fila['ACCIÓN']}</td>
-        </tr>
-        """
+      filas_logs += f"<tr><td>{fila['FECHA Y HORA']}</td><td><b>{fila['USUARIO']}</b></td><td>{fila['ACCIÓN']}</td></tr>"
 
-    tabla_logs_html = f"""
-      <div class="tabla-contenedor" style="max-height: 350px;">
-          <table class="tabla-usuarios">
-              <thead>
-                  <tr>
-                      <th>FECHA Y HORA</th>
-                      <th>USUARIO</th>
-                      <th>ACCIÓN</th>
-                  </tr>
-              </thead>
-              <tbody>
-                  {filas_logs}
-              </tbody>
-          </table>
-      </div>
-      """
+    tabla_logs_html = (
+        '<div class="tabla-contenedor" style="max-height: 350px;"><table'
+        " class="tabla-usuarios"><thead><tr><th>FECHA Y"
+        " HORA</th><th>USUARIO</th><th>ACCIÓN</th></tr></thead><tbody>"
+        f"{filas_logs}</tbody></table></div>"
+    )
     st.markdown(tabla_logs_html, unsafe_allow_html=True)
