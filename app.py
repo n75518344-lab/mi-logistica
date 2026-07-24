@@ -25,7 +25,7 @@ if "usuario_actual" not in st.session_state:
     st.session_state.usuario_actual = None
     st.session_state.rol_actual = None
 
-# CSS PERFECCIONADO PARA LOGIN Y DASHBOARD
+# CSS PERFECCIONADO CON SOPORTE COMPLETO PARA DATAFRAME
 st.markdown(
     """
     <style>
@@ -49,7 +49,20 @@ st.markdown(
         color: #0F172A; 
     }
 
-    /* FIX DEFINITIVO PARA TEXTO BLANCO EN EL MODAL/VENTANA EMERGENTE */
+    /* FIX DEFINITIVO PARA TEXTO EN DATAFRAME Y SUS MENÚS DESPLEGABLES */
+    [data-testid="stDataFrame"] * {
+        color: #0F172A !important;
+    }
+    
+    /* MODAL DE MENÚ INTERNO DE TABLAS (GLIDE DATA GRID POPOVER) */
+    div[data-baseweb="popover"] div, 
+    div[data-baseweb="menu"] div,
+    [role="tooltip"] * {
+        background-color: #FFFFFF !important;
+        color: #0F172A !important;
+    }
+
+    /* FIX TEXTO BLANCO EN EL MODAL/VENTANA EMERGENTE */
     div[role="dialog"] *, [data-testid="stDialog"] *, [data-testid="stModal"] * {
         color: #FFFFFF !important;
     }
@@ -174,10 +187,6 @@ st.markdown(
         color: #0F172A !important;
         background-color: transparent !important;
     }
-    div[data-baseweb="popover"], div[data-baseweb="menu"], ul[role="listbox"] {
-        background-color: #FFFFFF !important;
-        border: 1px solid #CBD5E1 !important;
-    }
     li[role="option"], div[role="option"] {
         background-color: #FFFFFF !important;
         color: #0F172A !important;
@@ -285,7 +294,7 @@ if "usuarios_registrados" not in st.session_state:
       },
   ])
 
-# VERIFICAR Y ASIGNAR COLUMNAS FALTANTES SI EXISTE UNA SESIÓN ANTIGUA
+# VERIFICAR Y ASIGNAR COLUMNAS FALTANTES
 if (
     "ÚLTIMA CONEXIÓN"
     not in st.session_state.usuarios_registrados.columns
@@ -516,7 +525,6 @@ else:
     with col_b:
       st.subheader("📋 Usuarios Registrados")
 
-      # GARANTIZAR SEGURIDAD EN SELECCIÓN DE COLUMNAS
       cols_deseadas = ["USUARIO", "ROL", "ESTADO", "ÚLTIMA CONEXIÓN"]
       cols_existentes = [
           c
