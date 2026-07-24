@@ -26,6 +26,12 @@ if "usuario_actual" not in st.session_state:
         st.session_state.usuario_actual = None
         st.session_state.rol_actual = None
 
+# ESTADOS DE ORDENAMIENTO PARA LA TABLA DE OPERARIO
+if "col_orden" not in st.session_state:
+    st.session_state.col_orden = None
+if "dir_orden" not in st.session_state:
+    st.session_state.dir_orden = True  # True = Ascendente, False = Descendente
+
 # CSS GENERAL DEL SISTEMA
 st.markdown(
     """
@@ -120,6 +126,16 @@ st.markdown(
         top: 0;
         z-index: 1;
         font-weight: 700;
+    }
+    .tabla-usuarios th a {
+        color: #FFFFFF !important;
+        text-decoration: none !important;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .tabla-usuarios th a:hover {
+        color: #38BDF8 !important;
     }
     .tabla-usuarios td {
         padding: 10px 14px;
@@ -286,6 +302,20 @@ if "historial_acciones" not in st.session_state:
         }
     ])
 
+# MANEJAR EVENTO DE ORDENAMIENTO POR CLIC EN ENCABEZADO VIA QUERY PARAMS
+if "sort" in query_params:
+    col_clikeada = query_params["sort"]
+    if st.session_state.col_orden == col_clikeada:
+        # Si ya estaba ordenada por esta columna, invierte la dirección
+        st.session_state.dir_orden = not st.session_state.dir_orden
+    else:
+        # Nueva columna, por defecto ascendente
+        st.session_state.col_orden = col_clikeada
+        st.session_state.dir_orden = True
+    # Limpiar parámetro para evitar bucles de recarga
+    del query_params["sort"]
+    st.rerun()
+
 def registrar_log(accion):
     nuevo_log = pd.DataFrame([{
         "FECHA Y HORA": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -444,7 +474,7 @@ else:
     st.divider()
 
     # ==========================================
-    # VISTA 1: PORTAL OPERARIO (FILTROS HíBRIDOS)
+    # VISTA 1: PORTAL OPERARIO (FILTROS Y ORDENAMIENTO POR ENCABEZADO)
     # ==========================================
     if st.session_state.rol_actual == "🛠️ Operario":
         col_tit, col_btns = st.columns([3, 2])
@@ -461,10 +491,9 @@ else:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # PANEL EXPANDIBLE DE FILTRADO AVANZADO (MULTISELECT + BÚSQUEDA LIBRE)
+        # PANEL EXPANDIBLE DE FILTRADO AVANZADO
         with st.expander("🔎 Panel de Filtros Avanzados (Múltiples columnas y búsqueda por texto)", expanded=True):
             
-            # FILA 1: Componentes Limitados (Multiselect múltiple)
             st.markdown("<p style='font-weight:800; font-size:14px; color:#0F382C; margin-bottom:8px;'>📌 Filtros por selección múltiple:</p>", unsafe_allow_html=True)
             fc1, fc2, fc3, fc4 = st.columns(4)
             
@@ -490,7 +519,6 @@ else:
 
             st.markdown("<hr style='margin: 15px 0px; border-color: #E2E8F0;'>", unsafe_allow_html=True)
 
-            # FILA 2: Componentes Extensos (Barras de búsqueda por tipeo)
             st.markdown("<p style='font-weight:800; font-size:14px; color:#0F382C; margin-bottom:8px;'>🔍 Búsqueda por texto (Escribe para filtrar):</p>", unsafe_allow_html=True)
             ft1, ft2, ft3 = st.columns(3)
 
@@ -506,10 +534,9 @@ else:
                 st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>Buscar Nombre Destinatario:</p>", unsafe_allow_html=True)
                 filtro_nombre_txt = st.text_input("Nombre", label_visibility="collapsed", placeholder="Ej: Cecilia Loo...")
 
-        # APLICAR TODOS LOS FILTROS COMBINADOS DE MANERA DINÁMICA
+        # APLICAR FILTROS
         df_filtrado = st.session_state.df_pedidos.copy()
 
-        # Filtros Multiselect
         if filtro_distrito:
             df_filtrado = df_filtrado[df_filtrado["DISTRITO"].astype(str).isin(filtro_distrito)]
         if filtro_servicio:
@@ -519,7 +546,6 @@ else:
         if filtro_sub_estado:
             df_filtrado = df_filtrado[df_filtrado["SUB_ESTADO"].astype(str).isin(filtro_sub_estado)]
 
-        # Filtros de Búsqueda por Texto (case-insensitive)
         if filtro_cliente_txt:
             df_filtrado = df_filtrado[df_filtrado["CLIENTE"].astype(str).str.contains(filtro_cliente_txt, case=False, na=False)]
         if filtro_codigo_txt:
@@ -527,10 +553,26 @@ else:
         if filtro_nombre_txt:
             df_filtrado = df_filtrado[df_filtrado["NOMBRE"].astype(str).str.contains(filtro_nombre_txt, case=False, na=False)]
 
-        # Renderizar tabla limpia en HTML puro (sin tres puntos ni menús nativos molestos)
+        # APLICAR ORDENAMIENTO SI EL USUARIO HIZO CLIC EN UN ENCABEZADO
+        if st.session_state.col_orden and st.session_state.col_orden in df_filtrado.columns:
+            df_filtrado = df_filtrado.sort_values(
+                by=st.session_state.col_orden,
+                ascending=st.session_state.dir_orden
+            )
+
+        # RENDERIZAR TABLA CON ENCABEZADOS CLICKEABLES
         columnas_pedidos = df_filtrado.columns.tolist()
         
-        headers_html = "".join([f"<th>{col}</th>" for col in columnas_pedidos])
+        headers_html = ""
+        for col in columnas_pedidos:
+            # Determinar icono de indicador de orden actual
+            icono = ""
+            if st.session_state.col_orden == col:
+                icono = " 🔼" if st.session_state.dir_orden else " 🔽"
+            
+            # Cada encabezado es un enlace que recarga con ?sort=NombreColumna
+            headers_html += f"<th><a href='?sort={col}'>{col}{icono}</a></th>"
+
         filas_pedidos_html = ""
         for _, fila in df_filtrado.iterrows():
             filas_pedidos_html += "<tr>"
