@@ -43,21 +43,30 @@ st.markdown(
         border-right: 1px solid #CBD5E1 !important;
     }
     [data-testid="stSidebar"] > div:first-child {
-        padding-top: 1rem !important;
-        padding-bottom: 1rem !important;
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
     }
     [data-testid="stSidebar"] section[data-testid="stSidebarContent"] {
-        padding-top: 1rem !important;
+        padding-top: 0.5rem !important;
     }
     
     [data-testid="stSidebarHeader"] {
         display: none !important;
     }
     
-    /* Eliminar margen negativo global para evitar solapamientos y lograr espaciado simétrico controlado */
+    /* Reducir márgenes verticales en los elementos del sidebar para compactarlos */
+    [data-testid="stSidebar"] div.stVerticalBlock {
+        gap: 0.2rem !important;
+    }
+    
     [data-testid="stSidebar"] .stTextInput, 
     [data-testid="stSidebar"] .stMultiSelect {
-        margin-bottom: 6px !important;
+        margin-bottom: 2px !important;
+    }
+    
+    [data-testid="stSidebar"] label {
+        margin-bottom: 0px !important;
+        padding-bottom: 0px !important;
     }
 
     /* =========================================================
@@ -118,7 +127,7 @@ st.markdown(
         color: #0F172A !important; 
         border: 2px solid #0F382C !important; 
         border-radius: 8px !important; 
-        padding: 8px 10px !important;
+        padding: 6px 10px !important;
     }
 
     /* ========================================================= */
@@ -541,15 +550,15 @@ else:
         st.markdown("<div style='margin-top: 2px;'></div>", unsafe_allow_html=True)
 
         # ------------------------------------------
-        # FILTROS EN EL SIDEBAR (CON ESPACIADO SIMÉTRICO)
+        # FILTROS EN EL SIDEBAR (MUY COMPACTOS Y JUNTOS)
         # ------------------------------------------
         with st.sidebar:
-            st.markdown("<h2 style='color: #0F382C; margin: 0px 0px 2px 0px; padding: 0px; white-space: nowrap; font-size: 26px; font-weight: 800;'>🌲 ALFA EXPRESS</h2>", unsafe_allow_html=True)
-            st.markdown("<p style='font-size: 12px; color: #64748B; margin-top: 0px; margin-bottom: 6px;'>Filtra los registros de envíos de manera rápida.</p>", unsafe_allow_html=True)
-            st.markdown("<hr style='margin: 6px 0px;'>", unsafe_allow_html=True)
+            st.markdown("<h2 style='color: #0F382C; margin: 0px 0px 0px 0px; padding: 0px; white-space: nowrap; font-size: 24px; font-weight: 800;'>🌲 ALFA EXPRESS</h2>", unsafe_allow_html=True)
+            st.markdown("<p style='font-size: 11px; color: #64748B; margin-top: 0px; margin-bottom: 2px;'>Filtra los registros de envíos de manera rápida.</p>", unsafe_allow_html=True)
+            st.markdown("<hr style='margin: 2px 0px 4px 0px;'>", unsafe_allow_html=True)
 
             # 1. RANGO DE FECHAS
-            st.markdown("<p style='font-weight:700; font-size:13px; color:#0F382C; margin-bottom:2px;'>📅 Rango de Fechas (DD/MM/YYYY):</p>", unsafe_allow_html=True)
+            st.markdown("<p style='font-weight:700; font-size:12px; color:#0F382C; margin:0 0 1px 0;'>📅 Rango de Fechas (DD/MM/YYYY):</p>", unsafe_allow_html=True)
             txt_fecha_inicio = st.text_input("Fecha Inicial", value="", placeholder="DD/MM/YYYY", key="f_ini")
             txt_fecha_fin = st.text_input("Fecha Final", value="", placeholder="DD/MM/YYYY", key="f_fin")
 
@@ -588,17 +597,17 @@ else:
                 </script>
             """, height=0)
 
-            st.markdown("<hr style='margin: 12px 0px;'>", unsafe_allow_html=True)
+            st.markdown("<hr style='margin: 4px 0px;'>", unsafe_allow_html=True)
 
             # 2. BÚSQUEDA POR TEXTO
-            st.markdown("<p style='font-weight:700; font-size:13px; color:#0F382C; margin-bottom:2px;'>🔍 Búsqueda por Texto:</p>", unsafe_allow_html=True)
+            st.markdown("<p style='font-weight:700; font-size:12px; color:#0F382C; margin:0 0 1px 0;'>🔍 Búsqueda por Texto:</p>", unsafe_allow_html=True)
             filtro_codigo_txt = st.text_input("Código Interno", placeholder="Ej: BLC1-480...", key="b_cod")
             filtro_nombre_txt = st.text_input("Nombre Destinatario", placeholder="Ej: Cecilia Loo...", key="b_nom")
 
-            st.markdown("<hr style='margin: 12px 0px;'>", unsafe_allow_html=True)
+            st.markdown("<hr style='margin: 4px 0px;'>", unsafe_allow_html=True)
 
             # 3. SELECCIÓN MÚLTIPLE
-            st.markdown("<p style='font-weight:700; font-size:13px; color:#0F382C; margin-bottom:2px;'>📌 Selección Múltiple:</p>", unsafe_allow_html=True)
+            st.markdown("<p style='font-weight:700; font-size:12px; color:#0F382C; margin:0 0 1px 0;'>📌 Selección Múltiple:</p>", unsafe_allow_html=True)
             
             clientes_unicos = sorted(st.session_state.df_pedidos["CLIENTE"].astype(str).unique().tolist())
             filtro_cliente = st.multiselect("Cliente", options=clientes_unicos, placeholder="Todos")
