@@ -667,7 +667,6 @@ else:
             df_filtrado = df_filtrado.sort_values(by="FECHA_REGISTRO", ascending=False)
 
         columnas_pedidos = df_filtrado.columns.tolist()
-        headers_html = "".join([f"<th>{col}</th>" for col in columnas_pedids if False else f"<th>{col}</th>"])
 
         filas_pedidos_html = ""
         for _, fila in df_filtrado.iterrows():
