@@ -25,7 +25,7 @@ if "usuario_actual" not in st.session_state:
         st.session_state.usuario_actual = None
         st.session_state.rol_actual = None
 
-# CSS PARA MANTENER LA ESTÉTICA DE NUESTRA PLATAFORMA Y QUITAR LOS GRÁFICOS INFERIORES
+# CSS PARA ELIMINAR LOS PUNTOS ROJOS/NEGROS DE LOS RADIO BUTTONS Y ESTILIZAR LA BARRA SUPERIOR
 st.markdown(
     """
     <style>
@@ -42,6 +42,11 @@ st.markdown(
         background-color: #FFFFFF !important;
         border-right: 1px solid #E2E8F0 !important;
         padding-top: 0.5rem !important;
+    }
+
+    /* ELIMINAR LOS PUNTOS / Círculos de radio buttons en la barra lateral */
+    div.row-widget.stRadio > div[role="radiogroup"] > label > div:first-child {
+        display: none !important;
     }
     
     .block-container { 
@@ -347,9 +352,9 @@ if st.session_state.usuario_actual is None:
         ):
             mostrar_modal_soporte()
 
-# APLICACIÓN PRINCIPAL CON BARRA SUPERIOR IDÉNTICA A LA IMAGEN 2 Y FUNCIONALIDADES
+# APLICACIÓN PRINCIPAL
 else:
-    # BARRA SUPERIOR IDÉNTICA A LA IMAGEN 2
+    # BARRA SUPERIOR IDÉNTICA LIMPIA (SIN LOS BOTONES DE REFRESCAR Y CONFIGURACIÓN INCORRECTOS)
     st.markdown(
         """
         <div style="display: flex; align-items: center; justify-content: space-between; background-color: #FFFFFF; border-bottom: 1px solid #E2E8F0; padding: 8px 15px; margin-top: -30px; margin-left: -30px; margin-right: -30px; margin-bottom: 15px;">
@@ -362,8 +367,6 @@ else:
                 <input type="text" placeholder="🔍 Search Detalle de pedidos" style="width: 100%; padding: 6px 12px; border: 1px solid #CBD5E1; border-radius: 4px; font-size: 13px; background-color: #F8FAFC;" disabled>
             </div>
             <div style="display: flex; align-items: center; gap: 10px;">
-                <span style="border: 1px solid #E2E8F0; padding: 4px 8px; border-radius: 4px; font-size: 12px; background: #FFFFFF;">🔄</span>
-                <span style="border: 1px solid #E2E8F0; padding: 4px 8px; border-radius: 4px; font-size: 12px; background: #FFFFFF;">⚙️</span>
                 <div style="background-color: #0F382C; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">O</div>
             </div>
         </div>
@@ -372,7 +375,7 @@ else:
     )
 
     with st.sidebar:
-        # Menú lateral acorde a nuestra plataforma previa
+        # Menú lateral sin puntos gracias al CSS inyectado
         menu_seleccion = st.radio(
             "Navegación",
             [
@@ -399,7 +402,7 @@ else:
             st.query_params.clear()
             st.rerun()
 
-    # VISTA: DASHBOARD / DETALLE DE PEDIDOS (EXACTAMENTE COMO EN LA IMAGEN 2, SIN BARRAS ABAJO)
+    # VISTA: DASHBOARD / DETALLE DE PEDIDOS
     if "DASHBOARD" in menu_seleccion or "PEDIDOS" in menu_seleccion:
         col_path, col_actions = st.columns([3, 1])
         with col_path:
@@ -415,7 +418,6 @@ else:
             act_cols = st.columns(4)
 
             with act_cols[0]:
-                # Función de descarga funcional con CSV
                 csv_data = st.session_state.pedidos_db.to_csv(
                     index=False
                 ).encode("utf-8")
@@ -452,7 +454,6 @@ else:
                 == st.session_state["filtro_estado_activo"]
             ]
 
-        # TABLA PRINCIPAL LIMPIA SIN GRÁFICOS INFERIORES
         df_display = df_to_show[
             [
                 "FECHA_REGISTRO",
