@@ -252,7 +252,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# DATOS EN SESIÓN CON COLUMNA 'ÚLTIMA CONEXIÓN'
+# DATOS EN SESIÓN CON VALIDACIÓN DE COLUMNA
 if "usuarios_registrados" not in st.session_state:
   st.session_state.usuarios_registrados = pd.DataFrame([
       {
@@ -284,6 +284,13 @@ if "usuarios_registrados" not in st.session_state:
           "ÚLTIMA CONEXIÓN": "Nunca",
       },
   ])
+
+# AUTO-CORRECCIÓN: SI EXISTE LA SESIÓN ANTERIOR SIN LA COLUMNA, LA AGREGA AUTOMÁTICAMENTE
+if (
+    "ÚLTIMA CONEXIÓN"
+    not in st.session_state.usuarios_registrados.columns
+):
+  st.session_state.usuarios_registrados["ÚLTIMA CONEXIÓN"] = "Nunca"
 
 if "historial_acciones" not in st.session_state:
   st.session_state.historial_acciones = pd.DataFrame([
@@ -505,7 +512,7 @@ else:
     with col_b:
       st.subheader("📋 Usuarios Registrados")
 
-      # TABLA CON ALTURA FIJA Y SCROLLBAR (MUESTRA 4-5 Y EL RESTO CON SCROLL)
+      # TABLA CON ALTURA FIJA Y SCROLLBAR
       st.dataframe(
           st.session_state.usuarios_registrados[
               ["USUARIO", "ROL", "ESTADO", "ÚLTIMA CONEXIÓN"]
