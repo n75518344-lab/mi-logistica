@@ -441,7 +441,6 @@ else:
       st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
-  # PESTAÑAS UBICADAS DIRECTAMENTE DEBAJO DEL ENCABEZADO
   tab1, tab2 = st.tabs(
       ["👥 Control de Usuarios y Claves", "📜 Registro de Auditoría (Logs)"]
   )
@@ -528,61 +527,70 @@ else:
       st.markdown(tabla_html, unsafe_allow_html=True)
 
       st.subheader("⚙️ Gestión de Claves y Accesos")
-      usr_gestion = st.selectbox(
-          "Selecciona un usuario para gestionar",
-          st.session_state.usuarios_registrados["USUARIO"].tolist(),
-          key="select_gestion",
-      )
 
-      with st.expander("🔑 Restablecer Contraseña Directamente"):
-        nueva_pass_admin = st.text_input(
-            f"Nueva Contraseña para {usr_gestion}",
-            type="password",
-            placeholder="Escribe la nueva clave",
-            key="n_p_admin",
+      # EXCLUIR AL USUARIO DE LA SESIÓN ACTIVA DEL DESPLEGABLE
+      lista_usuarios_gestion = st.session_state.usuarios_registrados[
+          st.session_state.usuarios_registrados["USUARIO"]
+          != st.session_state.usuario_actual
+      ]["USUARIO"].tolist()
+
+      if lista_usuarios_gestion:
+        usr_gestion = st.selectbox(
+            "Selecciona un usuario para gestionar",
+            lista_usuarios_gestion,
+            key="select_gestion",
         )
-        if st.button("🔄 Actualizar Clave Now", use_container_width=True):
-          if nueva_pass_admin:
+
+        with st.expander("🔑 Restablecer Contraseña Directamente"):
+          nueva_pass_admin = st.text_input(
+              f"Nueva Contraseña para {usr_gestion}",
+              type="password",
+              placeholder="Escribe la nueva clave",
+              key="n_p_admin",
+          )
+          if st.button("🔄 Actualizar Clave Now", use_container_width=True):
+            if nueva_pass_admin:
+              st.session_state.usuarios_registrados.loc[
+                  st.session_state.usuarios_registrados["USUARIO"]
+                  == usr_gestion,
+                  "PASS",
+              ] = nueva_pass_admin
+              registrar_log(
+                  f"Restableció la contraseña del usuario '{usr_gestion}'"
+              )
+              st.success(
+                  f"✅ Contraseña de '{usr_gestion}' actualizada"
+                  " correctamente."
+              )
+              st.rerun()
+            else:
+              st.warning("Escribe la nueva clave.")
+
+        col_e1, col_e2 = st.columns(2)
+        with col_e1:
+          st.markdown('<div id="btn_inactivar">', unsafe_allow_html=True)
+          if st.button(
+              "🚫 Dar de Baja / Inactivar",
+              use_container_width=True,
+              key="inactivar_btn",
+          ):
             st.session_state.usuarios_registrados.loc[
                 st.session_state.usuarios_registrados["USUARIO"]
                 == usr_gestion,
-                "PASS",
-            ] = nueva_pass_admin
-            registrar_log(
-                f"Restableció la contraseña del usuario '{usr_gestion}'"
-            )
-            st.success(
-                f"✅ Contraseña de '{usr_gestion}' actualizada correctamente."
-            )
+                "ESTADO",
+            ] = "Inactivo"
+            registrar_log(f"Inactivó al usuario '{usr_gestion}'")
+            st.success(f"Usuario '{usr_gestion}' marcado como Inactivo.")
             st.rerun()
-          else:
-            st.warning("Escribe la nueva clave.")
+          st.markdown("</div>", unsafe_allow_html=True)
 
-      col_e1, col_e2 = st.columns(2)
-      with col_e1:
-        st.markdown('<div id="btn_inactivar">', unsafe_allow_html=True)
-        if st.button(
-            "🚫 Dar de Baja / Inactivar",
-            use_container_width=True,
-            key="inactivar_btn",
-        ):
-          st.session_state.usuarios_registrados.loc[
-              st.session_state.usuarios_registrados["USUARIO"] == usr_gestion,
-              "ESTADO",
-          ] = "Inactivo"
-          registrar_log(f"Inactivó al usuario '{usr_gestion}'")
-          st.success(f"Usuario '{usr_gestion}' marcado como Inactivo.")
-          st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
-
-      with col_e2:
-        st.markdown('<div id="btn_eliminar">', unsafe_allow_html=True)
-        if st.button(
-            "❌ Eliminar Cuenta",
-            use_container_width=True,
-            key="eliminar_btn",
-        ):
-          if usr_gestion != st.session_state.usuario_actual:
+        with col_e2:
+          st.markdown('<div id="btn_eliminar">', unsafe_allow_html=True)
+          if st.button(
+              "❌ Eliminar Cuenta",
+              use_container_width=True,
+              key="eliminar_btn",
+          ):
             st.session_state.usuarios_registrados = (
                 st.session_state.usuarios_registrados[
                     st.session_state.usuarios_registrados["USUARIO"]
@@ -592,9 +600,9 @@ else:
             registrar_log(f"Eliminó al usuario '{usr_gestion}'")
             st.success(f"Usuario '{usr_gestion}' eliminado.")
             st.rerun()
-          else:
-            st.error("No puedes eliminar la cuenta actualmente en uso.")
-        st.markdown("</div>", unsafe_allow_html=True)
+          st.markdown("</div>", unsafe_allow_html=True)
+      else:
+        st.info("ℹ️ No hay otros usuarios registrados para gestionar.")
 
   with tab2:
     st.subheader("📜 Historial de Seguridad y Movimientos")
