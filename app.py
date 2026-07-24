@@ -107,16 +107,17 @@ st.markdown(
         color: #0F382C !important;
     }
 
-    /* OCULTAR TODAS LAS OPCIONES EXCEPTO ORDENAR (SORT ASCENDING / DESCENDING) */
-    div[role="menu"] div:has-text("Statistics"),
-    div[role="menu"] div:has-text("Autosize"),
-    div[role="menu"] div:has-text("Pin column"),
-    div[role="menu"] div:has-text("Hide column"),
-    ul[data-baseweb="menu"] li:has-text("Statistics"),
-    ul[data-baseweb="menu"] li:has-text("Autosize"),
-    ul[data-baseweb="menu"] li:has-text("Pin column"),
-    ul[data-baseweb="menu"] li:has-text("Hide column") {
+    /* OCULTAR TODAS LAS OPCIONES EXCEPTO ORDENAR (SORT ASCENDING / DESCENDING) DE FORMA ESTRICTA */
+    div[role="menu"] li, div[role="menu"] div, ul[data-baseweb="menu"] li {
         display: none !important;
+    }
+    
+    /* MOSTRAR UNICAMENTE LAS OPCIONES DE ORDENAMIENTO */
+    div[role="menu"] div:has-text("Sort"),
+    div[role="menu"] div:has-text("Ordenar"),
+    ul[data-baseweb="menu"] li:has-text("Sort"),
+    ul[data-baseweb="menu"] li:has-text("Ordenar") {
+        display: flex !important;
     }
 
     /* CONTENEDORES CON SCROLL INTELIGENTE PARA TABLAS */
