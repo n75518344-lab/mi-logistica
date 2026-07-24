@@ -26,7 +26,7 @@ if "usuario_actual" not in st.session_state:
         st.session_state.usuario_actual = None
         st.session_state.rol_actual = None
 
-# CSS GENERAL DEL SISTEMA (CON CORRECCIÓN DE EXPANDER)
+# CSS GENERAL DEL SISTEMA (CON CORRECCIÓN TOTAL DE EXPANDER)
 st.markdown(
     """
     <style>
@@ -142,11 +142,19 @@ st.markdown(
         color: #0F382C !important;
     }
 
-    /* CORRECCIÓN PARA EL TÍTULO DEL ST.EXPANDER */
-    [data-testid="stExpander"] summary, 
-    [data-testid="stExpander"] summary *, 
-    [data-testid="stExpander"] [data-testid="stMarkdownContainer"] p {
+    /* CORRECCIÓN FORZADA PARA EL ST.EXPANDER (FONDO CLARO Y TEXTO VISIBLE) */
+    [data-testid="stExpander"] {
+        background-color: #FFFFFF !important;
+        border: 1px solid #CBD5E1 !important;
+        border-radius: 10px !important;
+    }
+    [data-testid="stExpander"] summary {
+        background-color: #F1F5F9 !important;
+        border-radius: 10px !important;
+    }
+    [data-testid="stExpander"] summary * {
         color: #0F172A !important;
+        font-weight: 700 !important;
     }
 
     div[role="dialog"] *, [data-testid="stDialog"] *, [data-testid="stModal"] * {
