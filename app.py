@@ -741,7 +741,7 @@ else:
                                     <th>ROL</th>
                                     <th>ESTADO</th>
                                     <th>ÚLTIMA CONEXIÓN</th>
-                                }
+                                </tr>
                             </thead>
                             <tbody>
                                 {filas_html}
