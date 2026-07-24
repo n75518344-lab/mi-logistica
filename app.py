@@ -429,7 +429,7 @@ else:
     st.divider()
 
     # ==========================================
-    # VISTA 1: PORTAL OPERARIO (CON FILTROS ESTILO EXCEL Y ORDENAMIENTO)
+    # VISTA 1: PORTAL OPERARIO (CON ORDENAMIENTO Y SET FILTER + BUSCADOR INTERNO)
     # ==========================================
     if st.session_state.rol_actual == "🛠️ Operario":
         col_tit, col_btns = st.columns([3, 2])
@@ -446,18 +446,18 @@ else:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # Configuración avanzada de columnas con Set Filter (casillas con buscador y ordenamiento)
+        # Configuración avanzada de columnas con ordenamiento y buscador interno en cada filtro
         gb = GridOptionsBuilder.from_dataframe(st.session_state.df_pedidos)
         
         gb.configure_default_column(
             editable=False,
-            sortable=True,        # Permite ordenar ascendente y descendente haciendo clic en la cabecera
+            sortable=True,        # Ordenamiento ascendente y descendente al hacer clic en cabeceras
             resizable=True,
-            filterable=True,      # Habilita el filtrado global
+            filterable=True,
             flex=1
         )
         
-        # Activamos el Set Filter estilo Excel con cajita de búsqueda en cada columna clave
+        # Activamos el Set Filter en las columnas clave (Incluye cajita de búsqueda tipo Excel por columna)
         gb.configure_column("FECHA_REGISTRO", filter="agSetColumnFilter", sortable=True)
         gb.configure_column("CODIGO INTERNO", filter="agSetColumnFilter", sortable=True)
         gb.configure_column("CLIENTE", filter="agSetColumnFilter", sortable=True)
