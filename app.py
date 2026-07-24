@@ -37,14 +37,17 @@ st.markdown(
         color: #0F172A !important; 
     }
 
-    /* Sidebar - Eliminar padding superior excesivo para subir el contenido */
+    /* Sidebar - Eliminar padding superior e interno para subir completamente el título */
     [data-testid="stSidebar"] { 
         background-color: #FFFFFF !important;
         border-right: 1px solid #CBD5E1 !important;
     }
     [data-testid="stSidebar"] > div:first-child {
-        padding-top: 0.4rem !important;
+        padding-top: 0rem !important;
         padding-bottom: 1rem !important;
+    }
+    [data-testid="stSidebar"] section[data-testid="stSidebarContent"] {
+        padding-top: 0rem !important;
     }
     [data-testid="stSidebar"] .stTextInput, 
     [data-testid="stSidebar"] .stMultiSelect {
@@ -535,8 +538,8 @@ else:
         # FILTROS EN EL SIDEBAR
         # ------------------------------------------
         with st.sidebar:
-            st.markdown("<h3 style='color: #0F382C; margin-bottom: 0px; white-space: nowrap;'>🌲 ALFA EXPRESS</h3>", unsafe_allow_html=True)
-            st.markdown("<p style='font-size: 12px; color: #64748B; margin-bottom: 4px;'>Filtra los registros de envíos de manera rápida.</p>", unsafe_allow_html=True)
+            st.markdown("<h2 style='color: #0F382C; margin: 0px 0px 2px 0px; padding: 0px; white-space: nowrap; font-size: 26px; font-weight: 800;'>🌲 ALFA EXPRESS</h2>", unsafe_allow_html=True)
+            st.markdown("<p style='font-size: 12px; color: #64748B; margin-top: 0px; margin-bottom: 4px;'>Filtra los registros de envíos de manera rápida.</p>", unsafe_allow_html=True)
             st.markdown("<hr style='margin: 0px 0px 6px 0px;'>", unsafe_allow_html=True)
 
             st.markdown("<p style='font-weight:700; font-size:13px; color:#0F382C; margin-bottom:0px;'>📅 Rango de Fechas (DD/MM/YYYY):</p>", unsafe_allow_html=True)
@@ -785,7 +788,7 @@ else:
                                     st.session_state.usuarios_registrados["USUARIO"] != usr_gestion
                                 ]
                             )
-                            registrar_log(f"Eliminó al usuario '{usr_gestion}'")
+                            registrar_log(f"Eliminó alusuario '{usr_gestion}'")
                             st.rerun()
                         st.markdown("</div>", unsafe_allow_html=True)
                 else:
