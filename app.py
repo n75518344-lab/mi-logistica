@@ -26,7 +26,7 @@ if "usuario_actual" not in st.session_state:
         st.session_state.usuario_actual = None
         st.session_state.rol_actual = None
 
-# CSS GENERAL DEL SISTEMA (CON CORRECCIÓN PARA CALENDARIOS Y MÁRGENES)
+# CSS GENERAL DEL SISTEMA (CON CALENDARIO 100% CORREGIDO Y LEGIBLE)
 st.markdown(
     """
     <style>
@@ -130,20 +130,34 @@ st.markdown(
         background-color: #F1F5F9;
     }
 
-    /* CORRECCIÓN EXCLUSIVA PARA EL CALENDARIO Y POPOVERS DE FECHAS */
+    /* CORRECCIÓN DEFINITIVA PARA EL MINICALENDARIO DE BASEWEB */
     div[data-baseweb="popover"], div[data-baseweb="calendar"] {
         background-color: #FFFFFF !important;
         color: #0F172A !important;
     }
-    div[data-baseweb="popover"] *, div[data-baseweb="calendar"] * {
+    div[data-baseweb="calendar"] * {
+        background-color: transparent !important;
         color: #0F172A !important;
     }
     div[data-baseweb="calendar"] button {
+        background-color: transparent !important;
         color: #0F172A !important;
+        border-radius: 50% !important;
     }
     div[data-baseweb="calendar"] button:hover {
         background-color: #F1F5F9 !important;
         color: #0F382C !important;
+    }
+    /* Estilo para el día seleccionado */
+    div[data-baseweb="calendar"] [aria-selected="true"] {
+        background-color: #0F382C !important;
+        color: #FFFFFF !important;
+    }
+    /* Días fuera del mes actual */
+    div[data-baseweb="calendar"] [aria-disabled="true"], 
+    div[data-baseweb="calendar"] span[aria-hidden="true"] {
+        color: #94A3B8 !important;
+        opacity: 0.5 !important;
     }
 
     li[role="option"] {
