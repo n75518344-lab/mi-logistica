@@ -447,10 +447,10 @@ else:
     # VISTA 1: PORTAL OPERARIO (FILTROS Y BUSCADOR DE FECHA)
     # ==========================================
     if st.session_state.rol_actual == "🛠️ Operario":
-        col_tit, col_b1, col_b2, col_b3 = st.columns([2.2, 1.2, 0.9, 0.9])
+        col_tit, col_b1, col_b2, col_b3 = st.columns([3.4, 0.8, 0.8, 0.8], vertical_alignment="center")
         
         with col_tit:
-            st.markdown("<h3 style='margin:0;'>DASHBOARD > Gestión de Envíos</h3>", unsafe_allow_html=True)
+            st.markdown("<h3 style='margin:0;'>Gestión de Envíos</h3>", unsafe_allow_html=True)
         
         csv = st.session_state.df_pedidos.to_csv(index=False).encode('utf-8')
         with col_b1:
