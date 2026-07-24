@@ -509,12 +509,11 @@ else:
     if st.session_state.rol_actual == "🛠️ Operario":
         csv = st.session_state.df_pedidos.to_csv(index=False).encode('utf-8')
         
-        # 1. Fila superior exclusiva para el título a la izquierda
-        st.markdown("<h3 style='margin:0; padding:0; line-height: 1.2;'>Gestión de Envíos</h3>", unsafe_allow_html=True)
+        # Título y los 3 botones en una sola fila integrada para que queden juntos a la tabla
+        col_tit, col_b1, col_b2, col_b3 = st.columns([2.2, 0.9, 0.9, 0.9], vertical_alignment="bottom")
         
-        # 2. Fila independiente para los 3 botones alineados a la derecha justo encima de la tabla
-        _, col_b1, col_b2, col_b3 = st.columns([2.5, 0.9, 0.9, 0.9])
-        
+        with col_tit:
+            st.markdown("<h3 style='margin:0; padding:0; line-height: 1.2;'>Gestión de Envíos</h3>", unsafe_allow_html=True)
         with col_b1:
             st.markdown('<div class="contenedor-btn-custom">', unsafe_allow_html=True)
             st.download_button("📥 Descargar", data=csv, file_name="pedidos.csv", use_container_width=True)
@@ -528,7 +527,7 @@ else:
             if st.button("➕ Nuevo Pedido", use_container_width=True): modal_add_pedido()
             st.markdown('</div>', unsafe_allow_html=True)
 
-        # Margen mínimo para separar los botones de la cabecera de la tabla
+        # Margen mínimo para separar de inmediato la cabecera de la tabla
         st.markdown("<div style='margin-top: 4px;'></div>", unsafe_allow_html=True)
 
         # ------------------------------------------
