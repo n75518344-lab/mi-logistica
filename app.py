@@ -429,7 +429,7 @@ else:
     st.divider()
 
     # ==========================================
-    # VISTA 1: PORTAL OPERARIO (CON SET FILTER Y ORDENAMIENTO ESTILO EXCEL)
+    # VISTA 1: PORTAL OPERARIO (CON FILTROS FUNCIONALES Y ORDENAMIENTO)
     # ==========================================
     if st.session_state.rol_actual == "🛠️ Operario":
         col_tit, col_btns = st.columns([3, 2])
@@ -446,18 +446,22 @@ else:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # Configuración avanzada de columnas para habilitar el Set Filter (buscador + casillas estilo Excel)
+        # Configuración limpia de la grilla garantizando despliegue de menús y ordenamiento
         gb = GridOptionsBuilder.from_dataframe(st.session_state.df_pedidos)
         
-        # Activar ordenamiento por defecto y configurar columnas con filtro de casillas y buscador
         gb.configure_default_column(
             editable=False,
-            sortable=True,        # Habilita el ordenamiento ascendente y descendente en la cabecera
-            filter="agSetColumnFilter", # Activa el menú con buscador y casillas (checkboxes) exacto de la imagen
+            sortable=True,        # Habilita el ordenamiento ascendente y descendente
+            filterable=True,      # Habilita los filtros en la cabecera
             resizable=True,
             flex=1
         )
         
+        # Filtros activos funcionales desplegables
+        gb.configure_column("CODIGO INTERNO", filter="agTextColumnFilter")
+        gb.configure_column("CLIENTE", filter="agTextColumnFilter")
+        gb.configure_column("ESTADO", filter="agTextColumnFilter")
+
         gb.configure_pagination(paginationAutoPageSize=False, paginationPageSize=10)
         grid_options = gb.build()
 
