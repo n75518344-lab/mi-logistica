@@ -25,7 +25,7 @@ if "usuario_actual" not in st.session_state:
     st.session_state.usuario_actual = None
     st.session_state.rol_actual = None
 
-# CSS PERFECCIONADO CON SOPORTE COMPLETO PARA DATAFRAME
+# CSS CON CORRECCIÓN DE PORTALES DE NAVEGADOR
 st.markdown(
     """
     <style>
@@ -49,20 +49,23 @@ st.markdown(
         color: #0F172A; 
     }
 
-    /* FIX DEFINITIVO PARA TEXTO EN DATAFRAME Y SUS MENÚS DESPLEGABLES */
-    [data-testid="stDataFrame"] * {
-        color: #0F172A !important;
-    }
-    
-    /* MODAL DE MENÚ INTERNO DE TABLAS (GLIDE DATA GRID POPOVER) */
-    div[data-baseweb="popover"] div, 
-    div[data-baseweb="menu"] div,
+    /* FIX AGRESIVO PARA MENÚS FLOTANTES DE TABLAS EN EL DOM RAÍZ */
+    div[data-portal-id] *, 
+    [class*="glideDataGrid"] *,
+    div[data-baseweb="popover"] *,
     [role="tooltip"] * {
-        background-color: #FFFFFF !important;
-        color: #0F172A !important;
+        color: #FFFFFF !important;
+        fill: #FFFFFF !important;
     }
 
-    /* FIX TEXTO BLANCO EN EL MODAL/VENTANA EMERGENTE */
+    div[data-portal-id] > div,
+    div[data-baseweb="popover"] > div {
+        background-color: #1E293B !important;
+        border: 1px solid #334155 !important;
+        border-radius: 8px !important;
+    }
+
+    /* MODAL DE TEXTO BLANCO */
     div[role="dialog"] *, [data-testid="stDialog"] *, [data-testid="stModal"] * {
         color: #FFFFFF !important;
     }
@@ -83,7 +86,7 @@ st.markdown(
         background-color: #15803D !important;
     }
 
-    /* CONTENEDOR DE FORMULARIO DE LOGIN */
+    /* FORMULARIO DE LOGIN */
     [data-testid="stForm"] { 
         background-color: #FFFFFF !important; 
         border-radius: 14px !important; 
@@ -93,7 +96,7 @@ st.markdown(
         border-top: 6px solid #0F382C !important; 
     }
 
-    /* INPUTS DE TEXTO */
+    /* INPUTS */
     .stTextInput input { 
         background-color: #FFFFFF !important; 
         color: #0F172A !important; 
@@ -104,7 +107,7 @@ st.markdown(
     }
     .stTextInput input::placeholder { color: #94A3B8 !important; }
 
-    /* FIX INTEGRAL PARA OJO Y CAMPO DE CONTRASEÑA */
+    /* CONTRASEÑA */
     div[data-baseweb="input"] {
         background-color: #FFFFFF !important;
         border: 1px solid #CBD5E1 !important;
@@ -126,7 +129,7 @@ st.markdown(
         fill: #0F382C !important;
     }
 
-    /* FIX ESTILO EXPANDER / DESPLEGABLE */
+    /* EXPANDER */
     [data-testid="stExpander"] {
         background-color: #FFFFFF !important;
         border: 1px solid #E2E8F0 !important;
@@ -142,17 +145,8 @@ st.markdown(
         color: #0F172A !important;
         font-weight: 600 !important;
     }
-    [data-testid="stExpander"] details summary:hover {
-        background-color: #F1F5F9 !important;
-    }
 
-    /* BOTÓN "INGRESAR AL PORTAL" */
-    div[data-testid="stFormSubmitButton"] {
-        width: 100% !important;
-        display: flex !important;
-        justify-content: center !important;
-        margin-top: 10px !important;
-    }
+    /* BOTÓN SUBMIT */
     div[data-testid="stFormSubmitButton"] > button { 
         background-color: #0F382C !important; 
         border-radius: 8px !important; 
@@ -160,20 +154,11 @@ st.markdown(
         padding: 12px 20px !important; 
         width: 100% !important;
         min-height: 48px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
     }
     div[data-testid="stFormSubmitButton"] > button p, 
-    div[data-testid="stFormSubmitButton"] > button span,
-    div[data-testid="stFormSubmitButton"] > button div { 
+    div[data-testid="stFormSubmitButton"] > button span { 
         color: #FFFFFF !important; 
         font-weight: 700 !important; 
-        font-size: 15px !important;
-        white-space: nowrap !important;
-    }
-    div[data-testid="stFormSubmitButton"] > button:hover { 
-        background-color: #15803D !important; 
     }
 
     /* SELECTBOX */
@@ -191,12 +176,8 @@ st.markdown(
         background-color: #FFFFFF !important;
         color: #0F172A !important;
     }
-    li[role="option"]:hover, div[role="option"]:hover {
-        background-color: #F1F5F9 !important;
-        color: #0F382C !important;
-    }
 
-    /* BOTONES ESTÁNDAR */
+    /* BOTONES */
     div[data-testid="stButton"] > button { 
         background-color: #FFFFFF !important; 
         color: #0F172A !important;
@@ -205,63 +186,36 @@ st.markdown(
         font-weight: 600 !important;
     }
 
-    /* BOTÓN CERRAR SESIÓN */
     #logout_btn button {
         background-color: #FEE2E2 !important;
         border: 1px solid #FCA5A5 !important;
     }
-    #logout_btn button p, #logout_btn button span {
-        color: #991B1B !important;
-        font-weight: 700 !important;
-    }
+    #logout_btn button p { color: #991B1B !important; font-weight: 700 !important; }
 
-    /* BOTONES ACCIÓN USUARIO */
     #btn_inactivar button {
         background-color: #FEF3C7 !important;
         border: 1px solid #FCD34D !important;
     }
-    #btn_inactivar button p, #btn_inactivar button span {
-        color: #92400E !important;
-        font-weight: 700 !important;
-    }
+    #btn_inactivar button p { color: #92400E !important; font-weight: 700 !important; }
 
     #btn_eliminar button {
         background-color: #FEE2E2 !important;
         border: 1px solid #FCA5A5 !important;
     }
-    #btn_eliminar button p, #btn_eliminar button span {
-        color: #991B1B !important;
-        font-weight: 700 !important;
-    }
+    #btn_eliminar button p { color: #991B1B !important; font-weight: 700 !important; }
 
-    /* PESTAÑAS (TABS) */
-    .stTabs [data-baseweb="tab-list"] { 
-        background-color: transparent !important; 
-        gap: 8px; 
-    }
-    .stTabs [data-baseweb="tab"] { 
-        background-color: #E2E8F0 !important; 
-        border-radius: 8px 8px 0px 0px !important; 
-        padding: 8px 16px !important;
-        border: none !important; 
-    }
-    .stTabs [data-baseweb="tab"] p { 
-        color: #334155 !important; 
-        font-weight: 700 !important; 
-    }
-    .stTabs [aria-selected="true"] { 
-        background-color: #0F382C !important; 
-    }
-    .stTabs [aria-selected="true"] p { 
-        color: #FFFFFF !important; 
-        font-weight: 800 !important; 
-    }
+    /* PESTAÑAS */
+    .stTabs [data-baseweb="tab-list"] { background-color: transparent !important; gap: 8px; }
+    .stTabs [data-baseweb="tab"] { background-color: #E2E8F0 !important; border-radius: 8px 8px 0px 0px !important; padding: 8px 16px !important; }
+    .stTabs [data-baseweb="tab"] p { color: #334155 !important; font-weight: 700 !important; }
+    .stTabs [aria-selected="true"] { background-color: #0F382C !important; }
+    .stTabs [aria-selected="true"] p { color: #FFFFFF !important; font-weight: 800 !important; }
     </style>
 """,
     unsafe_allow_html=True,
 )
 
-# DATOS EN SESIÓN CON ESTRUCTURA GARANTIZADA
+# DATOS EN SESIÓN
 if "usuarios_registrados" not in st.session_state:
   st.session_state.usuarios_registrados = pd.DataFrame([
       {
@@ -294,7 +248,6 @@ if "usuarios_registrados" not in st.session_state:
       },
   ])
 
-# VERIFICAR Y ASIGNAR COLUMNAS FALTANTES
 if (
     "ÚLTIMA CONEXIÓN"
     not in st.session_state.usuarios_registrados.columns
@@ -353,7 +306,7 @@ def mostrar_modal_soporte():
     st.rerun()
 
 
-# VISTA DE LOGIN
+# LOGIN
 if st.session_state.usuario_actual is None:
   st.markdown(
       """
@@ -425,7 +378,6 @@ if st.session_state.usuario_actual is None:
           st.session_state.usuario_actual = input_user
           st.session_state.rol_actual = user_match.iloc[0]["ROL"]
 
-          # ACTUALIZAR ÚLTIMA CONEXIÓN
           if (
               "ÚLTIMA CONEXIÓN"
               in st.session_state.usuarios_registrados.columns
@@ -451,7 +403,7 @@ if st.session_state.usuario_actual is None:
     ):
       mostrar_modal_soporte()
 
-# VISTA DASHBOARD (ADMINISTRADOR)
+# DASHBOARD
 else:
   col_nav1, col_nav2 = st.columns([5, 1])
   with col_nav1:
@@ -478,7 +430,6 @@ else:
       ["👥 Control de Usuarios y Claves", "📜 Registro de Auditoría (Logs)"]
   )
 
-  # TAB 1: CONTROL DE USUARIOS Y CLAVES
   with tab1:
     col_a, col_b = st.columns([1, 1.3], gap="large")
 
@@ -532,7 +483,6 @@ else:
           if c in st.session_state.usuarios_registrados.columns
       ]
 
-      # TABLA CON ALTURA FIJA Y SCROLLBAR
       st.dataframe(
           st.session_state.usuarios_registrados[cols_existentes],
           use_container_width=True,
@@ -610,7 +560,6 @@ else:
             st.error("No puedes eliminar la cuenta actualmente en uso.")
         st.markdown("</div>", unsafe_allow_html=True)
 
-  # TAB 2: AUDITORÍA
   with tab2:
     st.subheader("📜 Historial de Seguridad y Movimientos")
     st.dataframe(
