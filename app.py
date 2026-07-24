@@ -4,6 +4,7 @@ import os
 import textwrap
 import pandas as pd
 import streamlit as st
+from st_aggrid import AgGrid, GridOptionsBuilder
 
 # 1. CONFIGURACIÓN DE PÁGINA
 st.set_page_config(
@@ -52,9 +53,7 @@ st.markdown(
         color: #0F172A; 
     }
 
-    /* ==========================================================
-       ESTILO OSCURO Y ELEGANTE FIJO PARA TODOS LOS BOTONES
-       ========================================================== */
+    /* ESTILO OSCURO Y ELEGANTE FIJO PARA TODOS LOS BOTONES */
     div[data-testid="stButton"] > button,
     div[data-testid="stDownloadButton"] > button { 
         background-color: #1E293B !important;  
@@ -81,7 +80,7 @@ st.markdown(
         border-color: #0F382C !important; 
     }
 
-    /* CONTENEDORES CON SCROLL INTELIGENTE PARA TABLAS */
+    /* CONTENEDORES PARA TABLAS HTML ADICIONALES */
     .tabla-contenedor, .tabla-contenedor-logs {
         max-height: 450px;
         height: fit-content;
@@ -98,7 +97,6 @@ st.markdown(
         margin-top: 15px !important;
     }
 
-    /* BARRA DE SCROLL MODERNA Y FINITA */
     .tabla-contenedor::-webkit-scrollbar,
     .tabla-contenedor-logs::-webkit-scrollbar {
         width: 6px !important;
@@ -109,7 +107,6 @@ st.markdown(
         border-radius: 10px !important;
     }
 
-    /* ESTILOS DE TABLA HTML */
     .tabla-usuarios {
         width: 100% !important;
         border-collapse: collapse;
@@ -134,13 +131,11 @@ st.markdown(
         background-color: #F1F5F9;
     }
 
-    /* SELECTBOX Y MENÚS DESPLEGABLES */
     ul[role="listbox"] {
         max-height: 200px !important;
         overflow-y: auto !important;
     }
 
-    /* MODAL */
     div[role="dialog"] *, [data-testid="stDialog"] *, [data-testid="stModal"] * {
         color: #FFFFFF !important;
     }
@@ -151,7 +146,6 @@ st.markdown(
         padding: 10px 16px !important;
     }
 
-    /* FORMULARIOS E INPUTS */
     [data-testid="stForm"] { 
         background-color: #FFFFFF !important; 
         border-radius: 14px !important; 
@@ -168,7 +162,6 @@ st.markdown(
         padding: 10px 12px !important;
     }
 
-    /* BOTÓN SUBMIT */
     div[data-testid="stFormSubmitButton"] > button { 
         background-color: #0F382C !important; 
         border-radius: 8px !important; 
@@ -183,7 +176,6 @@ st.markdown(
         font-weight: 700 !important; 
     }
 
-    /* BOTONES ESPECIALES */
     #logout_btn button {
         background-color: #FEE2E2 !important;
         border: 1px solid #FCA5A5 !important;
@@ -202,7 +194,6 @@ st.markdown(
     }
     #btn_eliminar button p, #btn_eliminar button span { color: #991B1B !important; font-weight: 700 !important; }
 
-    /* PESTAÑAS */
     .stTabs [data-baseweb="tab-list"] { 
         background-color: transparent !important; 
         gap: 28px !important; 
@@ -438,7 +429,7 @@ else:
     st.divider()
 
     # ==========================================
-    # VISTA 1: PORTAL OPERARIO (TABLA HTML LIMPIA SIN MENÚS)
+    # VISTA 1: PORTAL OPERARIO (CON AGGRID / FILTROS ESTILO EXCEL)
     # ==========================================
     if st.session_state.rol_actual == "🛠️ Operario":
         col_tit, col_btns = st.columns([3, 2])
@@ -455,34 +446,25 @@ else:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # Renderizar tabla limpia y profesional en HTML (sin menús flotantes)
-        filas_pedidos = ""
-        for _, fila in st.session_state.df_pedidos.iterrows():
-            filas_pedidos += f"<tr><td>{fila['FECHA_REGISTRO']}</td><td><b>{fila['CODIGO INTERNO']}</b></td><td>{fila['CLIENTE']}</td><td><span style='color: #0F382C; font-weight:700;'>{fila['ESTADO']}</span></td><td>{fila['SUB_ESTADO']}</td><td>{fila['NOMBRE']}</td><td>{fila['DISTRITO']}</td><td>{fila['TIPO_SERVICIO']}</td></tr>"
+        # Configuración de AgGrid para incluir filtros, menú contextual y ordenamiento por columnas estilo Excel
+        gb = GridOptionsBuilder.from_dataframe(st.session_state.df_pedidos)
+        gb.configure_default_column(
+            editable=False,
+            sortable=True,
+            filter=True,
+            resizable=True,
+            flex=1
+        )
+        gb.configure_pagination(paginationAutoPageSize=False, paginationPageSize=10)
+        grid_options = gb.build()
 
-        tabla_pedidos_html = textwrap.dedent(f"""
-            <div class="tabla-contenedor" style="max-height: 400px;">
-                <table class="tabla-usuarios">
-                    <thead>
-                        <tr>
-                            <th>FECHA_REGISTRO</th>
-                            <th>CODIGO INTERNO</th>
-                            <th>CLIENTE</th>
-                            <th>ESTADO</th>
-                            <th>SUB_ESTADO</th>
-                            <th>NOMBRE</th>
-                            <th>DISTRITO</th>
-                            <th>TIPO_SERVICIO</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filas_pedidos}
-                    </tbody>
-                </table>
-            </div>
-            """).strip()
-
-        st.markdown(tabla_pedidos_html, unsafe_allow_html=True)
+        AgGrid(
+            st.session_state.df_pedidos,
+            gridOptions=grid_options,
+            height=400,
+            theme="alpine",
+            use_container_width=True
+        )
 
     # ==========================================
     # VISTA 2: PORTAL ADMINISTRADOR
