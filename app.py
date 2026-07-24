@@ -511,24 +511,29 @@ else:
             st.markdown("<hr style='margin: 15px 0px; border-color: #E2E8F0;'>", unsafe_allow_html=True)
 
             st.markdown("<p style='font-weight:800; font-size:14px; color:#0F382C; margin-bottom:8px;'>📌 Filtros por selección múltiple:</p>", unsafe_allow_html=True)
-            fc1, fc2, fc3, fc4 = st.columns(4)
+            fc1, fc2, fc3, fc4, fc5 = st.columns(5)
             
             with fc1:
+                st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>Cliente:</p>", unsafe_allow_html=True)
+                clientes_unicos = sorted(st.session_state.df_pedidos["CLIENTE"].astype(str).unique().tolist())
+                filtro_cliente = st.multiselect("Clientes", options=clientes_unicos, label_visibility="collapsed", placeholder="Todos")
+
+            with fc2:
                 st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>Distrito:</p>", unsafe_allow_html=True)
                 distritos_unicos = sorted(st.session_state.df_pedidos["DISTRITO"].astype(str).unique().tolist())
                 filtro_distrito = st.multiselect("Distritos", options=distritos_unicos, label_visibility="collapsed", placeholder="Todos")
 
-            with fc2:
+            with fc3:
                 st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>Tipo Servicio:</p>", unsafe_allow_html=True)
                 servicios_unicos = sorted(st.session_state.df_pedidos["TIPO_SERVICIO"].astype(str).unique().tolist())
                 filtro_servicio = st.multiselect("Servicios", options=servicios_unicos, label_visibility="collapsed", placeholder="Todos")
 
-            with fc3:
+            with fc4:
                 st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>Estado:</p>", unsafe_allow_html=True)
                 estados_unicos = sorted(st.session_state.df_pedidos["ESTADO"].astype(str).unique().tolist())
                 filtro_estado = st.multiselect("Estados", options=estados_unicos, label_visibility="collapsed", placeholder="Todos")
 
-            with fc4:
+            with fc5:
                 st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>Sub Estado:</p>", unsafe_allow_html=True)
                 sub_estados_unicos = sorted(st.session_state.df_pedidos["SUB_ESTADO"].astype(str).unique().tolist())
                 filtro_sub_estado = st.multiselect("Sub Estados", options=sub_estados_unicos, label_visibility="collapsed", placeholder="Todos")
@@ -536,17 +541,13 @@ else:
             st.markdown("<hr style='margin: 15px 0px; border-color: #E2E8F0;'>", unsafe_allow_html=True)
 
             st.markdown("<p style='font-weight:800; font-size:14px; color:#0F382C; margin-bottom:8px;'>🔍 Búsqueda por texto:</p>", unsafe_allow_html=True)
-            ft1, ft2, ft3 = st.columns(3)
+            ft1, ft2 = st.columns(2)
 
             with ft1:
-                st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>Buscar Cliente:</p>", unsafe_allow_html=True)
-                filtro_cliente_txt = st.text_input("Cliente", label_visibility="collapsed", placeholder="Ej: Unimarket...", key="b_cli")
-
-            with ft2:
                 st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>Buscar Código Interno:</p>", unsafe_allow_html=True)
                 filtro_codigo_txt = st.text_input("Código Interno", label_visibility="collapsed", placeholder="Ej: BLC1-480...", key="b_cod")
 
-            with ft3:
+            with ft2:
                 st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>Buscar Nombre Destinatario:</p>", unsafe_allow_html=True)
                 filtro_nombre_txt = st.text_input("Nombre", label_visibility="collapsed", placeholder="Ej: Cecilia Loo...", key="b_nom")
 
@@ -580,6 +581,8 @@ else:
 
             df_filtrado = df_filtrado.drop(columns=["_fecha_temp"])
 
+        if filtro_cliente:
+            df_filtrado = df_filtrado[df_filtrado["CLIENTE"].astype(str).isin(filtro_cliente)]
         if filtro_distrito:
             df_filtrado = df_filtrado[df_filtrado["DISTRITO"].astype(str).isin(filtro_distrito)]
         if filtro_servicio:
@@ -589,8 +592,6 @@ else:
         if filtro_sub_estado:
             df_filtrado = df_filtrado[df_filtrado["SUB_ESTADO"].astype(str).isin(filtro_sub_estado)]
 
-        if filtro_cliente_txt:
-            df_filtrado = df_filtrado[df_filtrado["CLIENTE"].astype(str).str.contains(filtro_cliente_txt, case=False, na=False)]
         if filtro_codigo_txt:
             df_filtrado = df_filtrado[df_filtrado["CODIGO INTERNO"].astype(str).str.contains(filtro_codigo_txt, case=False, na=False)]
         if filtro_nombre_txt:
