@@ -26,12 +26,6 @@ if "usuario_actual" not in st.session_state:
         st.session_state.usuario_actual = None
         st.session_state.rol_actual = None
 
-# ESTADOS DE ORDENAMIENTO INTERNO
-if "col_orden" not in st.session_state:
-    st.session_state.col_orden = "FECHA_REGISTRO"
-if "dir_orden" not in st.session_state:
-    st.session_state.dir_orden = False  # False = Descendente por defecto
-
 # CSS GENERAL DEL SISTEMA
 st.markdown(
     """
@@ -450,7 +444,7 @@ else:
     st.divider()
 
     # ==========================================
-    # VISTA 1: PORTAL OPERARIO (FILTROS Y ORDENAMIENTO COMPACTO)
+    # VISTA 1: PORTAL OPERARIO (FILTROS Y BUSCADOR DE FECHA)
     # ==========================================
     if st.session_state.rol_actual == "🛠️ Operario":
         col_tit, col_btns = st.columns([3, 2])
@@ -535,28 +529,11 @@ else:
         if filtro_nombre_txt:
             df_filtrado = df_filtrado[df_filtrado["NOMBRE"].astype(str).str.contains(filtro_nombre_txt, case=False, na=False)]
 
-        # MINI BARRA DE ORDENAMIENTO COMPACTA Y ELEGANTE
-        oc1, oc2, oc3 = st.columns([2.2, 2.2, 4])
-        with oc1:
-            columna_seleccionada = st.selectbox("Ordenar por columna", list(st.session_state.df_pedidos.columns), label_visibility="collapsed", key="sel_col_ord")
-        with oc2:
-            tipo_dir = st.selectbox("Dirección", ["Descendente (Z-A / Mayor a Menor)", "Ascendente (A-Z / Menor a Mayor)"], label_visibility="collapsed", key="sel_dir_ord")
-        with oc3:
-            if st.button("🔄 Ordenar Tabla"):
-                st.session_state.col_orden = columna_seleccionada
-                st.session_state.dir_orden = True if "Ascendente" in tipo_dir else False
-                st.rerun()
+        # RENDERIZAR TABLA LIMPIA EN HTML (ORDENADA POR FECHA AUTOMÁTICAMENTE)
+        if "FECHA_REGISTRO" in df_filtrado.columns:
+            df_filtrado = df_filtrado.sort_values(by="FECHA_REGISTRO", ascending=False)
 
-        # APLICAR ORDENAMIENTO
-        if st.session_state.col_orden and st.session_state.col_orden in df_filtrado.columns:
-            df_filtrado = df_filtrado.sort_values(
-                by=st.session_state.col_orden,
-                ascending=st.session_state.dir_orden
-            )
-
-        # RENDERIZAR TABLA LIMPIA EN HTML
         columnas_pedidos = df_filtrado.columns.tolist()
-        
         headers_html = "".join([f"<th>{col}</th>" for col in columnas_pedidos])
 
         filas_pedidos_html = ""
