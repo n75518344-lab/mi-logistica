@@ -26,12 +26,14 @@ if "usuario_actual" not in st.session_state:
         st.session_state.usuario_actual = None
         st.session_state.rol_actual = None
 
-# CSS GENERAL Y ESTILOS DE PAGINACIÓN
+# CSS GENERAL Y CORRECCIÓN DE MENÚS Y LABELS
 st.markdown(
     """
     <style>
     html, body, .stApp { background-color: #F8FAFC !important; color: #0F172A !important; }
     [data-testid="stSidebar"] { background-color: #FFFFFF !important; border-right: 1px solid #CBD5E1 !important; }
+    [data-testid="stSidebar"] section[data-testid="stSidebarContent"] { padding-top: 1rem !important; }
+    [data-testid="stSidebarHeader"] { display: none !important; }
     
     header[data-testid="stHeader"] { display: none !important; }
     [data-testid="stElementToolbar"] { display: none !important; }
@@ -111,10 +113,9 @@ if "usuarios_registrados" not in st.session_state:
     ])
 
 if "df_pedidos" not in st.session_state:
-    # Generamos datos de prueba (incluyendo algunos simulados antiguos y recientes)
     lista_inicial = []
     for i in range(1, 70):
-        dias_atras = i % 85 # Algunos menores a 90 días, otros simulados mayores para limpieza automática
+        dias_atras = i % 85 
         f_reg = (datetime.now() - timedelta(days=dias_atras)).strftime("%d/%m/%Y")
         lista_inicial.append({
             "FECHA_REGISTRO": f_reg, 
@@ -128,7 +129,7 @@ if "df_pedidos" not in st.session_state:
         })
     st.session_state.df_pedidos = pd.DataFrame(lista_inicial)
 
-# APLICACIÓN ESTRICTA DE LA REGLA DE 90 DÍAS (ELIMINACIÓN AUTOMÁTICA)
+# APLICACIÓN DE LA REGLA DE 90 DÍAS (ELIMINACIÓN AUTOMÁTICA)
 if not st.session_state.df_pedidos.empty and "FECHA_REGISTRO" in st.session_state.df_pedidos.columns:
     st.session_state.df_pedidos["_fecha_dt"] = pd.to_datetime(
         st.session_state.df_pedidos["FECHA_REGISTRO"], format="%d/%m/%Y", errors="coerce"
@@ -267,36 +268,87 @@ else:
             if st.button("➕ Nuevo Pedido", use_container_width=True): modal_add_pedido()
             st.markdown('</div>', unsafe_allow_html=True)
 
-        # SIDEBAR FILTROS
+        # SIDEBAR CON MÁSCARA AUTOMÁTICA DD/MM/YYYY
         with st.sidebar:
-            st.markdown("<h2 style='color: #0F382C; font-size: 22px; font-weight: 800;'>🌲 ALFA EXPRESS</h2>", unsafe_allow_html=True)
-            st.markdown("<p style='font-size: 13px; color: #64748B;'>Filtra los registros de envíos de manera rápida.</p>", unsafe_allow_html=True)
+            st.markdown("<h2 style='color: #0F382C; font-size: 22px; font-weight: 800; margin: 0px 0px 4px 0px;'>🌲 ALFA EXPRESS</h2>", unsafe_allow_html=True)
+            st.markdown("<p style='font-size: 13px; color: #64748B; margin-top: 0px; margin-bottom: 14px;'>Filtra los registros de envíos de manera rápida.</p>", unsafe_allow_html=True)
             st.markdown("<hr style='margin: 0px 0px 14px 0px;'>", unsafe_allow_html=True)
 
-            txt_fecha_inicio = st.text_input("Fecha Inicial (DD/MM/YYYY)", placeholder="DD/MM/YYYY")
-            txt_fecha_fin = st.text_input("Fecha Final (DD/MM/YYYY)", placeholder="DD/MM/YYYY")
-            
-            st.markdown("<hr style='margin: 10px 0px;'>", unsafe_allow_html=True)
-            filtro_codigo_txt = st.text_input("Código Interno", placeholder="Ej: BLC1-480...")
-            filtro_nombre_txt = st.text_input("Nombre Destinatario", placeholder="Ej: Cliente...")
-            
+            st.markdown("<p style='font-weight:700; font-size:14px; color:#0F382C; margin:0 0 6px 0;'>📅 Rango de Fechas (DD/MM/YYYY):</p>", unsafe_allow_html=True)
+            txt_fecha_inicio = st.text_input("Fecha Inicial", value="", placeholder="DD/MM/YYYY", key="f_ini")
+            txt_fecha_fin = st.text_input("Fecha Final", value="", placeholder="DD/MM/YYYY", key="f_fin")
+
+            # Script JavaScript para la máscara automática en los inputs de fecha
+            components.html("""
+                <script>
+                const doc = window.parent.document;
+                function aplicarMascaraLimpia(input) {
+                    if (!input.dataset.masked) {
+                        input.dataset.masked = "true";
+                        input.setAttribute("maxlength", "10");
+                        
+                        input.addEventListener("input", function(e) {
+                            let val = this.value.replace(/\\D/g, "");
+                            if (val.length > 8) val = val.slice(0, 8);
+                            
+                            let res = "";
+                            if (val.length > 0) res += val.substring(0, 2);
+                            if (val.length >= 3) res += "/" + val.substring(2, 4);
+                            if (val.length >= 5) res += "/" + val.substring(4, 8);
+
+                            if (this.value !== res) {
+                                this.value = res;
+                                this.dispatchEvent(new Event('input', { bubbles: true }));
+                            }
+                        });
+                    }
+                }
+                function observarInputs() {
+                    doc.querySelectorAll('input').forEach(input => {
+                        if (input.getAttribute('placeholder') === 'DD/MM/YYYY') {
+                            aplicarMascaraLimpia(input);
+                        }
+                    });
+                }
+                setInterval(observarInputs, 300);
+                </script>
+            """, height=0)
+
+            st.markdown("<hr style='margin: 14px 0px;'>", unsafe_allow_html=True)
+
+            st.markdown("<p style='font-weight:700; font-size:14px; color:#0F382C; margin:0 0 6px 0;'>🔍 Búsqueda por Texto:</p>", unsafe_allow_html=True)
+            filtro_codigo_txt = st.text_input("Código Interno", placeholder="Ej: BLC1-480...", key="b_cod")
+            filtro_nombre_txt = st.text_input("Nombre Destinatario", placeholder="Ej: Cliente...", key="b_nom")
+
+            st.markdown("<hr style='margin: 14px 0px;'>", unsafe_allow_html=True)
+
+            st.markdown("<p style='font-weight:700; font-size:14px; color:#0F382C; margin:0 0 6px 0;'>📌 Selección Múltiple:</p>", unsafe_allow_html=True)
             clientes_unicos = sorted(st.session_state.df_pedidos["CLIENTE"].astype(str).unique().tolist())
-            filtro_cliente = st.multiselect("Cliente", options=clientes_unicos)
+            filtro_cliente = st.multiselect("Cliente", options=clientes_unicos, placeholder="Todos")
 
         # FILTRADO DE DATOS
         df_filtrado = st.session_state.df_pedidos.copy()
         if "FECHA_REGISTRO" in df_filtrado.columns:
             df_filtrado["_fecha_temp"] = pd.to_datetime(df_filtrado["FECHA_REGISTRO"], format="%d/%m/%Y", errors="coerce")
+            
+            f_ini_parsed = None
+            f_fin_parsed = None
+
             if txt_fecha_inicio.strip():
-                try:
-                    f_ini = datetime.strptime(txt_fecha_inicio.strip(), "%d/%m/%Y").date()
-                    df_filtrado = df_filtrado[df_filtrado["_fecha_temp"].dt.date >= f_ini]
+                try: f_ini_parsed = datetime.strptime(txt_fecha_inicio.strip(), "%d/%m/%Y").date()
                 except ValueError: pass
+
             if txt_fecha_fin.strip():
-                try:
-                    f_fin = datetime.strptime(txt_fecha_fin.strip(), "%d/%m/%Y").date()
-                    df_filtrado = df_filtrado[df_filtrado["_fecha_temp"].dt.date <= f_fin]
+                try: f_fin_parsed = datetime.strptime(txt_fecha_fin.strip(), "%d/%m/%Y").date()
                 except ValueError: pass
+
+            if f_ini_parsed and f_fin_parsed:
+                df_filtrado = df_filtrado[(df_filtrado["_fecha_temp"].dt.date >= f_ini_parsed) & (df_filtrado["_fecha_temp"].dt.date <= f_fin_parsed)]
+            elif f_ini_parsed and not f_fin_parsed:
+                df_filtrado = df_filtrado[df_filtrado["_fecha_temp"].dt.date == f_ini_parsed]
+            elif not f_ini_parsed and f_fin_parsed:
+                df_filtrado = df_filtrado[df_filtrado["_fecha_temp"].dt.date <= f_fin_parsed]
+
             df_filtrado = df_filtrado.drop(columns=["_fecha_temp"])
 
         if filtro_cliente: df_filtrado = df_filtrado[df_filtrado["CLIENTE"].astype(str).isin(filtro_cliente)]
@@ -307,17 +359,15 @@ else:
             df_filtrado = df_filtrado.sort_values(by="FECHA_REGISTRO", ascending=False)
 
         # ==========================================
-        # PAGINACIÓN AUTOMÁTICA DE 50 EN 50 (Estilo 1-50 de X)
+        # PAGINACIÓN AUTOMÁTICA DE 50 EN 50
         # ==========================================
         TAMANO_PAGINA = 50
         total_registros = len(df_filtrado)
         total_paginas = max(1, (total_registros + TAMANO_PAGINA - 1) // TAMANO_PAGINA)
 
-        # Controlar límites de página al filtrar
         if st.session_state.pagina_actual_tabla > total_paginas:
             st.session_state.pagina_actual_tabla = total_paginas
 
-        # Mostrar barra de controles de página con diseño limpio
         col_inf1, col_inf2, col_inf3, col_inf4 = st.columns([3.5, 1.2, 0.4, 0.4])
         
         inicio_idx = (st.session_state.pagina_actual_tabla - 1) * TAMANO_PAGINA
@@ -326,21 +376,17 @@ else:
 
         with col_inf1:
             st.markdown(f"<p style='color: #475569; font-size: 14px; margin-top: 8px;'>Registros mostrados: <b>{rango_texto}</b> (Bloques automáticos de 50)</p>", unsafe_allow_html=True)
-        
         with col_inf2:
             st.markdown(f"<p style='text-align: right; color: #475569; font-size: 14px; margin-top: 8px;'>Pág. {st.session_state.pagina_actual_tabla} de {total_paginas}</p>", unsafe_allow_html=True)
-        
         with col_inf3:
             if st.button("〈", use_container_width=True, disabled=(st.session_state.pagina_actual_tabla <= 1)):
                 st.session_state.pagina_actual_tabla -= 1
                 st.rerun()
-        
         with col_inf4:
             if st.button("〉", use_container_width=True, disabled=(st.session_state.pagina_actual_tabla >= total_paginas)):
                 st.session_state.pagina_actual_tabla += 1
                 st.rerun()
 
-        # Cortar los datos para la página actual
         df_paginado = df_filtrado.iloc[inicio_idx:fin_idx]
         columnas_pedidos = df_paginado.columns.tolist()
 
@@ -373,8 +419,7 @@ else:
         tab1, tab2 = st.tabs(["Usuarios y Claves", "Auditoría (Logs)"])
         with tab1:
             st.subheader("👥 Gestión de Usuarios")
-            df_u = st.session_state.usuarios_registrados
-            st.dataframe(df_u, use_container_width=True)
+            st.dataframe(st.session_state.usuarios_registrados, use_container_width=True)
         with tab2:
             st.subheader("📋 Auditoría de Acciones")
             st.dataframe(st.session_state.historial_acciones, use_container_width=True)
