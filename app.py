@@ -252,7 +252,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# DATOS EN SESIÓN CON VALIDACIÓN DE COLUMNA
+# DATOS EN SESIÓN CON ESTRUCTURA GARANTIZADA
 if "usuarios_registrados" not in st.session_state:
   st.session_state.usuarios_registrados = pd.DataFrame([
       {
@@ -285,7 +285,7 @@ if "usuarios_registrados" not in st.session_state:
       },
   ])
 
-# AUTO-CORRECCIÓN: SI EXISTE LA SESIÓN ANTERIOR SIN LA COLUMNA, LA AGREGA AUTOMÁTICAMENTE
+# VERIFICAR Y ASIGNAR COLUMNAS FALTANTES SI EXISTE UNA SESIÓN ANTIGUA
 if (
     "ÚLTIMA CONEXIÓN"
     not in st.session_state.usuarios_registrados.columns
@@ -416,11 +416,15 @@ if st.session_state.usuario_actual is None:
           st.session_state.usuario_actual = input_user
           st.session_state.rol_actual = user_match.iloc[0]["ROL"]
 
-          # ACTUALIZAR ÚLTIMA CONEXIÓN DEL USUARIO
-          st.session_state.usuarios_registrados.loc[
-              st.session_state.usuarios_registrados["USUARIO"] == input_user,
-              "ÚLTIMA CONEXIÓN",
-          ] = datetime.now().strftime("%Y-%m-%d %H:%M")
+          # ACTUALIZAR ÚLTIMA CONEXIÓN
+          if (
+              "ÚLTIMA CONEXIÓN"
+              in st.session_state.usuarios_registrados.columns
+          ):
+            st.session_state.usuarios_registrados.loc[
+                st.session_state.usuarios_registrados["USUARIO"] == input_user,
+                "ÚLTIMA CONEXIÓN",
+            ] = datetime.now().strftime("%Y-%m-%d %H:%M")
 
           if remember:
             st.query_params["saved_user"] = input_user
@@ -512,11 +516,17 @@ else:
     with col_b:
       st.subheader("📋 Usuarios Registrados")
 
+      # GARANTIZAR SEGURIDAD EN SELECCIÓN DE COLUMNAS
+      cols_deseadas = ["USUARIO", "ROL", "ESTADO", "ÚLTIMA CONEXIÓN"]
+      cols_existentes = [
+          c
+          for c in cols_deseadas
+          if c in st.session_state.usuarios_registrados.columns
+      ]
+
       # TABLA CON ALTURA FIJA Y SCROLLBAR
       st.dataframe(
-          st.session_state.usuarios_registrados[
-              ["USUARIO", "ROL", "ESTADO", "ÚLTIMA CONEXIÓN"]
-          ],
+          st.session_state.usuarios_registrados[cols_existentes],
           use_container_width=True,
           hide_index=True,
           height=210,
