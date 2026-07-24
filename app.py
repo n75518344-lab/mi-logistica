@@ -429,7 +429,7 @@ else:
     st.divider()
 
     # ==========================================
-    # VISTA 1: PORTAL OPERARIO (CON FILTROS FLOTANTES TIPO EXCEL - AGGRID)
+    # VISTA 1: PORTAL OPERARIO (CON SET FILTER Y ORDENAMIENTO ESTILO EXCEL)
     # ==========================================
     if st.session_state.rol_actual == "🛠️ Operario":
         col_tit, col_btns = st.columns([3, 2])
@@ -446,20 +446,22 @@ else:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # Configuración avanzada de AgGrid para replicar exactamente los menús de Excel en cada columna
+        # Configuración avanzada de columnas para habilitar el Set Filter (buscador + casillas estilo Excel)
         gb = GridOptionsBuilder.from_dataframe(st.session_state.df_pedidos)
+        
+        # Activar ordenamiento por defecto y configurar columnas con filtro de casillas y buscador
         gb.configure_default_column(
             editable=False,
-            sortable=True,
-            filter=True,          # Activa el menú flotante con buscador y casillas en cada cabecera
-            floatingFilter=False, # Mantiene la interfaz limpia sin barras fijas adicionales
+            sortable=True,        # Habilita el ordenamiento ascendente y descendente en la cabecera
+            filter="agSetColumnFilter", # Activa el menú con buscador y casillas (checkboxes) exacto de la imagen
             resizable=True,
             flex=1
         )
+        
         gb.configure_pagination(paginationAutoPageSize=False, paginationPageSize=10)
         grid_options = gb.build()
 
-        # Renderizar la tabla con menús interactivos por columna
+        # Renderizar la tabla interactiva
         AgGrid(
             st.session_state.df_pedidos,
             gridOptions=grid_options,
