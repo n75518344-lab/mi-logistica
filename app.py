@@ -77,7 +77,7 @@ st.markdown(
     }
 
     .tabla-contenedor, .tabla-contenedor-logs {
-        max-height: 450px;
+        max-height: 420px;
         height: fit-content;
         overflow-y: auto;
         border: 1px solid #CBD5E1;
@@ -416,7 +416,7 @@ else:
     st.divider()
 
     # ==========================================
-    # VISTA 1: PORTAL OPERARIO (BÚSQUEDA MULTI-SELECCIÓN)
+    # VISTA 1: PORTAL OPERARIO (FILTROS MULTI-COLUMNA Y MULTI-VALOR)
     # ==========================================
     if st.session_state.rol_actual == "🛠️ Operario":
         col_tit, col_btns = st.columns([3, 2])
@@ -433,32 +433,41 @@ else:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # SELECTOR DE COLUMNA Y MULTI-SELECCIÓN DE VALORES
-        st.markdown("<p style='font-weight:700; margin-bottom: 5px;'>🔍 Filtrado múltiple por columna:</p>", unsafe_allow_html=True)
-        c_columna, c_valores = st.columns([1, 2])
-        
-        columnas_disponibles = list(st.session_state.df_pedidos.columns)
-        columna_seleccionada = c_columna.selectbox("Elige la columna", columnas_disponibles, label_visibility="collapsed")
-        
-        # Extraer los valores únicos disponibles en esa columna (ordenados alfabéticamente)
-        valores_unicos = sorted(st.session_state.df_pedidos[columna_seleccionada].astype(str).unique().tolist())
-        
-        # st.multiselect permite elegir 1 o varios distritos/valores a la vez (ej. Miraflores, La Molina)
-        valores_seleccionados = c_valores.multiselect(
-            "Selecciona los valores",
-            options=valores_unicos,
-            placeholder=f"Selecciona uno o varios de {columna_seleccionada}...",
-            label_visibility="collapsed"
-        )
+        # PANEL EXPANDIBLE DE FILTRADO MULTI-COLUMNA
+        with st.expander("🔎 Panel de Filtros Avanzados (Filtrar por varias columnas a la vez)", expanded=True):
+            fc1, fc2, fc3 = st.columns(3)
+            
+            # Filtro 1: Distrito (Múltiple)
+            with fc1:
+                st.markdown("<p style='font-weight:700; font-size:13px; margin-bottom:2px;'>Filtrar por Distrito(s):</p>", unsafe_allow_html=True)
+                distritos_unicos = sorted(st.session_state.df_pedidos["DISTRITO"].astype(str).unique().tolist())
+                filtro_distrito = st.multiselect("Distritos", options=distritos_unicos, label_visibility="collapsed", placeholder="Todos los distritos")
 
-        # Aplicar el filtro dinámico múltiple
+            # Filtro 2: Tipo de Servicio (Múltiple)
+            with fc2:
+                st.markdown("<p style='font-weight:700; font-size:13px; margin-bottom:2px;'>Filtrar por Tipo de Servicio:</p>", unsafe_allow_html=True)
+                servicios_unicos = sorted(st.session_state.df_pedidos["TIPO_SERVICIO"].astype(str).unique().tolist())
+                filtro_servicio = st.multiselect("Servicios", options=servicios_unicos, label_visibility="collapsed", placeholder="Todos los servicios")
+
+            # Filtro 3: Estado (Múltiple)
+            with fc3:
+                st.markdown("<p style='font-weight:700; font-size:13px; margin-bottom:2px;'>Filtrar por Estado:</p>", unsafe_allow_html=True)
+                estados_unicos = sorted(st.session_state.df_pedidos["ESTADO"].astype(str).unique().tolist())
+                filtro_estado = st.multiselect("Estados", options=estados_unicos, label_visibility="collapsed", placeholder="Todos los estados")
+
+        # APLICAR LOS FILTROS COMBINADOS DE MANERA DINÁMICA
         df_filtrado = st.session_state.df_pedidos.copy()
-        
-        if valores_seleccionados:
-            # Filtra las filas donde el valor de la columna esté dentro de la lista seleccionada
-            df_filtrado = df_filtrado[df_filtrado[columna_seleccionada].astype(str).isin(valores_seleccionados)]
 
-        # Mostrar tabla limpia
+        if filtro_distrito:
+            df_filtrado = df_filtrado[df_filtrado["DISTRITO"].astype(str).isin(filtro_distrito)]
+            
+        if filtro_servicio:
+            df_filtrado = df_filtrado[df_filtrado["TIPO_SERVICIO"].astype(str).isin(filtro_servicio)]
+            
+        if filtro_estado:
+            df_filtrado = df_filtrado[df_filtrado["ESTADO"].astype(str).isin(filtro_estado)]
+
+        # Mostrar tabla limpia resultante
         st.dataframe(
             df_filtrado,
             use_container_width=True,
@@ -477,7 +486,7 @@ else:
 
             with col_a:
                 st.subheader("➕ Crear Nuevo Usuario")
-                with st.form("form_creار"):
+                with st.form("form_crear"):
                     nu = st.text_input("Nombre de Usuario", placeholder="Ej: operador_lima")
                     np = st.text_input("Contraseña Inicial", type="password", placeholder="Clave temporal")
                     nr = st.selectbox("Rol Asignado", ["🛠️ Operario", "🏢 Cliente", "🛵 Repartidor (App)"])
