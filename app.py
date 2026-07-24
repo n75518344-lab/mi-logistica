@@ -50,7 +50,7 @@ st.markdown(
         color: #0F172A; 
     }
 
-    /* CONTENEDORES SIN EL HUECO BLANCO DEL SCROLLBAR LATERAL */
+    /* CONTENEDORES CON SCROLL INTELIGENTE PARA TABLAS */
     .tabla-contenedor, .tabla-contenedor-logs {
         max-height: 280px;
         height: fit-content;
@@ -60,7 +60,6 @@ st.markdown(
         background-color: #FFFFFF;
         box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.04);
         margin-bottom: 15px !important;
-        scrollbar-width: none; /* Oculta scrollbar en Firefox */
     }
 
     .tabla-contenedor-logs {
@@ -68,14 +67,29 @@ st.markdown(
         margin-top: 15px !important;
     }
 
-    /* Oculta la barra reservada en Chrome, Safari y Edge para eliminar la brecha blanca */
+    /* BARRA DE SCROLL MODERNA Y FINITA PARA TABLAS */
     .tabla-contenedor::-webkit-scrollbar,
     .tabla-contenedor-logs::-webkit-scrollbar {
-        display: none;
-        width: 0px;
+        width: 6px !important;
     }
 
-    /* ESTILOS DE TABLA Y CABECERA PEGADA AL BORDE */
+    .tabla-contenedor::-webkit-scrollbar-track,
+    .tabla-contenedor-logs::-webkit-scrollbar-track {
+        background: transparent !important;
+    }
+
+    .tabla-contenedor::-webkit-scrollbar-thumb,
+    .tabla-contenedor-logs::-webkit-scrollbar-thumb {
+        background-color: #CBD5E1 !important;
+        border-radius: 10px !important;
+    }
+
+    .tabla-contenedor::-webkit-scrollbar-thumb:hover,
+    .tabla-contenedor-logs::-webkit-scrollbar-thumb:hover {
+        background-color: #94A3B8 !important;
+    }
+
+    /* ESTILOS DE TABLA */
     .tabla-usuarios {
         width: 100% !important;
         border-collapse: collapse;
@@ -97,10 +111,33 @@ st.markdown(
         color: #0F172A !important;
     }
     .tabla-usuarios tr:last-child td {
-        border-bottom: none; /* Elimina la línea inferior en la última fila */
+        border-bottom: none;
     }
     .tabla-usuarios tr:hover {
         background-color: #F1F5F9;
+    }
+
+    /* LIMITAR ALTURA Y SCROLLBAR PARA MENÚS DESPLEGABLES (SELECTBOX) */
+    ul[role="listbox"] {
+        max-height: 220px !important;
+        overflow-y: auto !important;
+    }
+
+    ul[role="listbox"]::-webkit-scrollbar {
+        width: 6px !important;
+    }
+
+    ul[role="listbox"]::-webkit-scrollbar-track {
+        background: transparent !important;
+    }
+
+    ul[role="listbox"]::-webkit-scrollbar-thumb {
+        background-color: #CBD5E1 !important;
+        border-radius: 10px !important;
+    }
+
+    ul[role="listbox"]::-webkit-scrollbar-thumb:hover {
+        background-color: #94A3B8 !important;
     }
 
     /* MODAL Y TEXTO BLANCO */
@@ -198,7 +235,7 @@ st.markdown(
         font-weight: 700 !important; 
     }
 
-    /* SELECTBOX */
+    /* SELECTBOX ESTILOS GENERALES */
     div[data-baseweb="select"] > div {
         background-color: #FFFFFF !important;
         color: #0F172A !important;
@@ -214,7 +251,7 @@ st.markdown(
         color: #0F172A !important;
     }
 
-    /* BOTONES ACCIÓN */
+    /* BOTONES */
     div[data-testid="stButton"] > button { 
         background-color: #FFFFFF !important; 
         color: #0F172A !important;
@@ -241,7 +278,7 @@ st.markdown(
     }
     #btn_eliminar button p { color: #991B1B !important; font-weight: 700 !important; }
 
-    /* PESTAÑAS Y BARRA CONTENEDORA MINIMALISTA */
+    /* PESTAÑAS MINIMALISTAS */
     .stTabs [data-baseweb="tab-list"] { 
         background-color: transparent !important; 
         gap: 28px !important; 
@@ -485,7 +522,7 @@ else:
       st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
-  # PESTAÑAS MINIMALISTAS
+  # PESTAÑAS
   tab1, tab2 = st.tabs(["Usuarios y Claves", "Auditoría (Logs)"])
 
   with tab1:
