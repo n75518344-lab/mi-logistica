@@ -1,7 +1,6 @@
 import base64
 from datetime import datetime
 import os
-import textwrap
 import plotly.express as px
 import pandas as pd
 import streamlit as st
@@ -11,7 +10,7 @@ st.set_page_config(
     page_title="Alfa Cargo Express",
     page_icon="🚚",
     layout="wide",
-    initial_sidebar_state="collapsed",
+    initial_sidebar_state="expanded",
 )
 
 # REVISAR SESIÓN
@@ -27,23 +26,25 @@ if "usuario_actual" not in st.session_state:
         st.session_state.usuario_actual = None
         st.session_state.rol_actual = None
 
-# CSS GENERAL DEL SISTEMA
+# CSS GENERAL PARA EL ESTILO APPSHEET
 st.markdown(
     """
     <style>
-    /* OCULTAR SCROLLBAR GLOBAL DE LA VENTANA */
+    /* ESTILOS GENERALES Y FONDO */
     html, body, .stApp { 
         background-color: #F8FAFC !important; 
         color: #0F172A !important; 
     }
 
-    /* OCULTAR SIDEBAR Y CABECERA DE STREAMLIT */
-    [data-testid="stSidebar"], [data-testid="collapsedControl"], header[data-testid="stHeader"] { 
-        display: none !important; 
+    /* PERSONALIZACIÓN DE LA BARRA LATERAL (SIDEBAR) ESTILO APPSHEET */
+    [data-testid="stSidebar"] { 
+        background-color: #FFFFFF !important;
+        border-right: 1px solid #E2E8F0 !important;
+        padding-top: 1rem;
     }
     
     .block-container { 
-        max-width: 95% !important; 
+        max-width: 98% !important; 
         padding-top: 0.5rem !important; 
         padding-bottom: 2rem !important; 
     }
@@ -52,82 +53,25 @@ st.markdown(
         color: #0F172A; 
     }
 
-    /* ESTILOS DE TABLA INTERACTIVA */
-    .tabla-contenedor {
-        max-height: 420px;
-        overflow-y: auto;
-        border: 1px solid #CBD5E1;
-        border-radius: 8px;
-        background-color: #FFFFFF;
-        box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.04);
-    }
-
-    /* MODAL Y TEXTO BLANCO */
-    div[role="dialog"] *, [data-testid="stDialog"] *, [data-testid="stModal"] * {
-        color: #FFFFFF !important;
-    }
-
-    div[role="dialog"] button, [data-testid="stDialog"] button, [data-testid="stModal"] button {
-        background-color: #0F382C !important;
-        border: none !important;
-        border-radius: 8px !important;
-        padding: 10px 16px !important;
-    }
-
-    /* FORMULARIO DE LOGIN */
-    [data-testid="stForm"] { 
-        background-color: #FFFFFF !important; 
-        border-radius: 14px !important; 
-        border: 1px solid #E2E8F0 !important; 
-        box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.05) !important; 
-        padding: 28px !important; 
-        border-top: 6px solid #0F382C !important; 
-    }
-
-    /* INPUTS */
-    .stTextInput input, .stDateInput input, .stSelectbox div { 
-        background-color: #FFFFFF !important; 
-        color: #0F172A !important; 
-        border: 1px solid #CBD5E1 !important; 
-        border-radius: 8px !important; 
-    }
-
-    /* BOTÓN SUBMIT */
-    div[data-testid="stFormSubmitButton"] > button { 
-        background-color: #0F382C !important; 
-        border-radius: 8px !important; 
-        border: none !important; 
-        padding: 12px 20px !important; 
-        width: 100% !important;
-        min-height: 48px !important;
-    }
-    div[data-testid="stFormSubmitButton"] > button p, 
-    div[data-testid="stFormSubmitButton"] > button span { 
-        color: #FFFFFF !important; 
-        font-weight: 700 !important; 
-    }
-
-    /* BOTONES LOGOUT */
-    #logout_btn button {
-        background-color: #FEE2E2 !important;
-        border: 1px solid #FCA5A5 !important;
-    }
-    #logout_btn button p { color: #991B1B !important; font-weight: 700 !important; }
-
-    /* TARJETAS DE DETALLE */
+    /* TARJETAS DE DETALLE LATERAL */
     .card-detalle {
         background-color: #FFFFFF;
         padding: 15px;
-        border-radius: 10px;
+        border-radius: 8px;
         border: 1px solid #E2E8F0;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    /* BOTONES DEL MENÚ LATERAL */
+    .stButton > button {
+        border-radius: 6px !important;
     }
     </style>
 """,
     unsafe_allow_html=True,
 )
 
-# DATOS EN SESIÓN - BASE DE DATOS DE PEDIDOS (Basada en tus imágenes)
+# BASE DE DATOS DE PEDIDOS (Basada en tus imágenes)
 if "pedidos_db" not in st.session_state:
     st.session_state.pedidos_db = pd.DataFrame([
         {
@@ -215,36 +159,14 @@ if "usuarios_registrados" not in st.session_state:
             "PASS": "admin123",
             "ROL": "👨‍💼 Portal Administrador",
             "ESTADO": "Activo",
-            "ÚLTIMA CONEXIÓN": datetime.now().strftime("%Y-%m-%d %H:%M"),
         },
         {
             "USUARIO": "operador1",
             "PASS": "123",
             "ROL": "🛠️ Operario",
             "ESTADO": "Activo",
-            "ÚLTIMA CONEXIÓN": "Nunca",
         },
     ])
-
-if "historial_acciones" not in st.session_state:
-    st.session_state.historial_acciones = pd.DataFrame([
-        {
-            "FECHA Y HORA": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "USUARIO": "admin",
-            "ACCIÓN": "Inicio de sistema",
-        }
-    ])
-
-
-def registrar_log(accion):
-    nuevo_log = pd.DataFrame([{
-        "FECHA Y HORA": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "USUARIO": st.session_state.usuario_actual,
-        "ACCIÓN": accion,
-    }])
-    st.session_state.historial_acciones = pd.concat(
-        [nuevo_log, st.session_state.historial_acciones], ignore_index=True
-    )
 
 
 def obtener_imagen_github(nombre_archivo="alfa_warehouse.jpg"):
@@ -259,13 +181,13 @@ def obtener_imagen_github(nombre_archivo="alfa_warehouse.jpg"):
 def mostrar_modal_soporte():
     st.markdown(
         """
-    <div style="color: #FFFFFF !important; line-height: 1.6;">
-        <p style="color: #FFFFFF !important; font-size: 15px; margin-bottom: 15px;">
-            Por motivos de seguridad corporativa, la asignación y restablecimiento de contraseñas es gestionada de manera directa por el área de Administración.
-        </p>
-        <div style="color: #FFFFFF !important; font-size: 14px; margin-bottom: 8px;">💬 <b>WhatsApp Soporte:</b> +51 987 654 321</div>
-        <div style="color: #FFFFFF !important; font-size: 14px; margin-bottom: 8px;">✉️ <b>Correo Institucional:</b> soporte@alfacargo.pe</div>
-    </div>
+        <div style="line-height: 1.6;">
+            <p style="font-size: 15px; margin-bottom: 15px;">
+                La asignación y restablecimiento de contraseñas es gestionada de manera directa por el área de Administración.
+            </p>
+            <div style="font-size: 14px; margin-bottom: 8px;">💬 <b>WhatsApp Soporte:</b> +51 987 654 321</div>
+            <div style="font-size: 14px; margin-bottom: 8px;">✉️ <b>Correo:</b> soporte@alfacargo.pe</div>
+        </div>
     """,
         unsafe_allow_html=True,
     )
@@ -273,14 +195,14 @@ def mostrar_modal_soporte():
         st.rerun()
 
 
-# LOGIN
+# PANTALLA DE LOGIN (Si no ha iniciado sesión)
 if st.session_state.usuario_actual is None:
     st.markdown(
         """
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <div style="font-size: 28px; font-weight: 900; color: #0F382C;">🌲 ALFA CARGO EXPRESS</div>
-        <div style='color: #64748B; font-size: 14px; font-weight: 600;'>🌐 Central Lima, Perú</div>
-    </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div style="font-size: 28px; font-weight: 900; color: #0F382C;">🌲 ALFA CARGO EXPRESS</div>
+            <div style='color: #64748B; font-size: 14px; font-weight: 600;'>🌐 Central Lima, Perú</div>
+        </div>
     """,
         unsafe_allow_html=True,
     )
@@ -290,14 +212,16 @@ if st.session_state.usuario_actual is None:
     with col_left:
         st.markdown(
             '<div style="color: #0F172A; font-size: 22px; font-weight: 700;'
-            ' margin-bottom: 15px;">Módulo de Operaciones e Integración Logística</div>',
+            ' margin-bottom: 15px;">Módulo de Operaciones e Integración'
+            " Logística</div>",
             unsafe_allow_html=True,
         )
         img_b64 = obtener_imagen_github("alfa_warehouse.jpg")
         if img_b64:
             st.markdown(
                 f'<img src="data:image/jpeg;base64,{img_b64}" style="width: 100%;'
-                ' max-height: 260px; object-fit: contain; border-radius: 12px;" />',
+                ' max-height: 260px; object-fit: contain; border-radius: 12px;"'
+                " />",
                 unsafe_allow_html=True,
             )
 
@@ -305,7 +229,7 @@ if st.session_state.usuario_actual is None:
         with st.form("login_form"):
             st.markdown(
                 '<h3 style="text-align: center; color: #0F382C; font-weight:800;'
-                ' margin-bottom: 20px;">Bienvenido</h3>',
+                ' margin-bottom: 20px;">Iniciar Sesión</h3>',
                 unsafe_allow_html=True,
             )
             input_user = st.text_input(
@@ -330,12 +254,9 @@ if st.session_state.usuario_actual is None:
                 if not user_match.empty:
                     st.session_state.usuario_actual = input_user
                     st.session_state.rol_actual = user_match.iloc[0]["ROL"]
-
                     if remember:
                         st.query_params["saved_user"] = input_user
                         st.query_params["saved_rol"] = st.session_state.rol_actual
-
-                    registrar_log("Inicio de sesión exitoso")
                     st.rerun()
                 else:
                     st.error("❌ Credenciales incorrectas.")
@@ -346,143 +267,237 @@ if st.session_state.usuario_actual is None:
         ):
             mostrar_modal_soporte()
 
-# DASHBOARD OPERATORIO Y ADMINISTRADOR
+# SISTEMA PRINCIPAL (CON MENÚ LATERAL ESTILO APPSHEET)
 else:
-    # BARRA SUPERIOR
-    col_nav1, col_nav2 = st.columns([5, 1])
-    with col_nav1:
+    with st.sidebar:
         st.markdown(
-            f"""
-            <div style="font-size: 22px; font-weight: 800; color: #0F382C; margin-bottom: 0px;">🌲 ALFA CARGO EXPRESS</div>
-            <div style="font-size: 13px; color: #475569; font-weight: 600; margin-bottom: 5px;">Usuario activo: <strong>{st.session_state.usuario_actual}</strong> ({st.session_state.rol_actual})</div>
-            """,
+            "### 🌲 **ALFA CARGO EXPRESS**",
+            help="Plataforma Logística",
+        )
+        st.divider()
+
+        # Opciones idénticas a tu menú lateral de AppSheet
+        menu_seleccion = st.radio(
+            "Navegación",
+            [
+                "📊 DASHBOARD",
+                "📦 PEDIDOS",
+                "👤 Iniciar Sesion / Cuenta",
+                "ℹ️ About",
+                "💬 Feedback",
+                "🧩 App Gallery",
+            ],
+            label_visibility="collapsed",
+        )
+
+        st.divider()
+        st.markdown(
+            f"👤 **{st.session_state.usuario_actual}**"
+            f" <br><small>{st.session_state.rol_actual}</small>",
             unsafe_allow_html=True,
         )
-    with col_nav2:
-        st.markdown('<div id="logout_btn">', unsafe_allow_html=True)
-        if st.button("🚪 Cerrar Sesión", key="logout"):
-            registrar_log("Cierre de sesión")
+
+        if st.button("🚪 Cerrar Sesión", use_container_width=True):
             st.session_state.usuario_actual = None
             st.session_state.rol_actual = None
             st.query_params.clear()
             st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
 
-    st.divider()
+    # VISTA: DASHBOARD PRINCIPAL
+    if "DASHBOARD" in menu_seleccion:
+        st.markdown(
+            "### 📊 DASHBOARD <span style='font-size:16px; color:#64748B;'>>&nbsp;"
+            " Detalle de pedidos</span>",
+            unsafe_allow_html=True,
+        )
 
-    # VISTA OPERARIO (REPLICANDO APPSHEET)
-    if st.session_state.rol_actual == "🛠️ Operario":
-        tab_dash, tab_detalle = st.tabs(["📊 DASHBOARD", "📦 PEDIDOS / DETALLE"])
+        # BARRA DE FILTROS DESPLEGABLE (Estilo acordeón superior o lateral limpio)
+        with st.expander("🔍 FILTROS AVANZADOS (Desplegable)", expanded=False):
+            f_col1, f_col2, f_col3, f_col4 = st.columns(4)
+            with f_col1:
+                f_inicio = st.date_input(
+                    "Fecha Inicial", value=pd.to_datetime("2026-06-01")
+                )
+            with f_col2:
+                f_final = st.date_input(
+                    "Fecha Final", value=pd.to_datetime("2026-07-31")
+                )
+            with f_col3:
+                estado_opt = st.selectbox(
+                    "Estado",
+                    ["TODOS"]
+                    + list(st.session_state.pedidos_db["ESTADO"].unique()),
+                )
+            with f_col4:
+                tipo_opt = st.selectbox(
+                    "Tipo de Servicio",
+                    ["TODOS"]
+                    + list(
+                        st.session_state.pedidos_db["TIPO_SERVICIO"].unique()
+                    ),
+                )
 
-        # DATOS FILTRADOS EN MEMORIA
-        df_pedidos = st.session_state.pedidos_db
-
-        with tab_dash:
-            col_filtros, col_graf1, col_graf2 = st.columns([1, 1.2, 1.2], gap="medium")
-
-            with col_filtros:
-                st.markdown("### 🔍 FILTROS")
-                f_inicio = st.date_input("FECHA_INICIAL", value=pd.to_datetime("2026-06-01"))
-                f_final = st.date_input("FECHA_FINAL", value=pd.to_datetime("2026-07-31"))
-                estado_opt = st.selectbox("ESTADO", ["TODOS"] + list(df_pedidos["ESTADO"].unique()))
-                tipo_opt = st.selectbox("TIPO_SERVICIO", ["TODOS"] + list(df_pedidos["TIPO_SERVICIO"].unique()))
-
-            # APLICAR FILTROS
-            df_filtered = df_pedidos.copy()
-            df_filtered["FECHA_REGISTRO_DT"] = pd.to_datetime(df_filtered["FECHA_REGISTRO"])
+        # FILTRADO DE DATOS
+        df_filtered = st.session_state.pedidos_db.copy()
+        df_filtered["FECHA_REGISTRO_DT"] = pd.to_datetime(
+            df_filtered["FECHA_REGISTRO"]
+        )
+        df_filtered = df_filtered[
+            (df_filtered["FECHA_REGISTRO_DT"] >= pd.to_datetime(f_inicio))
+            & (df_filtered["FECHA_REGISTRO_DT"] <= pd.to_datetime(f_final))
+        ]
+        if estado_opt != "TODOS":
+            df_filtered = df_filtered[df_filtered["ESTADO"] == estado_opt]
+        if tipo_opt != "TODOS":
             df_filtered = df_filtered[
-                (df_filtered["FECHA_REGISTRO_DT"] >= pd.to_datetime(f_inicio)) &
-                (df_filtered["FECHA_REGISTRO_DT"] <= pd.to_datetime(f_final))
+                df_filtered["TIPO_SERVICIO"] == tipo_opt
             ]
-            if estado_opt != "TODOS":
-                df_filtered = df_filtered[df_filtered["ESTADO"] == estado_opt]
-            if tipo_opt != "TODOS":
-                df_filtered = df_filtered[df_filtered["TIPO_SERVICIO"] == tipo_opt]
 
-            with col_graf1:
-                st.markdown("### Avance de ruta")
-                if not df_filtered.empty:
-                    fig_pie = px.pie(
-                        df_filtered, 
-                        names="ESTADO", 
-                        color="ESTADO",
-                        color_discrete_map={"ENTREGADO": "#1D70B8", "EN TRÁNSITO": "#F59E0B"},
-                        hole=0.4
-                    )
-                    fig_pie.update_layout(margin=dict(t=20, b=20, l=10, r=10), height=250)
-                    st.plotly_chart(fig_pie, use_container_width=True)
-                else:
-                    st.info("Sin datos")
+        # DISTRIBUCIÓN IDÉNTICA A LA IMAGEN 1 y 4 (Tabla grande + Gráficos abajo/derecha)
+        st.markdown("#### Detalle de pedidos")
+        st.dataframe(
+            df_filtered[[
+                "FECHA_REGISTRO",
+                "CODIGO_INTERNO",
+                "CLIENTE",
+                "ESTADO",
+                "SUB_ESTADO",
+                "NOMBRE",
+                "DISTRITO",
+                "TIPO_SERVICIO",
+            ]],
+            use_container_width=True,
+            hide_index=True,
+        )
 
-            with col_graf2:
-                st.markdown("### Cantidad de Pedidos")
-                if not df_filtered.empty:
-                    df_counts = df_filtered.groupby("FECHA_REGISTRO").size().reset_index(name="Count")
-                    fig_bar = px.bar(
-                        df_counts, 
-                        x="FECHA_REGISTRO", 
-                        y="Count",
-                        color_discrete_sequence=["#1D70B8"]
-                    )
-                    fig_bar.update_layout(margin=dict(t=20, b=20, l=10, r=10), height=250)
-                    st.plotly_chart(fig_bar, use_container_width=True)
-                else:
-                    st.info("Sin datos")
+        # GRÁFICOS INFERIORES
+        g_col1, g_col2 = st.columns(2)
+        with g_col1:
+            st.markdown("##### Avance de ruta")
+            if not df_filtered.empty:
+                fig_pie = px.pie(
+                    df_filtered,
+                    names="ESTADO",
+                    color="ESTADO",
+                    color_discrete_map={
+                        "ENTREGADO": "#1D70B8",
+                        "EN TRÁNSITO": "#F59E0B",
+                    },
+                    hole=0.4,
+                )
+                fig_pie.update_layout(
+                    margin=dict(t=10, b=10, l=10, r=10), height=220
+                )
+                st.plotly_chart(fig_pie, use_container_width=True)
+            else:
+                st.info("Sin datos para gráfica.")
 
-            st.divider()
-            st.markdown("### Detalle de pedidos")
-            st.dataframe(
-                df_filtered[["FECHA_REGISTRO", "CODIGO_INTERNO", "CLIENTE", "ESTADO", "SUB_ESTADO", "NOMBRE", "DISTRITO", "TIPO_SERVICIO"]],
-                use_container_width=True,
-                hide_index=True
+        with g_col2:
+            st.markdown("##### Cantidad de Pedidos")
+            if not df_filtered.empty:
+                df_counts = (
+                    df_filtered.groupby("FECHA_REGISTRO")
+                    .size()
+                    .reset_index(name="Count")
+                )
+                fig_bar = px.bar(
+                    df_counts,
+                    x="FECHA_REGISTRO",
+                    y="Count",
+                    color_discrete_sequence=["#1D70B8"],
+                )
+                fig_bar.update_layout(
+                    margin=dict(t=10, b=10, l=10, r=10), height=220
+                )
+                st.plotly_chart(fig_bar, use_container_width=True)
+            else:
+                st.info("Sin datos para gráfica.")
+
+    # VISTA: PEDIDOS Y FICHA TÉCNICA LATERAL (Como en la Imagen 2 y 3)
+    elif "PEDIDOS" in menu_seleccion:
+        st.markdown(
+            "### 📦 GESTIÓN DE PEDIDOS Y DETALLE TÉCNICO",
+            unsafe_allow_html=True,
+        )
+
+        col_tabla, col_ficha = st.columns([1.6, 1], gap="medium")
+
+        with col_tabla:
+            st.markdown("#### Lista de Registros")
+            df_pedidos = st.session_state.pedidos_db
+
+            # Selector para ver la tarjeta técnica del pedido
+            codigo_sel = st.selectbox(
+                "Seleccionar Código Interno para ver Ficha:",
+                df_pedidos["CODIGO_INTERNO"].unique(),
             )
 
-        with tab_detalle:
-            col_list, col_card = st.columns([1.8, 1], gap="medium")
+            st.dataframe(
+                df_pedidos[[
+                    "FECHA_REGISTRO",
+                    "CODIGO_INTERNO",
+                    "CLIENTE",
+                    "ESTADO",
+                    "SUB_ESTADO",
+                    "NOMBRE",
+                    "DISTRITO",
+                ]],
+                use_container_width=True,
+                hide_index=True,
+            )
 
-            with col_list:
-                st.markdown("### Lista de Pedidos")
-                codigo_sel = st.selectbox(
-                    "Selecciona un Pedido para inspeccionar ficha completa:",
-                    df_pedidos["CODIGO_INTERNO"].unique()
+        with col_ficha:
+            st.markdown("#### Pedidos filtro (Detalle)")
+            pedido_info = df_pedidos[
+                df_pedidos["CODIGO_INTERNO"] == codigo_sel
+            ].iloc[0]
+
+            st.markdown(
+                f"""
+                <div class="card-detalle">
+                    <p><b>NOMBRE:</b> {pedido_info['NOMBRE']}</p>
+                    <p><b>DIRECCION:</b> {pedido_info['DIRECCION']}</p>
+                    <p><b>DEPARTAMENTO:</b> {pedido_info['DEPARTAMENTO']}</p>
+                    <p><b>PROVINCIA:</b> {pedido_info['PROVINCIA']}</p>
+                    <p><b>DISTRITO:</b> {pedido_info['DISTRITO']}</p>
+                    <p><b>DOCUMENTO:</b> {pedido_info['DOCUMENTO']}</p>
+                    <p><b>TELEFONO:</b> {pedido_info['TELEFONO']}</p>
+                    <p><b>DESCRIPCION:</b> {pedido_info['DESCRIPCION']}</p>
+                    <p><b>PESO:</b> {pedido_info['PESO']} kg</p>
+                    <p><b>TIPO_SERVICIO:</b> {pedido_info['TIPO_SERVICIO']}</p>
+                    <p><b>PLACA:</b> {pedido_info['PLACA']}</p>
+                </div>
+            """,
+                unsafe_allow_html=True,
+            )
+
+            st.markdown("#### 📸 EVIDENCIA_1")
+            if pedido_info["EVIDENCIA"]:
+                st.image(
+                    pedido_info["EVIDENCIA"],
+                    caption="Comprobante de Entrega",
+                    width=250,
                 )
+            else:
+                st.warning("No hay evidencia fotográfica adjunta.")
 
-                st.dataframe(
-                    df_pedidos[["FECHA_REGISTRO", "CODIGO_INTERNO", "CLIENTE", "ESTADO", "SUB_ESTADO", "NOMBRE", "DISTRITO", "TIPO_SERVICIO"]],
-                    use_container_width=True,
-                    hide_index=True
-                )
+    # VISTAS SECUNDARIAS DEL MENÚ
+    elif "About" in menu_seleccion:
+        st.markdown("### ℹ️ Acerca de Alfa Cargo Express")
+        st.write(
+            "Sistema de control logístico optimizado para operaciones de"
+            " última milla y distribución en Lima metropolitana."
+        )
 
-            with col_card:
-                st.markdown("### 📋 Pedidos filtro (Detalle)")
-                pedido_info = df_pedidos[df_pedidos["CODIGO_INTERNO"] == codigo_sel].iloc[0]
+    elif "Feedback" in menu_seleccion:
+        st.markdown("### 💬 Buzón de Sugerencias")
+        st.text_area("Escribe tus comentarios para mejoras operativas:")
+        if st.button("Enviar Comentario"):
+            st.success("¡Gracias! Tu feedback ha sido registrado.")
 
-                st.markdown(
-                    f"""
-                    <div class="card-detalle">
-                        <p><b>NOMBRE:</b> {pedido_info['NOMBRE']}</p>
-                        <p><b>DIRECCION:</b> {pedido_info['DIRECCION']}</p>
-                        <p><b>DEPARTAMENTO:</b> {pedido_info['DEPARTAMENTO']}</p>
-                        <p><b>PROVINCIA:</b> {pedido_info['PROVINCIA']}</p>
-                        <p><b>DISTRITO:</b> {pedido_info['DISTRITO']}</p>
-                        <p><b>DOCUMENTO:</b> {pedido_info['DOCUMENTO']}</p>
-                        <p><b>TELEFONO:</b> {pedido_info['TELEFONO']}</p>
-                        <p><b>DESCRIPCION:</b> {pedido_info['DESCRIPCION']}</p>
-                        <p><b>PESO:</b> {pedido_info['PESO']} kg</p>
-                        <p><b>TIPO_SERVICIO:</b> {pedido_info['TIPO_SERVICIO']}</p>
-                        <p><b>PLACA:</b> {pedido_info['PLACA']}</p>
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
-
-                st.markdown("#### 📸 EVIDENCIA_1")
-                if pedido_info["EVIDENCIA"]:
-                    st.image(pedido_info["EVIDENCIA"], caption="Comprobante de Entrega", width=220)
-                else:
-                    st.warning("Sin imagen de evidencia adjunta.")
-
-    # MANTENER VISTA ADMIN EN CASO DE LOGUEARSE COMO ADMIN
-    else:
-        st.subheader("👨‍💼 Panel de Control de Administración")
-        st.dataframe(st.session_state.usuarios_registrados, use_container_width=True)
+    elif "App Gallery" in menu_seleccion:
+        st.markdown("### 🧩 Galería de Módulos")
+        st.info(
+            "Próximamente más integraciones de despacho automatizado y control"
+            " de flota satelital."
+        )
