@@ -1,15 +1,16 @@
 import base64
 from datetime import datetime
 import os
+import textwrap
 import pandas as pd
 import streamlit as st
 
 # 1. CONFIGURACIÓN DE PÁGINA
 st.set_page_config(
-    page_title="Alfa Cargo Express",
+    page_title="Alfa Cargo Express - Admin",
     page_icon="🚚",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="collapsed",
 )
 
 # REVISAR SESIÓN
@@ -25,32 +26,24 @@ if "usuario_actual" not in st.session_state:
         st.session_state.usuario_actual = None
         st.session_state.rol_actual = None
 
-# CSS PARA ELIMINAR LOS PUNTOS ROJOS/NEGROS DE LOS RADIO BUTTONS Y ESTILIZAR LA BARRA SUPERIOR
+# CSS GENERAL DEL SISTEMA
 st.markdown(
     """
     <style>
+    /* OCULTAR SCROLLBAR GLOBAL DE LA VENTANA */
     html, body, .stApp { 
+        overflow: hidden !important; 
         background-color: #F8FAFC !important; 
         color: #0F172A !important; 
     }
 
-    header[data-testid="stHeader"] {
-        display: none !important;
-    }
-
-    [data-testid="stSidebar"] { 
-        background-color: #FFFFFF !important;
-        border-right: 1px solid #E2E8F0 !important;
-        padding-top: 0.5rem !important;
-    }
-
-    /* ELIMINAR LOS PUNTOS / Círculos de radio buttons en la barra lateral */
-    div.row-widget.stRadio > div[role="radiogroup"] > label > div:first-child {
-        display: none !important;
+    /* OCULTAR SIDEBAR Y CABECERA DE STREAMLIT */
+    [data-testid="stSidebar"], [data-testid="collapsedControl"], header[data-testid="stHeader"] { 
+        display: none !important; 
     }
     
     .block-container { 
-        max-width: 98% !important; 
+        max-width: 88% !important; 
         padding-top: 0.5rem !important; 
         padding-bottom: 2rem !important; 
     }
@@ -59,127 +52,271 @@ st.markdown(
         color: #0F172A; 
     }
 
-    .stButton > button {
-        border-radius: 6px !important;
+    /* CONTENEDORES CON SCROLL INTELIGENTE PARA TABLAS */
+    .tabla-contenedor, .tabla-contenedor-logs {
+        max-height: 250px;
+        height: fit-content;
+        overflow-y: auto;
+        border: 1px solid #CBD5E1;
+        border-radius: 10px;
+        background-color: #FFFFFF;
+        box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.04);
+        margin-bottom: 15px !important;
+    }
+
+    .tabla-contenedor-logs {
+        max-height: 500px;
+        margin-top: 15px !important;
+    }
+
+    /* BARRA DE SCROLL MODERNA Y FINITA PARA TABLAS */
+    .tabla-contenedor::-webkit-scrollbar,
+    .tabla-contenedor-logs::-webkit-scrollbar {
+        width: 6px !important;
+    }
+
+    .tabla-contenedor::-webkit-scrollbar-track,
+    .tabla-contenedor-logs::-webkit-scrollbar-track {
+        background: transparent !important;
+    }
+
+    .tabla-contenedor::-webkit-scrollbar-thumb,
+    .tabla-contenedor-logs::-webkit-scrollbar-thumb {
+        background-color: #CBD5E1 !important;
+        border-radius: 10px !important;
+    }
+
+    .tabla-contenedor::-webkit-scrollbar-thumb:hover,
+    .tabla-contenedor-logs::-webkit-scrollbar-thumb:hover {
+        background-color: #94A3B8 !important;
+    }
+
+    /* ESTILOS DE TABLA */
+    .tabla-usuarios {
+        width: 100% !important;
+        border-collapse: collapse;
+        font-size: 14px;
+        text-align: left;
+    }
+    .tabla-usuarios th {
+        background-color: #0F382C;
+        color: #FFFFFF !important;
+        padding: 12px 14px;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        font-weight: 700;
+    }
+    .tabla-usuarios td {
+        padding: 10px 14px;
+        border-bottom: 1px solid #E2E8F0;
+        color: #0F172A !important;
+    }
+    .tabla-usuarios tr:last-child td {
+        border-bottom: none;
+    }
+    .tabla-usuarios tr:hover {
+        background-color: #F1F5F9;
+    }
+
+    /* LIMITAR ALTURA Y SCROLLBAR PARA MENÚS DESPLEGABLES (SELECTBOX) */
+    ul[role="listbox"] {
+        max-height: 200px !important;
+        overflow-y: auto !important;
+    }
+
+    ul[role="listbox"]::-webkit-scrollbar {
+        width: 6px !important;
+    }
+
+    ul[role="listbox"]::-webkit-scrollbar-track {
+        background: transparent !important;
+    }
+
+    ul[role="listbox"]::-webkit-scrollbar-thumb {
+        background-color: #CBD5E1 !important;
+        border-radius: 10px !important;
+    }
+
+    ul[role="listbox"]::-webkit-scrollbar-thumb:hover {
+        background-color: #94A3B8 !important;
+    }
+
+    /* MODAL Y TEXTO BLANCO */
+    div[role="dialog"] *, [data-testid="stDialog"] *, [data-testid="stModal"] * {
+        color: #FFFFFF !important;
+    }
+
+    div[role="dialog"] button, [data-testid="stDialog"] button, [data-testid="stModal"] button {
+        background-color: #0F382C !important;
+        border: none !important;
+        border-radius: 8px !important;
+        padding: 10px 16px !important;
+    }
+    div[role="dialog"] button *, [data-testid="stDialog"] button *, [data-testid="stModal"] button * {
+        color: #FFFFFF !important;
+        font-weight: 700 !important;
+        font-size: 14px !important;
+    }
+    div[role="dialog"] button:hover, [data-testid="stDialog"] button:hover, [data-testid="stModal"] button:hover {
+        background-color: #15803D !important;
+    }
+
+    /* FORMULARIO DE LOGIN */
+    [data-testid="stForm"] { 
+        background-color: #FFFFFF !important; 
+        border-radius: 14px !important; 
+        border: 1px solid #E2E8F0 !important; 
+        box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.05) !important; 
+        padding: 28px !important; 
+        border-top: 6px solid #0F382C !important; 
+    }
+
+    /* INPUTS - TEXTO CLARO Y FONDO BLANCO */
+    .stTextInput input { 
+        background-color: #FFFFFF !important; 
+        color: #0F172A !important; 
+        border: 1px solid #CBD5E1 !important; 
+        border-radius: 8px !important; 
+        padding: 10px 12px !important;
+        font-size: 14px !important;
+    }
+    .stTextInput input::placeholder { color: #94A3B8 !important; }
+
+    /* CONTRASEÑA */
+    div[data-baseweb="input"] {
+        background-color: #FFFFFF !important;
+        border: 1px solid #CBD5E1 !important;
+        border-radius: 8px !important;
+        overflow: hidden !important;
+    }
+    div[data-baseweb="input"] > div {
+        background-color: #FFFFFF !important;
+    }
+    div[data-baseweb="input"] input {
+        background-color: #FFFFFF !important;
+        border: none !important;
+        color: #0F172A !important;
+    }
+    button[aria-label="Show password"], button[aria-label="Hide password"] {
+        background-color: #FFFFFF !important;
+        border: none !important;
+    }
+    button[aria-label="Show password"] svg, button[aria-label="Hide password"] svg {
+        fill: #0F382C !important;
+    }
+
+    /* EXPANDER */
+    [data-testid="stExpander"] {
+        background-color: #FFFFFF !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 8px !important;
+        overflow: hidden !important;
+    }
+    [data-testid="stExpander"] details summary {
+        background-color: #F8FAFC !important;
+        color: #0F172A !important;
+        border-bottom: 1px solid #E2E8F0 !important;
+    }
+    [data-testid="stExpander"] details summary * {
+        color: #0F172A !important;
+        font-weight: 600 !important;
+    }
+
+    /* BOTÓN SUBMIT */
+    div[data-testid="stFormSubmitButton"] > button { 
+        background-color: #0F382C !important; 
+        border-radius: 8px !important; 
+        border: none !important; 
+        padding: 12px 20px !important; 
+        width: 100% !important;
+        min-height: 48px !important;
+    }
+    div[data-testid="stFormSubmitButton"] > button p, 
+    div[data-testid="stFormSubmitButton"] > button span { 
+        color: #FFFFFF !important; 
+        font-weight: 700 !important; 
+    }
+
+    /* SELECTBOX ESTILOS GENERALES */
+    div[data-baseweb="select"] > div {
+        background-color: #FFFFFF !important;
+        color: #0F172A !important;
+        border: 1px solid #CBD5E1 !important;
+        border-radius: 8px !important;
+    }
+    div[data-baseweb="select"] * {
+        color: #0F172A !important;
+        background-color: transparent !important;
+    }
+    li[role="option"], div[role="option"] {
+        background-color: #FFFFFF !important;
+        color: #0F172A !important;
+    }
+
+    /* BOTONES */
+    div[data-testid="stButton"] > button { 
+        background-color: #FFFFFF !important; 
+        color: #0F172A !important;
+        border: 1px solid #CBD5E1 !important; 
+        border-radius: 8px !important; 
+        font-weight: 600 !important;
+    }
+
+    #logout_btn button {
+        background-color: #FEE2E2 !important;
+        border: 1px solid #FCA5A5 !important;
+    }
+    #logout_btn button p { color: #991B1B !important; font-weight: 700 !important; }
+
+    #btn_inactivar button {
+        background-color: #FEF3C7 !important;
+        border: 1px solid #FCD34D !important;
+    }
+    #btn_inactivar button p { color: #92400E !important; font-weight: 700 !important; }
+
+    #btn_eliminar button {
+        background-color: #FEE2E2 !important;
+        border: 1px solid #FCA5A5 !important;
+    }
+    #btn_eliminar button p { color: #991B1B !important; font-weight: 700 !important; }
+
+    /* PESTAÑAS MINIMALISTAS */
+    .stTabs [data-baseweb="tab-list"] { 
+        background-color: transparent !important; 
+        gap: 28px !important; 
+        border-bottom: 2px solid #CBD5E1 !important; 
+        margin-top: 5px !important; 
+        padding-bottom: 0px !important;
+        width: 100% !important;
+    }
+    .stTabs [data-baseweb="tab"] { 
+        background-color: transparent !important; 
+        border: none !important;
+        border-bottom: 3px solid transparent !important;
+        padding: 8px 4px 10px 4px !important; 
+        border-radius: 0px !important;
+        margin-bottom: -2px !important;
+    }
+    .stTabs [data-baseweb="tab"] p { 
+        color: #64748B !important; 
+        font-weight: 500 !important; 
+        font-size: 15px !important;
+    }
+    .stTabs [aria-selected="true"] { 
+        background-color: transparent !important; 
+        border-bottom: 3px solid #0F382C !important; 
+    }
+    .stTabs [aria-selected="true"] p { 
+        color: #0F382C !important; 
+        font-weight: 700 !important; 
     }
     </style>
 """,
     unsafe_allow_html=True,
 )
 
-# BASE DE DATOS DE PEDIDOS
-if "pedidos_db" not in st.session_state:
-    st.session_state.pedidos_db = pd.DataFrame([
-        {
-            "FECHA_REGISTRO": "2026-07-08",
-            "CODIGO_INTERNO": "Tramontina",
-            "CLIENTE": "UNIMARKET",
-            "ESTADO": "ENTREGADO",
-            "SUB_ESTADO": "ENTREGA EFECTIVA",
-            "NOMBRE": "CECILIA LOO",
-            "DIRECCION": "AV. LA MAR 576",
-            "DEPARTAMENTO": "LIMA",
-            "PROVINCIA": "LIMA",
-            "DISTRITO": "ATE",
-            "DOCUMENTO": "TRAMONTINA",
-            "TELEFONO": "999999999",
-            "DESCRIPCION": "CAJAS",
-            "PESO": 1.00,
-            "TIPO_SERVICIO": "SAME-DAY",
-            "PLACA": "ABR120",
-        },
-        {
-            "FECHA_REGISTRO": "2026-06-11",
-            "CODIGO_INTERNO": "SIN NUMERO",
-            "CLIENTE": "UNIMARKET",
-            "ESTADO": "ENTREGADO",
-            "SUB_ESTADO": "ENTREGA EFECTIVA",
-            "NOMBRE": "LUIS FELIPE LLOSA",
-            "DIRECCION": "CALLE LOS PINOS 123",
-            "DEPARTAMENTO": "LIMA",
-            "PROVINCIA": "LIMA",
-            "DISTRITO": "SAN ISIDRO",
-            "DOCUMENTO": "73629102",
-            "TELEFONO": "987654321",
-            "DESCRIPCION": "PAQUETE PEQUEÑO",
-            "PESO": 0.50,
-            "TIPO_SERVICIO": "SAME-DAY",
-            "PLACA": "ABR120",
-        },
-        {
-            "FECHA_REGISTRO": "2026-06-13",
-            "CODIGO_INTERNO": "BLC1-48039",
-            "CLIENTE": "UNIMARKET",
-            "ESTADO": "ENTREGADO",
-            "SUB_ESTADO": "ENTREGA EFECTIVA",
-            "NOMBRE": "JOHN CASAS AGUILAR",
-            "DIRECCION": "AV. LARCO 890",
-            "DEPARTAMENTO": "LIMA",
-            "PROVINCIA": "LIMA",
-            "DISTRITO": "MIRAFLORES",
-            "DOCUMENTO": "10492817",
-            "TELEFONO": "912345678",
-            "DESCRIPCION": "CAJA MEDIANA",
-            "PESO": 2.50,
-            "TIPO_SERVICIO": "SAME-DAY",
-            "PLACA": "ABR120",
-        },
-        {
-            "FECHA_REGISTRO": "2026-06-13",
-            "CODIGO_INTERNO": "BLC2-5014",
-            "CLIENTE": "UNIMARKET",
-            "ESTADO": "ENTREGADO",
-            "SUB_ESTADO": "ENTREGA EFECTIVA",
-            "NOMBRE": "JUAN CARLOS REYES HAWKINS",
-            "DIRECCION": "AV. PARDO 450",
-            "DEPARTAMENTO": "LIMA",
-            "PROVINCIA": "LIMA",
-            "DISTRITO": "MIRAFLORES",
-            "DOCUMENTO": "40291827",
-            "TELEFONO": "922334455",
-            "DESCRIPCION": "SOBRE",
-            "PESO": 0.30,
-            "TIPO_SERVICIO": "SAME-DAY",
-            "PLACA": "ABR120",
-        },
-        {
-            "FECHA_REGISTRO": "2026-06-13",
-            "CODIGO_INTERNO": "LWE2026 - 424",
-            "CLIENTE": "UNIMARKET",
-            "ESTADO": "EN TRÁNSITO",
-            "SUB_ESTADO": "EN RUTA",
-            "NOMBRE": "MARIA EMILIA GUZMAN",
-            "DIRECCION": "AV. CAMINO REAL 400",
-            "DEPARTAMENTO": "LIMA",
-            "PROVINCIA": "LIMA",
-            "DISTRITO": "SANTIAGO DE SURCO",
-            "DOCUMENTO": "45928103",
-            "TELEFONO": "955443322",
-            "DESCRIPCION": "SOBRE DOCUMENTOS",
-            "PESO": 0.20,
-            "TIPO_SERVICIO": "NEXT-DAY",
-            "PLACA": "C8X-401",
-        },
-        {
-            "FECHA_REGISTRO": "2026-06-16",
-            "CODIGO_INTERNO": "BLC1-48086",
-            "CLIENTE": "UNIMARKET",
-            "ESTADO": "ENTREGADO",
-            "SUB_ESTADO": "ENTREGA EFECTIVA",
-            "NOMBRE": "ELSA ROSARIO UGARTE",
-            "DIRECCION": "CALLE LIBERTAD 200",
-            "DEPARTAMENTO": "LIMA",
-            "PROVINCIA": "LIMA",
-            "DISTRITO": "MIRAFLORES",
-            "DOCUMENTO": "08273645",
-            "TELEFONO": "944332211",
-            "DESCRIPCION": "PAQUETE",
-            "PESO": 1.20,
-            "TIPO_SERVICIO": "SAME-DAY",
-            "PLACA": "ABR120",
-        },
-    ])
-
+# DATOS EN SESIÓN
 if "usuarios_registrados" not in st.session_state:
     st.session_state.usuarios_registrados = pd.DataFrame([
         {
@@ -187,14 +324,56 @@ if "usuarios_registrados" not in st.session_state:
             "PASS": "admin123",
             "ROL": "👨‍💼 Portal Administrador",
             "ESTADO": "Activo",
+            "ÚLTIMA CONEXIÓN": datetime.now().strftime("%Y-%m-%d %H:%M"),
         },
         {
             "USUARIO": "operador1",
             "PASS": "123",
             "ROL": "🛠️ Operario",
             "ESTADO": "Activo",
+            "ÚLTIMA CONEXIÓN": "Nunca",
+        },
+        {
+            "USUARIO": "juan_repartidor",
+            "PASS": "123",
+            "ROL": "🛵 Repartidor (App)",
+            "ESTADO": "Activo",
+            "ÚLTIMA CONEXIÓN": "Nunca",
+        },
+        {
+            "USUARIO": "cliente_global",
+            "PASS": "123",
+            "ROL": "🏢 Cliente",
+            "ESTADO": "Activo",
+            "ÚLTIMA CONEXIÓN": "Nunca",
         },
     ])
+
+if (
+    "ÚLTIMA CONEXIÓN"
+    not in st.session_state.usuarios_registrados.columns
+):
+    st.session_state.usuarios_registrados["ÚLTIMA CONEXIÓN"] = "Nunca"
+
+if "historial_acciones" not in st.session_state:
+    st.session_state.historial_acciones = pd.DataFrame([
+        {
+            "FECHA Y HORA": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "USUARIO": "admin",
+            "ACCIÓN": "Inicio de sistema",
+        }
+    ])
+
+
+def registrar_log(accion):
+    nuevo_log = pd.DataFrame([{
+        "FECHA Y HORA": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "USUARIO": st.session_state.usuario_actual,
+        "ACCIÓN": accion,
+    }])
+    st.session_state.historial_acciones = pd.concat(
+        [nuevo_log, st.session_state.historial_acciones], ignore_index=True
+    )
 
 
 def obtener_imagen_github(nombre_archivo="alfa_warehouse.jpg"):
@@ -204,90 +383,38 @@ def obtener_imagen_github(nombre_archivo="alfa_warehouse.jpg"):
     return None
 
 
+# MODAL DE SOPORTE
 @st.dialog("📌 Soporte y Recuperación de Credenciales")
 def mostrar_modal_soporte():
     st.markdown(
         """
-        <div style="line-height: 1.6;">
-            <p style="font-size: 15px; margin-bottom: 15px;">
-                La asignación y restablecimiento de contraseñas es gestionada por el área de Administración.
-            </p>
-            <div style="font-size: 14px; margin-bottom: 8px;">💬 <b>WhatsApp Soporte:</b> +51 987 654 321</div>
-            <div style="font-size: 14px; margin-bottom: 8px;">✉️ <b>Correo:</b> soporte@alfacargo.pe</div>
-        </div>
+    <div style="color: #FFFFFF !important; line-height: 1.6;">
+        <p style="color: #FFFFFF !important; font-size: 15px; margin-bottom: 15px;">
+            Por motivos de seguridad corporativa, la asignación y restablecimiento de contraseñas es gestionada de manera directa por el área de Administración.
+        </p>
+        <p style="color: #FFFFFF !important; font-weight: bold; font-size: 15px; margin-bottom: 10px;">
+            Canales de atención:
+        </p>
+        <div style="color: #FFFFFF !important; font-size: 14px; margin-bottom: 8px;">💬 <b>WhatsApp Soporte:</b> +51 987 654 321</div>
+        <div style="color: #FFFFFF !important; font-size: 14px; margin-bottom: 8px;">✉️ <b>Correo Institucional:</b> <a href="mailto:soporte@alfacargo.pe" style="color: #38BDF8 !important; text-decoration: underline;">soporte@alfacargo.pe</a></div>
+        <div style="color: #FFFFFF !important; font-size: 14px; margin-bottom: 20px;">🕒 <b>Horario de Atención:</b> Lun a Vie de 8:00 am a 6:00 pm</div>
+    </div>
     """,
         unsafe_allow_html=True,
     )
+
     if st.button("Entendido", use_container_width=True):
         st.rerun()
 
 
-# MODAL PARA AÑADIR NUEVO PEDIDO
-@st.dialog("➕ Añadir Nuevo Pedido / Registro")
-def modal_agregar_pedido():
-    with st.form("form_nuevo_pedido"):
-        f_reg = st.date_input(
-            "Fecha de Registro", value=datetime.today()
-        ).strftime("%Y-%m-%d")
-        c_int = st.text_input("Código Interno")
-        cli = st.text_input("Cliente", value="UNIMARKET")
-        est = st.selectbox("Estado", ["ENTREGADO", "EN TRÁNSITO", "PENDIENTE"])
-        sub_est = st.selectbox(
-            "Sub Estado", ["ENTREGA EFECTIVA", "EN RUTA", "EN ALMACÉN"]
-        )
-        nom = st.text_input("Nombre del Destinatario")
-        dist = st.text_input("Distrito")
-        t_serv = st.selectbox("Tipo de Servicio", ["SAME-DAY", "NEXT-DAY"])
-
-        submit_nuevo = st.form_submit_button("Guardar Pedido")
-        if submit_nuevo:
-            if c_int and nom:
-                nuevo_df = pd.DataFrame([{
-                    "FECHA_REGISTRO": f_reg,
-                    "CODIGO_INTERNO": c_int,
-                    "CLIENTE": cli,
-                    "ESTADO": est,
-                    "SUB_ESTADO": sub_est,
-                    "NOMBRE": nom,
-                    "DIRECCION": "S/N",
-                    "DEPARTAMENTO": "LIMA",
-                    "PROVINCIA": "LIMA",
-                    "DISTRITO": dist,
-                    "DOCUMENTO": "00000000",
-                    "TELEFONO": "999999999",
-                    "DESCRIPCION": "General",
-                    "PESO": 1.0,
-                    "TIPO_SERVICIO": t_serv,
-                    "PLACA": "AUTO-01",
-                }])
-                st.session_state.pedidos_db = pd.concat(
-                    [st.session_state.pedidos_db, nuevo_df], ignore_index=True
-                )
-                st.success("✅ Pedido añadido correctamente.")
-                st.rerun()
-            else:
-                st.warning("Por favor completa los campos obligatorios.")
-
-
-# MODAL DE FILTRADO AVANZADO
-@st.dialog("🎛️ Filtros Avanzados")
-def modal_filtros():
-    estado_filtro = st.selectbox(
-        "Filtrar por Estado", ["TODOS", "ENTREGADO", "EN TRÁNSITO"]
-    )
-    if st.button("Aplicar Filtro", use_container_width=True):
-        st.session_state["filtro_estado_activo"] = estado_filtro
-        st.rerun()
-
-
-# PANTALLA DE LOGIN
+# LOGIN
 if st.session_state.usuario_actual is None:
     st.markdown(
         """
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <div style="font-size: 28px; font-weight: 900; color: #0F382C;">🌲 ALFA CARGO EXPRESS</div>
-            <div style='color: #64748B; font-size: 14px; font-weight: 600;'>🌐 Central Lima, Perú</div>
-        </div>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div style="font-size: 28px; font-weight: 900; color: #0F382C;">🌲 ALFA CARGO EXPRESS</div>
+        <div style='color: #64748B; font-size: 14px; font-weight: 600;'>🌐 Central Lima, Perú</div>
+    </div>
     """,
         unsafe_allow_html=True,
     )
@@ -297,16 +424,26 @@ if st.session_state.usuario_actual is None:
     with col_left:
         st.markdown(
             '<div style="color: #0F172A; font-size: 22px; font-weight: 700;'
-            ' margin-bottom: 15px;">Módulo de Operaciones e Integración'
-            " Logística</div>",
+            ' margin-bottom: 15px;">Módulo de Administración del Sistema</div>',
             unsafe_allow_html=True,
         )
+        st.markdown(
+            """
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+            <div style="color: #334155; font-weight: 600; font-size: 14px;">▌ Control de Accesos y Roles</div>
+            <div style="color: #334155; font-weight: 600; font-size: 14px;">▌ Gestión de Claves Directa</div>
+            <div style="color: #334155; font-weight: 600; font-size: 14px;">▌ Auditoría y Registros (Logs)</div>
+            <div style="color: #334155; font-weight: 600; font-size: 14px;">▌ Seguridad Operativa</div>
+        </div>
+        """,
+            unsafe_allow_html=True,
+        )
+
         img_b64 = obtener_imagen_github("alfa_warehouse.jpg")
         if img_b64:
             st.markdown(
                 f'<img src="data:image/jpeg;base64,{img_b64}" style="width: 100%;'
-                ' max-height: 260px; object-fit: contain; border-radius: 12px;"'
-                " />",
+                ' max-height: 260px; object-fit: contain; border-radius: 12px;" />',
                 unsafe_allow_html=True,
             )
 
@@ -314,7 +451,7 @@ if st.session_state.usuario_actual is None:
         with st.form("login_form"):
             st.markdown(
                 '<h3 style="text-align: center; color: #0F382C; font-weight:800;'
-                ' margin-bottom: 20px;">Iniciar Sesión</h3>',
+                ' margin-bottom: 20px;">Bienvenido</h3>',
                 unsafe_allow_html=True,
             )
             input_user = st.text_input(
@@ -326,7 +463,9 @@ if st.session_state.usuario_actual is None:
                 placeholder="Ingresa tu contraseña",
                 key="p_login",
             )
+
             remember = st.checkbox("Recordar inicio de sesión", value=True)
+
             submit_btn = st.form_submit_button("Ingresar al Portal")
 
             if submit_btn:
@@ -339,153 +478,263 @@ if st.session_state.usuario_actual is None:
                 if not user_match.empty:
                     st.session_state.usuario_actual = input_user
                     st.session_state.rol_actual = user_match.iloc[0]["ROL"]
+
+                    if (
+                        "ÚLTIMA CONEXIÓN"
+                        in st.session_state.usuarios_registrados.columns
+                    ):
+                        st.session_state.usuarios_registrados.loc[
+                            st.session_state.usuarios_registrados["USUARIO"]
+                            == input_user,
+                            "ÚLTIMA CONEXIÓN",
+                        ] = datetime.now().strftime("%Y-%m-%d %H:%M")
+
                     if remember:
                         st.query_params["saved_user"] = input_user
                         st.query_params["saved_rol"] = st.session_state.rol_actual
+
+                    registrar_log("Inicio de sesión exitoso")
                     st.rerun()
                 else:
                     st.error("❌ Credenciales incorrectas.")
 
+        st.markdown("<br>", unsafe_allow_html=True)
         if st.button(
             "❓ ¿Necesitas ayuda con tu acceso o contraseña?",
             use_container_width=True,
         ):
             mostrar_modal_soporte()
 
-# APLICACIÓN PRINCIPAL
+# DASHBOARD
 else:
-    # BARRA SUPERIOR IDÉNTICA LIMPIA (SIN LOS BOTONES DE REFRESCAR Y CONFIGURACIÓN INCORRECTOS)
-    st.markdown(
-        """
-        <div style="display: flex; align-items: center; justify-content: space-between; background-color: #FFFFFF; border-bottom: 1px solid #E2E8F0; padding: 8px 15px; margin-top: -30px; margin-left: -30px; margin-right: -30px; margin-bottom: 15px;">
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <span style="font-size: 18px; font-weight: bold; cursor: pointer;">☰</span>
-                <div style="background-color: #0F382C; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 14px;">α</div>
-                <span style="font-size: 16px; font-weight: 800; color: #0F172A; letter-spacing: 0.5px;">ALFA CARGO EXPRESS</span>
-            </div>
-            <div style="flex-grow: 1; max-width: 400px; margin: 0 20px;">
-                <input type="text" placeholder="🔍 Search Detalle de pedidos" style="width: 100%; padding: 6px 12px; border: 1px solid #CBD5E1; border-radius: 4px; font-size: 13px; background-color: #F8FAFC;" disabled>
-            </div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <div style="background-color: #0F382C; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">O</div>
-            </div>
-        </div>
-    """,
-        unsafe_allow_html=True,
-    )
-
-    with st.sidebar:
-        # Menú lateral sin puntos gracias al CSS inyectado
-        menu_seleccion = st.radio(
-            "Navegación",
-            [
-                "📊 DASHBOARD",
-                "📦 PEDIDOS",
-                "👤 Iniciar Sesion",
-                "ℹ️ About",
-                "💬 Feedback",
-                "🧩 App Gallery",
-            ],
-            label_visibility="collapsed",
-        )
-
-        st.divider()
+    col_nav1, col_nav2 = st.columns([5, 1])
+    with col_nav1:
         st.markdown(
-            f"👤 **{st.session_state.usuario_actual}**"
-            f" <br><small>{st.session_state.rol_actual}</small>",
+            f"""
+        <div style="font-size: 22px; font-weight: 800; color: #0F382C; margin-bottom: 0px;">🌲 ALFA CARGO EXPRESS — Portal Administrador</div>
+        <div style="font-size: 13px; color: #475569; font-weight: 600; margin-bottom: 5px;">Admin activo: <strong>{st.session_state.usuario_actual}</strong></div>
+        """,
             unsafe_allow_html=True,
         )
-
-        if st.button("🚪 Cerrar Sesión", use_container_width=True):
+    with col_nav2:
+        st.markdown('<div id="logout_btn">', unsafe_allow_html=True)
+        if st.button("🚪 Cerrar Sesión", key="logout"):
+            registrar_log("Cierre de sesión")
             st.session_state.usuario_actual = None
             st.session_state.rol_actual = None
             st.query_params.clear()
             st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
 
-    # VISTA: DASHBOARD / DETALLE DE PEDIDOS
-    if "DASHBOARD" in menu_seleccion or "PEDIDOS" in menu_seleccion:
-        col_path, col_actions = st.columns([3, 1])
-        with col_path:
-            st.markdown(
-                "<span style='font-weight: 700; color: #0F172A;'>DASHBOARD</span>"
-                " <span style='color: #64748B;'>>&nbsp; Detalle de"
-                " pedidos</span>",
-                unsafe_allow_html=True,
-            )
+    # PESTAÑAS
+    tab1, tab2 = st.tabs(["Usuarios y Claves", "Auditoría (Logs)"])
 
-        with col_actions:
-            # BOTONES SUPERIORES FUNCIONALES (Subir/Descargar/Añadir/Filtrar)
-            act_cols = st.columns(4)
+    with tab1:
+        col_a, col_b = st.columns([1, 1.3], gap="large")
 
-            with act_cols[0]:
-                csv_data = st.session_state.pedidos_db.to_csv(
-                    index=False
-                ).encode("utf-8")
-                st.download_button(
-                    label="📥",
-                    data=csv_data,
-                    file_name="detalle_pedidos.csv",
-                    mime="text/csv",
-                    help="Descargar datos en CSV",
+        with col_a:
+            st.subheader("➕ Crear Nuevo Usuario")
+            with st.form("form_crear"):
+                nu = st.text_input(
+                    "Nombre de Usuario", placeholder="Ej: operador_lima"
+                )
+                np = st.text_input(
+                    "Contraseña Inicial",
+                    type="password",
+                    placeholder="Clave temporal",
                 )
 
-            with act_cols[1]:
-                if st.button("🔄", help="Actualizar vista"):
-                    st.rerun()
+                nr = st.selectbox(
+                    "Rol Asignado",
+                    ["🛠️ Operario", "🏢 Cliente", "🛵 Repartidor (App)"],
+                )
 
-            with act_cols[2]:
-                if st.button("➕", help="Añadir registro"):
-                    modal_agregar_pedido()
+                btn_crear = st.form_submit_button("Guardar Usuario")
 
-            with act_cols[3]:
-                if st.button("🎛️", help="Filtros avanzados"):
-                    modal_filtros()
+                if btn_crear:
+                    if nu and np:
+                        if (
+                            nu
+                            in st.session_state.usuarios_registrados[
+                                "USUARIO"
+                            ].values
+                        ):
+                            st.error("El nombre de usuario ya existe.")
+                        else:
+                            nueva_f = pd.DataFrame([{
+                                "USUARIO": nu,
+                                "PASS": np,
+                                "ROL": nr,
+                                "ESTADO": "Activo",
+                                "ÚLTIMA CONEXIÓN": "Nunca",
+                            }])
+                            st.session_state.usuarios_registrados = (
+                                pd.concat(
+                                    [
+                                        st.session_state.usuarios_registrados,
+                                        nueva_f,
+                                    ],
+                                    ignore_index=True,
+                                )
+                            )
+                            registrar_log(
+                                f"Creó al usuario '{nu}' con rol '{nr}'"
+                            )
+                            st.success(f"✅ Usuario {nu} creado con éxito")
+                            st.rerun()
+                    else:
+                        st.warning("Completa los campos obligatorios.")
 
-        st.markdown("<br>", unsafe_allow_html=True)
+        with col_b:
+            st.subheader("📋 Usuarios Registrados")
 
-        # APLICAR FILTRO SI EXISTE
-        df_to_show = st.session_state.pedidos_db
-        if (
-            "filtro_estado_activo" in st.session_state
-            and st.session_state["filtro_estado_activo"] != "TODOS"
-        ):
-            df_to_show = df_to_show[
-                df_to_show["ESTADO"]
-                == st.session_state["filtro_estado_activo"]
+            cols_deseadas = ["USUARIO", "ROL", "ESTADO", "ÚLTIMA CONEXIÓN"]
+            cols_existentes = [
+                c
+                for c in cols_deseadas
+                if c in st.session_state.usuarios_registrados.columns
             ]
 
-        df_display = df_to_show[
-            [
-                "FECHA_REGISTRO",
-                "CODIGO_INTERNO",
-                "CLIENTE",
-                "ESTADO",
-                "SUB_ESTADO",
-                "NOMBRE",
-                "DISTRITO",
-                "TIPO_SERVICIO",
-            ]
-        ].copy()
+            df_vista = st.session_state.usuarios_registrados[cols_existentes]
 
-        st.dataframe(df_display, use_container_width=True, hide_index=True)
+            filas_html = ""
+            for _, fila in df_vista.iterrows():
+                color_estado = (
+                    "#16A34A" if fila["ESTADO"] == "Activo" else "#DC2626"
+                )
+                ultima_conexion = fila.get("ÚLTIMA CONEXIÓN", "Nunca")
+                filas_html += f"<tr><td><b>{fila['USUARIO']}</b></td><td>{fila['ROL']}</td><td><span style='color: {color_estado}; font-weight:700;'>{fila['ESTADO']}</span></td><td>{ultima_conexion}</td></tr>"
 
-    elif "About" in menu_seleccion:
-        st.markdown("### ℹ️ Acerca de Alfa Cargo Express")
-        st.write(
-            "Plataforma de control logístico de última milla para operaciones"
-            " comerciales."
-        )
+            tabla_html = textwrap.dedent(f"""
+                <div class="tabla-contenedor">
+                    <table class="tabla-usuarios">
+                        <thead>
+                            <tr>
+                                <th>USUARIO</th>
+                                <th>ROL</th>
+                                <th>ESTADO</th>
+                                <th>ÚLTIMA CONEXIÓN</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filas_html}
+                        </tbody>
+                    </table>
+                </div>
+                """).strip()
 
-    elif "Feedback" in menu_seleccion:
-        st.markdown("### 💬 Buzón de Sugerencias")
-        st.text_area("Escribe tus comentarios:")
-        if st.button("Enviar"):
-            st.success("¡Enviado con éxito!")
+            st.markdown(tabla_html, unsafe_allow_html=True)
 
-    elif "App Gallery" in menu_seleccion:
-        st.markdown("### 🧩 Galería de Módulos")
-        st.info("Módulos adicionales en desarrollo.")
+            st.subheader("⚙️ Gestión de Claves y Accesos")
 
-    elif "Iniciar Sesion" in menu_seleccion:
-        st.markdown("### 👤 Gestión de Cuenta")
-        st.write(f"Usuario activo actualmente: {st.session_state.usuario_actual}")
+            # EXCLUSIÓN DEL USUARIO ACTUAL
+            lista_usuarios_gestion = st.session_state.usuarios_registrados[
+                st.session_state.usuarios_registrados["USUARIO"]
+                != st.session_state.usuario_actual
+            ]["USUARIO"].tolist()
+
+            if lista_usuarios_gestion:
+                usr_gestion = st.selectbox(
+                    "Selecciona un usuario para gestionar",
+                    lista_usuarios_gestion,
+                    key="select_gestion",
+                )
+
+                with st.expander("🔑 Restablecer Contraseña Directamente"):
+                    nueva_pass_admin = st.text_input(
+                        f"Nueva Contraseña para {usr_gestion}",
+                        type="password",
+                        placeholder="Escribe la nueva clave",
+                        key="n_p_admin",
+                    )
+                    if st.button(
+                        "🔄 Actualizar Clave Now", use_container_width=True
+                    ):
+                        if nueva_pass_admin:
+                            st.session_state.usuarios_registrados.loc[
+                                st.session_state.usuarios_registrados[
+                                    "USUARIO"
+                                ]
+                                == usr_gestion,
+                                "PASS",
+                            ] = nueva_pass_admin
+                            registrar_log(
+                                f"Restableció la contraseña del usuario"
+                                f" '{usr_gestion}'"
+                            )
+                            st.success(
+                                f"✅ Contraseña de '{usr_gestion}' actualizada"
+                                " correctamente."
+                            )
+                            st.rerun()
+                        else:
+                            st.warning("Escribe la nueva clave.")
+
+                col_e1, col_e2 = st.columns(2)
+                with col_e1:
+                    st.markdown('<div id="btn_inactivar">', unsafe_allow_html=True)
+                    if st.button(
+                        "🚫 Dar de Baja / Inactivar",
+                        use_container_width=True,
+                        key="inactivar_btn",
+                    ):
+                        st.session_state.usuarios_registrados.loc[
+                            st.session_state.usuarios_registrados["USUARIO"]
+                            == usr_gestion,
+                            "ESTADO",
+                        ] = "Inactivo"
+                        registrar_log(f"Inactivó al usuario '{usr_gestion}'")
+                        st.success(
+                            f"Usuario '{usr_gestion}' marcado como Inactivo."
+                        )
+                        st.rerun()
+                    st.markdown("</div>", unsafe_allow_html=True)
+
+                with col_e2:
+                    st.markdown('<div id="btn_eliminar">', unsafe_allow_html=True)
+                    if st.button(
+                        "❌ Eliminar Cuenta",
+                        use_container_width=True,
+                        key="eliminar_btn",
+                    ):
+                        st.session_state.usuarios_registrados = (
+                            st.session_state.usuarios_registrados[
+                                st.session_state.usuarios_registrados[
+                                    "USUARIO"
+                                ]
+                                != usr_gestion
+                            ]
+                        )
+                        registrar_log(f"Eliminó al usuario '{usr_gestion}'")
+                        st.success(f"Usuario '{usr_gestion}' eliminado.")
+                        st.rerun()
+                    st.markdown("</div>", unsafe_allow_html=True)
+            else:
+                st.info("ℹ️ No hay otros usuarios registrados para gestionar.")
+
+    with tab2:
+        st.subheader("📜 Historial de Seguridad y Movimientos")
+
+        df_logs = st.session_state.historial_acciones
+        filas_logs = ""
+        for _, fila in df_logs.iterrows():
+            filas_logs += f"<tr><td>{fila['FECHA Y HORA']}</td><td><b>{fila['USUARIO']}</b></td><td>{fila['ACCIÓN']}</td></tr>"
+
+        tabla_logs_html = textwrap.dedent(f"""
+            <div class="tabla-contenedor-logs">
+                <table class="tabla-usuarios">
+                    <thead>
+                        <tr>
+                            <th>FECHA Y HORA</th>
+                            <th>USUARIO</th>
+                            <th>ACCIÓN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {filas_logs}
+                    </tbody>
+                </table>
+            </div>
+            """).strip()
+
+        st.markdown(tabla_logs_html, unsafe_allow_html=True)
