@@ -90,7 +90,7 @@ st.markdown(
     }
 
     /* CONTENEDORES CON SCROLL INTELIGENTE PARA TABLAS */
-    .tabla-contenedor, .tabla-contenedor-logs, .tabla-contenedor-pedidos {
+    .tabla-contenedor, .tabla-contenedor-logs {
         max-height: 450px;
         height: fit-content;
         overflow-y: auto;
@@ -108,27 +108,23 @@ st.markdown(
 
     /* BARRA DE SCROLL MODERNA Y FINITA PARA TABLAS */
     .tabla-contenedor::-webkit-scrollbar,
-    .tabla-contenedor-logs::-webkit-scrollbar,
-    .tabla-contenedor-pedidos::-webkit-scrollbar {
+    .tabla-contenedor-logs::-webkit-scrollbar {
         width: 6px !important;
     }
 
     .tabla-contenedor::-webkit-scrollbar-track,
-    .tabla-contenedor-logs::-webkit-scrollbar-track,
-    .tabla-contenedor-pedidos::-webkit-scrollbar-track {
+    .tabla-contenedor-logs::-webkit-scrollbar-track {
         background: transparent !important;
     }
 
     .tabla-contenedor::-webkit-scrollbar-thumb,
-    .tabla-contenedor-logs::-webkit-scrollbar-thumb,
-    .tabla-contenedor-pedidos::-webkit-scrollbar-thumb {
+    .tabla-contenedor-logs::-webkit-scrollbar-thumb {
         background-color: #CBD5E1 !important;
         border-radius: 10px !important;
     }
 
     .tabla-contenedor::-webkit-scrollbar-thumb:hover,
-    .tabla-contenedor-logs::-webkit-scrollbar-thumb:hover,
-    .tabla-contenedor-pedidos::-webkit-scrollbar-thumb:hover {
+    .tabla-contenedor-logs::-webkit-scrollbar-thumb:hover {
         background-color: #94A3B8 !important;
     }
 
@@ -596,44 +592,21 @@ else:
             st.markdown("<h3 style='margin:0;'>DASHBOARD > Detalle de pedidos</h3>", unsafe_allow_html=True)
         
         with col_btns:
-            b1, b2, b3, b4 = st.columns(4)
+            b1, b2, b3 = st.columns(3)
             csv = st.session_state.df_pedidos.to_csv(index=False).encode('utf-8')
             b1.download_button("📥 Descargar", data=csv, file_name="pedidos.csv")
             if b2.button("📤 Subir"): modal_upload()
             if b3.button("➕ Nuevo"): modal_add_pedido()
-            btn_filtro = b4.toggle("🔍")
 
-        df_final = st.session_state.df_pedidos.copy()
-        
-        # FILTRO ESTILO EXCEL (COLUMNA Y VALOR)
-        if btn_filtro:
-            st.markdown("<div style='background-color: #F1F5F9; padding: 12px; border-radius: 8px; border: 1px solid #CBD5E1; margin-bottom: 15px;'>", unsafe_allow_html=True)
-            fc1, fc2 = st.columns(2)
-            columna_seleccionada = fc1.selectbox("Filtrar por columna:", list(df_final.columns))
-            
-            valores_unicos = ["(Todos)"] + list(df_final[columna_seleccionada].dropna().unique())
-            valor_seleccionado = fc2.selectbox(f"Seleccionar valor para [{columna_seleccionada}]:", valores_unicos)
-            
-            if valor_seleccionado != "(Todos)":
-                df_final = df_final[df_final[columna_seleccionada] == valor_seleccionado]
-            st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("<br>", unsafe_allow_html=True)
 
-        filas_html = ""
-        for _, f in df_final.iterrows():
-            filas_html += f"<tr><td>{f['FECHA_REGISTRO']}</td><td><b>{f['CODIGO INTERNO']}</b></td><td>{f['CLIENTE']}</td><td>{f['ESTADO']}</td><td>{f['SUB_ESTADO']}</td><td>{f['NOMBRE']}</td><td>{f['DISTRITO']}</td><td>{f['TIPO_SERVICIO']}</td><td style='color:green; font-weight:bold;'>›</td></tr>"
-        
-        st.markdown(f"""
-            <div class="tabla-contenedor-pedidos">
-                <table class="tabla-usuarios">
-                    <thead>
-                        <tr>
-                            <th>FECHA_REGISTRO</th><th>CODIGO INTERNO</th><th>CLIENTE</th><th>ESTADO</th><th>SUB_ESTADO</th><th>NOMBRE</th><th>DISTRITO</th><th>TIPO_SERVICIO</th><th></th>
-                        </tr>
-                    </thead>
-                    <tbody>{filas_html}</tbody>
-                </table>
-            </div>
-        """, unsafe_allow_html=True)
+        # TABLA INTERACTIVA NATIVA ESTILO EXCEL (CON FILTROS Y BÚSQUEDA EN CADA COLUMNA)
+        st.dataframe(
+            st.session_state.df_pedidos,
+            use_container_width=True,
+            hide_index=True,
+            height=400
+        )
 
     # ==========================================
     # VISTA 2: PORTAL ADMINISTRADOR
