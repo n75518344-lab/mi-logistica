@@ -91,21 +91,46 @@ st.markdown(
     }
     .stTextInput input::placeholder { color: #94A3B8 !important; }
 
-    /* LIMPIEZA DEL OJO EN CONTRASEÑA */
+    /* FIX INTEGRAL PARA OJO Y CAMPO DE CONTRASEÑA */
     div[data-baseweb="input"] {
         background-color: #FFFFFF !important;
         border: 1px solid #CBD5E1 !important;
         border-radius: 8px !important;
+        overflow: hidden !important;
+    }
+    div[data-baseweb="input"] > div {
+        background-color: #FFFFFF !important;
     }
     div[data-baseweb="input"] input {
+        background-color: #FFFFFF !important;
         border: none !important;
     }
     button[aria-label="Show password"], button[aria-label="Hide password"] {
-        background-color: transparent !important;
+        background-color: #FFFFFF !important;
         border: none !important;
     }
     button[aria-label="Show password"] svg, button[aria-label="Hide password"] svg {
         fill: #0F382C !important;
+    }
+
+    /* FIX ESTILO EXPANDER / DESPLEGABLE */
+    [data-testid="stExpander"] {
+        background-color: #FFFFFF !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 8px !important;
+        overflow: hidden !important;
+    }
+    [data-testid="stExpander"] details summary {
+        background-color: #F8FAFC !important;
+        color: #0F172A !important;
+        border-bottom: 1px solid #E2E8F0 !important;
+    }
+    [data-testid="stExpander"] details summary * {
+        color: #0F172A !important;
+        font-weight: 600 !important;
+    }
+    [data-testid="stExpander"] details summary:hover {
+        background-color: #F1F5F9 !important;
     }
 
     /* BOTÓN "INGRESAR AL PORTAL" */
@@ -464,7 +489,6 @@ else:
             "Contraseña Inicial", type="password", placeholder="Clave temporal"
         )
 
-        # SE EXCLUYÓ '👨‍💼 Portal Administrador' PARA EVITAR CREAR MÁS ADMINS
         nr = st.selectbox(
             "Rol Asignado",
             ["🛠️ Operario", "🏢 Cliente", "🛵 Repartidor (App)"],
