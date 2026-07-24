@@ -42,7 +42,7 @@ st.markdown(
     }
     .block-container { 
         max-width: 88% !important; 
-        padding-top: 2rem !important; 
+        padding-top: 0.5rem !important; 
         padding-bottom: 2rem !important; 
     }
     
@@ -222,7 +222,7 @@ st.markdown(
     #btn_eliminar button p { color: #991B1B !important; font-weight: 700 !important; }
 
     /* PESTAÑAS */
-    .stTabs [data-baseweb="tab-list"] { background-color: transparent !important; gap: 8px; }
+    .stTabs [data-baseweb="tab-list"] { background-color: transparent !important; gap: 8px; margin-top: 0px !important; }
     .stTabs [data-baseweb="tab"] { background-color: #E2E8F0 !important; border-radius: 8px 8px 0px 0px !important; padding: 8px 16px !important; }
     .stTabs [data-baseweb="tab"] p { color: #334155 !important; font-weight: 700 !important; }
     .stTabs [aria-selected="true"] { background-color: #0F382C !important; }
@@ -426,8 +426,8 @@ else:
   with col_nav1:
     st.markdown(
         f"""
-        <div style="font-size: 24px; font-weight: 800; color: #0F382C;">🌲 ALFA CARGO EXPRESS — Portal Administrador</div>
-        <div style="font-size: 14px; color: #475569; font-weight: 600;">Admin activo: <strong>{st.session_state.usuario_actual}</strong></div>
+        <div style="font-size: 22px; font-weight: 800; color: #0F382C; margin-bottom: 0px;">🌲 ALFA CARGO EXPRESS — Portal Administrador</div>
+        <div style="font-size: 13px; color: #475569; font-weight: 600; margin-bottom: 5px;">Admin activo: <strong>{st.session_state.usuario_actual}</strong></div>
         """,
         unsafe_allow_html=True,
     )
@@ -441,8 +441,7 @@ else:
       st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
-  st.markdown("<br>", unsafe_allow_html=True)
-
+  # PESTAÑAS UBICADAS DIRECTAMENTE DEBAJO DEL ENCABEZADO
   tab1, tab2 = st.tabs(
       ["👥 Control de Usuarios y Claves", "📜 Registro de Auditoría (Logs)"]
   )
@@ -528,7 +527,6 @@ else:
 
       st.markdown(tabla_html, unsafe_allow_html=True)
 
-      # SECCIÓN DE GESTIÓN DE CLAVES (SE ELIMINÓ EL st.markdown("---") PARA ACERCARLA)
       st.subheader("⚙️ Gestión de Claves y Accesos")
       usr_gestion = st.selectbox(
           "Selecciona un usuario para gestionar",
