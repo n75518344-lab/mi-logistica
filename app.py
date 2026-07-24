@@ -448,7 +448,7 @@ else:
 
         st.markdown("<div style='margin-top: 6px;'></div>", unsafe_allow_html=True)
 
-        # PANEL EXPANDIBLE DE FILTRADO AVANZADO CON AUTO-SLASH FLUIDO
+        # PANEL EXPANDIBLE DE FILTRADO AVANZADO
         with st.expander("🔎 Panel de Filtros Avanzados (Selección múltiple, Fechas y Búsqueda)", expanded=True):
             
             st.markdown("<p style='font-weight:800; font-size:14px; color:#0F382C; margin-bottom:8px;'>📅 Rango de Fechas (Formato DD/MM/YYYY):</p>", unsafe_allow_html=True)
@@ -456,60 +456,11 @@ else:
             
             with dc1:
                 st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>FECHA INICIAL:</p>", unsafe_allow_html=True)
-                txt_fecha_inicio = st.text_input("Fecha Inicial", value="", placeholder="DD/MM/YYYY", label_visibility="collapsed", key="f_ini")
+                txt_fecha_inicio = st.text_input("Fecha Inicial", value="", placeholder="23/07/2026", label_visibility="collapsed", key="f_ini")
 
             with dc2:
                 st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>FECHA FINAL:</p>", unsafe_allow_html=True)
                 txt_fecha_fin = st.text_input("Fecha Final", value="", placeholder="DD/MM/YYYY", label_visibility="collapsed", key="f_fin")
-
-            # COMPONENTE JAVASCRIPT DE AUTO-SLASH FLUIDO Y SEGURO
-            components.html("""
-                <script>
-                const doc = window.parent.document;
-
-                function aplicarMascaraFluida(input) {
-                    if (!input.dataset.autoSlash) {
-                        input.dataset.autoSlash = "true";
-                        input.setAttribute("maxlength", "10");
-                        
-                        input.addEventListener("input", function(e) {
-                            let v = this.value.replace(/\\D/g, "");
-                            if (v.length > 8) v = v.slice(0, 8);
-                            
-                            let formatted = "";
-                            if (v.length > 0) {
-                                formatted = v.substring(0, 2);
-                            }
-                            if (v.length >= 3) {
-                                formatted += "/" + v.substring(2, 4);
-                            } else if (v.length === 2 && e.inputType === "deleteContentBackward") {
-                                formatted = v;
-                            }
-                            if (v.length >= 5) {
-                                formatted += "/" + v.substring(4, 8);
-                            }
-
-                            if (this.value !== formatted) {
-                                this.value = formatted;
-                                this.dispatchEvent(new Event('input', { bubbles: true }));
-                            }
-                        });
-                    }
-                }
-
-                function buscarInputs() {
-                    doc.querySelectorAll('input').forEach(input => {
-                        const placeholder = input.getAttribute('placeholder');
-                        const ariaLabel = input.getAttribute('aria-label');
-                        if (placeholder === 'DD/MM/YYYY' || ariaLabel === 'Fecha Inicial' || ariaLabel === 'Fecha Final') {
-                            aplicarMascaraFluida(input);
-                        }
-                    });
-                }
-
-                setInterval(buscarInputs, 500);
-                </script>
-            """, height=0)
 
             st.markdown("<hr style='margin: 15px 0px; border-color: #E2E8F0;'>", unsafe_allow_html=True)
 
