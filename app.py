@@ -37,32 +37,23 @@ st.markdown(
         color: #0F172A !important; 
     }
 
-    /* Sidebar - Eliminar por completo márgenes y paddings superiores de Streamlit */
+    /* Sidebar - Ajuste equilibrado del padding superior */
     [data-testid="stSidebar"] { 
         background-color: #FFFFFF !important;
         border-right: 1px solid #CBD5E1 !important;
     }
     [data-testid="stSidebar"] > div:first-child {
-        padding-top: 0rem !important;
+        padding-top: 1rem !important;
         padding-bottom: 1rem !important;
     }
     [data-testid="stSidebar"] section[data-testid="stSidebarContent"] {
-        padding-top: 0rem !important;
+        padding-top: 1rem !important;
     }
     
-    /* Eliminar el contenedor interno superior que Streamlit inyecta en el sidebar */
     [data-testid="stSidebarHeader"] {
         display: none !important;
-        height: 0px !important;
-        padding: 0px !important;
-        margin: 0px !important;
     }
     
-    [data-testid="stSidebarUserContent"] {
-        padding-top: 0rem !important;
-        margin-top: -20px !important;
-    }
-
     [data-testid="stSidebar"] .stTextInput, 
     [data-testid="stSidebar"] .stMultiSelect {
         margin-bottom: -10px !important;
@@ -552,7 +543,7 @@ else:
         # FILTROS EN EL SIDEBAR
         # ------------------------------------------
         with st.sidebar:
-            st.markdown("<h2 style='color: #0F382C; margin: -15px 0px 2px 0px; padding: 0px; white-space: nowrap; font-size: 26px; font-weight: 800;'>🌲 ALFA EXPRESS</h2>", unsafe_allow_html=True)
+            st.markdown("<h2 style='color: #0F382C; margin: 0px 0px 2px 0px; padding: 0px; white-space: nowrap; font-size: 26px; font-weight: 800;'>🌲 ALFA EXPRESS</h2>", unsafe_allow_html=True)
             st.markdown("<p style='font-size: 12px; color: #64748B; margin-top: 0px; margin-bottom: 4px;'>Filtra los registros de envíos de manera rápida.</p>", unsafe_allow_html=True)
             st.markdown("<hr style='margin: 0px 0px 6px 0px;'>", unsafe_allow_html=True)
 
