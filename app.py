@@ -7,7 +7,7 @@ import streamlit as st
 
 # 1. CONFIGURACIÓN DE PÁGINA
 st.set_page_config(
-    page_title="Alfa Cargo Express - Admin",
+    page_title="Alfa Cargo Express - Admin & Operaciones",
     page_icon="🚚",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -363,6 +363,71 @@ if "historial_acciones" not in st.session_state:
       }
   ])
 
+# DATOS DE PEDIDOS (MÓDULO OPERATIVO)
+if "df_pedidos" not in st.session_state:
+  st.session_state.df_pedidos = pd.DataFrame([
+      {
+          "FECHA_REGISTRO": "8/7/2026",
+          "CODIGO INTERNO": "Tramontina",
+          "CLIENTE": "UNIMARKET",
+          "ESTADO": "ENTREGADO",
+          "SUB_ESTADO": "ENTREGA EFECTIVA",
+          "NOMBRE": "CECILIA LOO",
+          "DISTRITO": "ATE",
+          "TIPO_SERVICIO": "SAME-DAY",
+      },
+      {
+          "FECHA_REGISTRO": "11/6/2026",
+          "CODIGO INTERNO": "SIN NUMERO",
+          "CLIENTE": "UNIMARKET",
+          "ESTADO": "ENTREGADO",
+          "SUB_ESTADO": "ENTREGA EFECTIVA",
+          "NOMBRE": "LUIS FELIPE LLOSA",
+          "DISTRITO": "SAN ISIDRO",
+          "TIPO_SERVICIO": "SAME-DAY",
+      },
+      {
+          "FECHA_REGISTRO": "13/6/2026",
+          "CODIGO INTERNO": "BLC1-48039",
+          "CLIENTE": "UNIMARKET",
+          "ESTADO": "ENTREGADO",
+          "SUB_ESTADO": "ENTREGA EFECTIVA",
+          "NOMBRE": "JOHN CASAS AGUILAR",
+          "DISTRITO": "MIRAFLORES",
+          "TIPO_SERVICIO": "SAME-DAY",
+      },
+      {
+          "FECHA_REGISTRO": "13/6/2026",
+          "CODIGO INTERNO": "BLC2-5014",
+          "CLIENTE": "UNIMARKET",
+          "ESTADO": "ENTREGADO",
+          "SUB_ESTADO": "ENTREGA EFECTIVA",
+          "NOMBRE": "JUAN CARLOS REYES HAWKINS",
+          "DISTRITO": "MIRAFLORES",
+          "TIPO_SERVICIO": "SAME-DAY",
+      },
+      {
+          "FECHA_REGISTRO": "13/6/2026",
+          "CODIGO INTERNO": "LWE2026 - 424",
+          "CLIENTE": "UNIMARKET",
+          "ESTADO": "ENTREGADO",
+          "SUB_ESTADO": "ENTREGA EFECTIVA",
+          "NOMBRE": "MARIA EMILIA GUZMAN",
+          "DISTRITO": "SANTIAGO DE SURCO",
+          "TIPO_SERVICIO": "SAME-DAY",
+      },
+      {
+          "FECHA_REGISTRO": "16/6/2026",
+          "CODIGO INTERNO": "BLC1-48086",
+          "CLIENTE": "UNIMARKET",
+          "ESTADO": "ENTREGADO",
+          "SUB_ESTADO": "ENTREGA EFECTIVA",
+          "NOMBRE": "Elsa Rosario Ugarte",
+          "DISTRITO": "MIRAFLORES",
+          "TIPO_SERVICIO": "SAME-DAY",
+      },
+  ])
+
 
 def registrar_log(accion):
   nuevo_log = pd.DataFrame([{
@@ -406,6 +471,47 @@ def mostrar_modal_soporte():
     st.rerun()
 
 
+# MODAL PARA SUBIR DATA O AGREGAR PEDIDO
+@st.dialog("📦 Subir o Agregar Nuevo Pedido")
+def mostrar_modal_agregar_pedido():
+  st.markdown(
+      '<p style="color: #FFFFFF !important; font-size: 14px;">Ingresa los datos del nuevo envío o carga un archivo masivo.</p>',
+      unsafe_allow_html=True,
+  )
+
+  f_reg = st.text_input(
+      "Fecha de Registro", value=datetime.now().strftime("%d/%m/%Y")
+  )
+  c_int = st.text_input("Código Interno", placeholder="Ej: BLC1-99999")
+  cli = st.text_input("Cliente", placeholder="Ej: UNIMARKET")
+  est = st.selectbox("Estado", ["ENTREGADO", "EN PROCESO", "PENDIENTE"])
+  sub_est = st.text_input("Sub Estado", value="ENTREGA EFECTIVA")
+  nom = st.text_input("Nombre Destinatario")
+  dis = st.text_input("Distrito", placeholder="Ej: MIRAFLORES")
+  t_serv = st.selectbox("Tipo de Servicio", ["SAME-DAY", "NEXT-DAY", "EXPRESS"])
+
+  if st.button("Registrar Pedido", use_container_width=True):
+    if c_int and cli:
+      nuevo_p = pd.DataFrame([{
+          "FECHA_REGISTRO": f_reg,
+          "CODIGO INTERNO": c_int,
+          "CLIENTE": cli,
+          "ESTADO": est,
+          "SUB_ESTADO": sub_est,
+          "NOMBRE": nom,
+          "DISTRITO": dis,
+          "TIPO_SERVICIO": t_serv,
+      }])
+      st.session_state.df_pedidos = pd.concat(
+          [st.session_state.df_pedidos, nuevo_p], ignore_index=True
+      )
+      registrar_log(f"Agregó pedido código '{c_int}'")
+      st.success("¡Pedido registrado exitosamente!")
+      st.rerun()
+    else:
+      st.warning("Completa al menos el código interno y el cliente.")
+
+
 # LOGIN
 if st.session_state.usuario_actual is None:
   st.markdown(
@@ -423,16 +529,16 @@ if st.session_state.usuario_actual is None:
   with col_left:
     st.markdown(
         '<div style="color: #0F172A; font-size: 22px; font-weight: 700;'
-        ' margin-bottom: 15px;">Módulo de Administración del Sistema</div>',
+        ' margin-bottom: 15px;">Módulo de Administración y Operaciones</div>',
         unsafe_allow_html=True,
     )
     st.markdown(
         """
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
             <div style="color: #334155; font-weight: 600; font-size: 14px;">▌ Control de Accesos y Roles</div>
-            <div style="color: #334155; font-weight: 600; font-size: 14px;">▌ Gestión de Claves Directa</div>
+            <div style="color: #334155; font-weight: 600; font-size: 14px;">▌ Gestión de Envíos y Tracking</div>
             <div style="color: #334155; font-weight: 600; font-size: 14px;">▌ Auditoría y Registros (Logs)</div>
-            <div style="color: #334155; font-weight: 600; font-size: 14px;">▌ Seguridad Operativa</div>
+            <div style="color: #334155; font-weight: 600; font-size: 14px;">▌ Filtros y Descarga de Data</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -509,8 +615,8 @@ else:
   with col_nav1:
     st.markdown(
         f"""
-        <div style="font-size: 22px; font-weight: 800; color: #0F382C; margin-bottom: 0px;">🌲 ALFA CARGO EXPRESS — Portal Administrador</div>
-        <div style="font-size: 13px; color: #475569; font-weight: 600; margin-bottom: 5px;">Admin activo: <strong>{st.session_state.usuario_actual}</strong></div>
+        <div style="font-size: 22px; font-weight: 800; color: #0F382C; margin-bottom: 0px;">🌲 ALFA CARGO EXPRESS — Panel de Control</div>
+        <div style="font-size: 13px; color: #475569; font-weight: 600; margin-bottom: 5px;">Usuario activo: <strong>{st.session_state.usuario_actual}</strong> | Rol: <strong>{st.session_state.rol_actual}</strong></div>
         """,
         unsafe_allow_html=True,
     )
@@ -524,8 +630,10 @@ else:
       st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
-  # PESTAÑAS
-  tab1, tab2 = st.tabs(["Usuarios y Claves", "Auditoría (Logs)"])
+  # PESTAÑAS (Se incluyen Usuarios, Auditoría y ahora el Portal Operativo de Pedidos)
+  tab1, tab2, tab3 = st.tabs(
+      ["Usuarios y Claves", "Auditoría (Logs)", "📦 Detalle de Pedidos"]
+  )
 
   with tab1:
     col_a, col_b = st.columns([1, 1.3], gap="large")
@@ -712,3 +820,119 @@ else:
         """).strip()
 
     st.markdown(tabla_logs_html, unsafe_allow_html=True)
+
+  with tab3:
+    # CABECERA DEL PORTAL DE OPERACIONES (Estilo inspirado en tu imagen de referencia)
+    col_op1, col_op2 = st.columns([3, 2])
+    with col_op1:
+      st.markdown(
+          '<h3 style="color: #0F382C; margin-bottom: 0px;">DASHBOARD > Detalle'
+          " de pedidos</h3>",
+          unsafe_allow_html=True,
+      )
+
+    with col_op2:
+      # Botonera superior estilo moderno (Descargar, Subir/Agregar, Filtros)
+      c_b1, c_b2, c_b3 = st.columns([1, 1, 1])
+      with c_b1:
+        csv_data = st.session_state.df_pedidos.to_csv(index=False).encode(
+            "utf-8"
+        )
+        st.download_button(
+            label="📥",
+            data=csv_data,
+            file_name="pedidos_alfa.csv",
+            mime="text/csv",
+            help="Descargar base de pedidos en CSV",
+        )
+      with c_b2:
+        if st.button("➕", help="Agregar o cargar pedido"):
+          mostrar_modal_agregar_pedido()
+      with c_b3:
+        filtro_activo = st.toggle("🔍", value=False, help="Activar filtros")
+
+    # SECCIÓN DE FILTROS DINÁMICOS
+    df_filtrado = st.session_state.df_pedidos.copy()
+    if filtro_activo:
+      st.markdown(
+          '<div style="background-color: #FFFFFF; padding: 15px; border-radius:'
+          " 8px; border: 1px solid #CBD5E1; margin-bottom: 15px;\">",
+          unsafe_allow_html=True,
+      )
+      f_col1, f_col2, f_col3 = st.columns(3)
+      with f_col1:
+        clientes_disponibles = [
+            "TODOS"
+        ] + st.session_state.df_pedidos["CLIENTE"].unique().tolist()
+        filtro_cte = st.selectbox("Filtrar por Cliente", clientes_disponibles)
+        if filtro_cte != "TODOS":
+          df_filtrado = df_filtrado[df_filtrado["CLIENTE"] == filtro_cte]
+      with f_col2:
+        estados_disponibles = [
+            "TODOS"
+        ] + st.session_state.df_pedidos["ESTADO"].unique().tolist()
+        filtro_est = st.selectbox("Filtrar por Estado", estados_disponibles)
+        if filtro_est != "TODOS":
+          df_filtrado = df_filtrado[df_filtrado["ESTADO"] == filtro_est]
+      with f_col3:
+        busqueda_txt = st.text_input(
+            "Buscar por Código / Nombre",
+            placeholder="Escribe para buscar...",
+        )
+        if busqueda_txt:
+          df_filtrado = df_filtrado[
+              df_filtrado["CODIGO INTERNO"]
+              .str.contains(busqueda_txt, case=False, na=False)
+              | df_filtrado["NOMBRE"]
+              .str.contains(busqueda_txt, case=False, na=False)
+          ]
+      st.markdown("</div>", unsafe_allow_html=True)
+
+    # TABLA DE PEDIDOS ESTILO CORPORATIVO LIMPIO
+    filas_pedidos_html = ""
+    for _, fila in df_filtrado.iterrows():
+      filas_pedidos_html += f"""
+            <tr>
+                <td>{fila['FECHA_REGISTRO']}</td>
+                <td><b>{fila['CODIGO INTERNO']}</b></td>
+                <td>{fila['CLIENTE']}</td>
+                <td><span style='color: #16A34A; font-weight:700;'>{fila['ESTADO']}</span></td>
+                <td>{fila['SUB_ESTADO']}</td>
+                <td>{fila['NOMBRE']}</td>
+                <td>{fila['DISTRITO']}</td>
+                <td>{fila['TIPO_SERVICIO']}</td>
+                <td style='text-align: center; color: #0F382C; font-weight: bold;'>›</td>
+            </tr>
+            """
+
+    if not filas_pedidos_html:
+      filas_pedidos_html = (
+          "<tr><td colspan='9' style='text-align: center; color:"
+          " #64748B;'>No se encontraron registros con los filtros"
+          " aplicados.</td></tr>"
+      )
+
+    tabla_pedidos_html = textwrap.dedent(f"""
+        <div class="tabla-contenedor-logs" style="max-height: 420px !important;">
+            <table class="tabla-usuarios">
+                <thead>
+                    <tr>
+                        <th>FECHA_REGISTRO</th>
+                        <th>CODIGO INTERNO</th>
+                        <th>CLIENTE</th>
+                        <th>ESTADO</th>
+                        <th>SUB_ESTADO</th>
+                        <th>NOMBRE</th>
+                        <th>DISTRITO</th>
+                        <th>TIPO_SERVICIO</th>
+                        <th style="text-align: center;">DETALLE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {filas_pedidos_html}
+                </tbody>
+            </table>
+        </div>
+        """).strip()
+
+    st.markdown(tabla_pedidos_html, unsafe_allow_html=True)
