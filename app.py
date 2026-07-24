@@ -664,7 +664,7 @@ else:
         if filtro_nombre_txt: df_filtrado = df_filtrado[df_filtrado["NOMBRE"].astype(str).str.contains(filtro_nombre_txt, case=False, na=False)]
 
         if "FECHA_REGISTRO" in df_filtrado.columns:
-            df_filtrado = df_filtrado.sort_values(by="FECHA_REGISTRO", ascending=False)
+            df_filtrado = df_filtrado.sort_values(by="FECHA_REGIST_RO", ascending=False) if "FECHA_REGISTRO" in df_filtrado.columns else df_filtrado
 
         columnas_pedidos = df_filtrado.columns.tolist()
 
