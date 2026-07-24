@@ -59,6 +59,14 @@ st.markdown(
     [data-testid="stSidebar"] .stMultiSelect p {
         color: #0F172A !important;
     }
+
+    /* Forzar fondo blanco y texto oscuro en el menú desplegable (dropdown) de BaseWeb */
+    div[data-baseweb="popover"], div[data-baseweb="menu"], ul[data-baseweb="menu"] {
+        background-color: #FFFFFF !important;
+    }
+    div[data-baseweb="popover"] * {
+        color: #0F172A !important;
+    }
     
     [data-testid="stSidebar"] div[data-baseweb="tag"] {
         background-color: #E2E8F0 !important;
