@@ -449,10 +449,30 @@ def modal_add_pedido():
 
 @st.dialog("📤 Subir Data Masiva")
 def modal_upload():
-    file = st.file_uploader("Selecciona archivo Excel o CSV", type=["xlsx", "csv"])
-    if file and st.button("Procesar y Cargar"):
-        registrar_log("Subida de archivo masivo")
-        st.rerun()
+    uploaded_file = st.file_uploader("Selecciona archivo Excel o CSV", type=["xlsx", "csv"])
+    if uploaded_file is not None:
+        try:
+            if uploaded_file.name.endswith('.csv'):
+                df_nuevo = pd.read_csv(uploaded_file)
+            else:
+                df_nuevo = pd.read_excel(uploaded_file)
+            
+            if st.button("Procesar y Cargar"):
+                columnas_requeridas = ["FECHA_REGISTRO", "CODIGO INTERNO", "CLIENTE", "ESTADO", "SUB_ESTADO", "NOMBRE", "DISTRITO", "TIPO_SERVICIO"]
+                
+                # Normalizar nombres de columnas a mayúsculas por si acaso
+                df_nuevo.columns = [str(c).strip().upper() for c in df_nuevo.columns]
+                
+                faltantes = [col for col in columnas_requeridas if col not in df_nuevo.columns]
+                if faltantes:
+                    st.error(f"El archivo no cuenta con las columnas obligatorias requeridas: {', '.join(faltantes)}")
+                else:
+                    st.session_state.df_pedidos = pd.concat([st.session_state.df_pedidos, df_nuevo[columnas_requeridas]], ignore_index=True)
+                    registrar_log("Subida y carga exitosa de archivo masivo")
+                    st.success("¡Datos cargados correctamente!")
+                    st.rerun()
+        except Exception as e:
+            st.error(f"Ocurrió un error al procesar el archivo: {e}")
 
 if st.session_state.usuario_actual is None:
     st.markdown(
@@ -750,134 +770,4 @@ else:
                 with st.form("form_crear"):
                     nu = st.text_input("Nombre de Usuario", placeholder="Ej: operador_lima")
                     np = st.text_input("Contraseña Inicial", type="password", placeholder="Clave temporal")
-                    nr = st.selectbox("Rol Asignado", ["🛠️ Operario", "🏢 Cliente", "🛵 Repartidor (App)"])
-
-                    btn_crear = st.form_submit_button("Guardar Usuario")
-
-                    if btn_crear:
-                        if nu and np:
-                            if nu not in st.session_state.usuarios_registrados["USUARIO"].values:
-                                nueva_f = pd.DataFrame([{
-                                    "USUARIO": nu,
-                                    "PASS": np,
-                                    "ROL": nr,
-                                    "ESTADO": "Activo",
-                                    "ÚLTIMA CONEXIÓN": "Nunca",
-                                }])
-                                st.session_state.usuarios_registrados = pd.concat(
-                                    [st.session_state.usuarios_registrados, nueva_f],
-                                    ignore_index=True,
-                                )
-                                registrar_log(f"Creó al usuario '{nu}' con rol '{nr}'")
-                                st.rerun()
-
-            with col_b:
-                st.subheader("📋 Usuarios Registrados")
-
-                cols_deseadas = ["USUARIO", "ROL", "ESTADO", "ÚLTIMA CONEXIÓN"]
-                cols_existentes = [c for c in cols_deseadas if c in st.session_state.usuarios_registrados.columns]
-                df_vista = st.session_state.usuarios_registrados[cols_existentes]
-
-                filas_html = ""
-                for _, fila in df_vista.iterrows():
-                    color_estado = "#16A34A" if fila["ESTADO"] == "Activo" else "#DC2626"
-                    ultima_conexion = fila.get("ÚLTIMA CONEXIÓN", "Nunca")
-                    filas_html += f"<tr><td><b>{fila['USUARIO']}</b></td><td>{fila['ROL']}</td><td><span style='color: {color_estado}; font-weight:700;'>{fila['ESTADO']}</span></td><td>{ultima_conexion}</td></tr>"
-
-                tabla_html = textwrap.dedent(f"""
-                    <div class="tabla-contenedor">
-                        <table class="tabla-usuarios">
-                            <thead>
-                                <tr>
-                                    <th>USUARIO</th>
-                                    <th>ROL</th>
-                                    <th>ESTADO</th>
-                                    <th>ÚLTIMA CONEXIÓN</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filas_html}
-                            </tbody>
-                        </table>
-                    </div>
-                    """).strip()
-
-                st.markdown(tabla_html, unsafe_allow_html=True)
-
-                st.subheader("⚙️ Gestión de Claves y Accesos")
-
-                lista_usuarios_gestion = st.session_state.usuarios_registrados[
-                    st.session_state.usuarios_registrados["USUARIO"] != st.session_state.usuario_actual
-                ]["USUARIO"].tolist()
-
-                if lista_usuarios_gestion:
-                    usr_gestion = st.selectbox("Selecciona un usuario para gestionar", lista_usuarios_gestion, key="select_gestion")
-
-                    with st.expander("🔑 Restablecer Contraseña Directamente"):
-                        nueva_pass_admin = st.text_input(
-                            f"Nueva Contraseña para {usr_gestion}",
-                            type="password",
-                            placeholder="Escribe la nueva clave",
-                            key="n_p_admin",
-                        )
-                        if st.button("🔄 Actualizar Clave Now", use_container_width=True):
-                            if nueva_pass_admin:
-                                st.session_state.usuarios_registrados.loc[
-                                    st.session_state.usuarios_registrados["USUARIO"] == usr_gestion,
-                                    "PASS",
-                                ] = nueva_pass_admin
-                                registrar_log(f"Restableció la contraseña del usuario '{usr_gestion}'")
-                                st.rerun()
-
-                    col_e1, col_e2 = st.columns(2)
-                    with col_e1:
-                        st.markdown('<div id="btn_inactivar">', unsafe_allow_html=True)
-                        if st.button("🚫 Dar de Baja / Inactivar", use_container_width=True, key="inactivar_btn"):
-                            st.session_state.usuarios_registrados.loc[
-                                st.session_state.usuarios_registrados["USUARIO"] == usr_gestion,
-                                "ESTADO",
-                            ] = "Inactivo"
-                            registrar_log(f"Inactivó al usuario '{usr_gestion}'")
-                            st.rerun()
-                        st.markdown("</div>", unsafe_allow_html=True)
-
-                    with col_e2:
-                        st.markdown('<div id="btn_eliminar">', unsafe_allow_html=True)
-                        if st.button("❌ Eliminar Cuenta", use_container_width=True, key="eliminar_btn"):
-                            st.session_state.usuarios_registrados = (
-                                st.session_state.usuarios_registrados[
-                                    st.session_state.usuarios_registrados["USUARIO"] != usr_gestion
-                                ]
-                            )
-                            registrar_log(f"Eliminó al usuario '{usr_gestion}'")
-                            st.rerun()
-                        st.markdown("</div>", unsafe_allow_html=True)
-                else:
-                    st.info("ℹ️ No hay otros usuarios registrados para gestionar.")
-
-        with tab2:
-            st.subheader("📜 Historial de Seguridad y Movimientos")
-
-            df_logs = st.session_state.historial_acciones
-            filas_logs = ""
-            for _, fila in df_logs.iterrows():
-                filas_logs += f"<tr><td>{fila['FECHA Y HORA']}</td><td><b>{fila['USUARIO']}</b></td><td>{fila['ACCIÓN']}</td></tr>"
-
-            tabla_logs_html = textwrap.dedent(f"""
-                <div class="tabla-contenedor-logs">
-                    <table class="tabla-usuarios">
-                        <thead>
-                            <tr>
-                                <th>FECHA Y HORA</th>
-                                <th>USUARIO</th>
-                                <th>ACCIÓN</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filas_logs}
-                        </tbody>
-                    </table>
-                </div>
-                """).strip()
-
-            st.markdown(tabla_logs_html, unsafe_allow_html=True)
+                    nr = st.selectbox("Rol Asig
