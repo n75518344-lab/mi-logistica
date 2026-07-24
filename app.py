@@ -456,11 +456,57 @@ else:
             
             with dc1:
                 st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>FECHA INICIAL:</p>", unsafe_allow_html=True)
-                txt_fecha_inicio = st.text_input("Fecha Inicial", value="", placeholder="23/07/2026", label_visibility="collapsed", key="f_ini")
+                txt_fecha_inicio = st.text_input("Fecha Inicial", value="", placeholder="DD/MM/YYYY", label_visibility="collapsed", key="f_ini")
 
             with dc2:
                 st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>FECHA FINAL:</p>", unsafe_allow_html=True)
                 txt_fecha_fin = st.text_input("Fecha Final", value="", placeholder="DD/MM/YYYY", label_visibility="collapsed", key="f_fin")
+
+            # MÁSCARA JS LIMPIA PARA FECHAS
+            components.html("""
+                <script>
+                const doc = window.parent.document;
+
+                function aplicarMascaraLimpia(input) {
+                    if (!input.dataset.masked) {
+                        input.dataset.masked = "true";
+                        input.setAttribute("maxlength", "10");
+                        
+                        input.addEventListener("input", function(e) {
+                            let val = this.value.replace(/\\D/g, "");
+                            if (val.length > 8) val = val.slice(0, 8);
+                            
+                            let res = "";
+                            if (val.length > 0) {
+                                res += val.substring(0, 2);
+                            }
+                            if (val.length >= 3) {
+                                res += "/" + val.substring(2, 4);
+                            }
+                            if (val.length >= 5) {
+                                res += "/" + val.substring(4, 8);
+                            }
+
+                            if (this.value !== res) {
+                                this.value = res;
+                                this.dispatchEvent(new Event('input', { bubbles: true }));
+                            }
+                        });
+                    }
+                }
+
+                function observarInputs() {
+                    doc.querySelectorAll('input').forEach(input => {
+                        const placeholder = input.getAttribute('placeholder');
+                        if (placeholder === 'DD/MM/YYYY') {
+                            aplicarMascaraLimpia(input);
+                        }
+                    });
+                }
+
+                setInterval(observarInputs, 300);
+                </script>
+            """, height=0)
 
             st.markdown("<hr style='margin: 15px 0px; border-color: #E2E8F0;'>", unsafe_allow_html=True)
 
