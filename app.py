@@ -27,7 +27,7 @@ if "usuario_actual" not in st.session_state:
         st.session_state.usuario_actual = None
         st.session_state.rol_actual = None
 
-# CSS GENERAL DEL SISTEMA Y CORRECCIÓN DEFINITIVA DE DROPDOWNS
+# CSS GENERAL DEL SISTEMA Y CORRECCIÓN DE BORDES EN MULTISELECT
 st.markdown(
     """
     <style>
@@ -52,13 +52,21 @@ st.markdown(
     }
 
     /* =========================================================
-       CORRECCIÓN DEFINITIVA: INPUTS, SELECTS Y DROPDOWNS
+       ESTILOS PARA INPUTS, SELECTS Y BORDES VERDE OSCURO
        ========================================================= */
        
-    /* 1. Fondo del cuadro principal del select/multiselect */
+    /* 1. Fondo y borde verde oscuro del cuadro principal del select/multiselect */
     div[data-baseweb="select"] > div {
         background-color: #FFFFFF !important;
-        border-color: #CBD5E1 !important;
+        border-color: #0F382C !important;
+        border-width: 1.5px !important;
+    }
+    
+    /* Forzar borde verde oscuro también al estar enfocados o seleccionados */
+    div[data-baseweb="select"] > div:focus-within,
+    div[data-baseweb="select"] > div:hover {
+        border-color: #0F382C !important;
+        box-shadow: 0 0 0 1px #0F382C !important;
     }
     
     /* 2. Textos, iconos (flechas) y placeholder dentro del cuadro principal */
@@ -77,7 +85,7 @@ st.markdown(
         color: #0F172A !important;
     }
     
-    /* 4. Menú desplegable (popover/listbox) - SE RENDERIZA FUERA DEL SIDEBAR */
+    /* 4. Menú desplegable (popover/listbox) - FUERA DEL SIDEBAR */
     div[data-baseweb="popover"] > div, 
     ul[role="listbox"],
     div[data-baseweb="popover"] ul {
@@ -91,13 +99,12 @@ st.markdown(
         color: #0F172A !important;
     }
     
-    /* 6. Asegurar que cualquier span/div dentro de la opción sea oscuro */
     li[role="option"] span,
     li[role="option"] div {
         color: #0F172A !important;
     }
     
-    /* 7. Hover o selección sobre las opciones */
+    /* 6. Hover o selección sobre las opciones */
     li[role="option"]:hover,
     li[role="option"][aria-selected="true"] {
         background-color: #E2E8F0 !important;
