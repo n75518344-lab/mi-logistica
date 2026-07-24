@@ -26,7 +26,7 @@ if "usuario_actual" not in st.session_state:
         st.session_state.usuario_actual = None
         st.session_state.rol_actual = None
 
-# CSS GENERAL DEL SISTEMA (CON OCULTAMIENTO DE LOS TRES PUNTOS EN ENCABEZADOS)
+# CSS GENERAL DEL SISTEMA
 st.markdown(
     """
     <style>
@@ -41,14 +41,6 @@ st.markdown(
     }
 
     [data-testid="stElementToolbar"] {
-        display: none !important;
-    }
-
-    /* OCULTAR EL MENÚ DE LOS TRES PUNTOS EN LOS ENCABEZADOS DE LAS TABLAS */
-    .stDataFrame [data-testid="stDataFrameResizable"] div[class*="header-menu-button"],
-    th .material-symbols-outlined,
-    [class*="glideDataEditor"] canvas + div,
-    button[aria-label="Menu"] {
         display: none !important;
     }
     
@@ -535,13 +527,33 @@ else:
         if filtro_nombre_txt:
             df_filtrado = df_filtrado[df_filtrado["NOMBRE"].astype(str).str.contains(filtro_nombre_txt, case=False, na=False)]
 
-        # Mostrar tabla limpia resultante
-        st.dataframe(
-            df_filtrado,
-            use_container_width=True,
-            height=400,
-            hide_index=True
-        )
+        # Renderizar tabla limpia en HTML puro (sin tres puntos ni menús nativos molestos)
+        columnas_pedidos = df_filtrado.columns.tolist()
+        
+        headers_html = "".join([f"<th>{col}</th>" for col in columnas_pedidos])
+        filas_pedidos_html = ""
+        for _, fila in df_filtrado.iterrows():
+            filas_pedidos_html += "<tr>"
+            for col in columnas_pedidos:
+                filas_pedidos_html += f"<td>{fila[col]}</td>"
+            filas_pedidos_html += "</tr>"
+
+        tabla_pedidos_html = textwrap.dedent(f"""
+            <div class="tabla-contenedor-logs" style="max-height: 420px; margin-top: 0px !important;">
+                <table class="tabla-usuarios">
+                    <thead>
+                        <tr>
+                            {headers_html}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {filas_pedidos_html if not df_filtrado.empty else "<tr><td colspan='100%' style='text-align:center;'>No se encontraron registros</td></tr>"}
+                    </tbody>
+                </table>
+            </div>
+            """).strip()
+
+        st.markdown(tabla_pedidos_html, unsafe_allow_html=True)
 
     # ==========================================
     # VISTA 2: PORTAL ADMINISTRADOR
