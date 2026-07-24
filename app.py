@@ -429,7 +429,7 @@ else:
     st.divider()
 
     # ==========================================
-    # VISTA 1: PORTAL OPERARIO (CON FILTROS FUNCIONALES Y ORDENAMIENTO)
+    # VISTA 1: PORTAL OPERARIO (CON FILTROS ESTILO EXCEL / CHECKBOXES)
     # ==========================================
     if st.session_state.rol_actual == "🛠️ Operario":
         col_tit, col_btns = st.columns([3, 2])
@@ -446,21 +446,21 @@ else:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # Configuración limpia de la grilla garantizando despliegue de menús y ordenamiento
+        # Configuración avanzada de columnas con Set Filter (estilo casillas Excel)
         gb = GridOptionsBuilder.from_dataframe(st.session_state.df_pedidos)
         
         gb.configure_default_column(
             editable=False,
-            sortable=True,        # Habilita el ordenamiento ascendente y descendente
-            filterable=True,      # Habilita los filtros en la cabecera
+            sortable=True,        # Ordenamiento ascendente y descendente
             resizable=True,
             flex=1
         )
         
-        # Filtros activos funcionales desplegables
-        gb.configure_column("CODIGO INTERNO", filter="agTextColumnFilter")
-        gb.configure_column("CLIENTE", filter="agTextColumnFilter")
-        gb.configure_column("ESTADO", filter="agTextColumnFilter")
+        # Aplicamos el filtro de selección múltiple con casillas (Set Filter) a las columnas principales
+        gb.configure_column("CODIGO INTERNO", filter="agSetColumnFilter")
+        gb.configure_column("CLIENTE", filter="agSetColumnFilter")
+        gb.configure_column("ESTADO", filter="agSetColumnFilter")
+        gb.configure_column("DISTRITO", filter="agSetColumnFilter")
 
         gb.configure_pagination(paginationAutoPageSize=False, paginationPageSize=10)
         grid_options = gb.build()
