@@ -27,7 +27,7 @@ if "usuario_actual" not in st.session_state:
         st.session_state.usuario_actual = None
         st.session_state.rol_actual = None
 
-# CSS GENERAL DEL SISTEMA Y CORRECCIÓN DE BORDES Y TEXTOS OSCUROS EN MENÚS DESPLEGABLES
+# CSS GENERAL DEL SISTEMA Y CORRECCIÓN TOTAL DE MENÚS DESPLEGABLES (FONDO BLANCO Y TEXTO OSCURO)
 st.markdown(
     """
     <style>
@@ -69,7 +69,7 @@ st.markdown(
     }
 
     /* =========================================================
-       ESTILOS PARA INPUTS, SELECTS Y MENÚS DESPLEGABLES (TEXTO VISIBLE)
+       ESTILOS ABSOLUTOS PARA SELECTS, MULTISELECTS Y MENÚS FLOTANTES
        ========================================================= */
        
     div[data-baseweb="select"] > div {
@@ -84,7 +84,7 @@ st.markdown(
         box-shadow: 0 0 0 1px #0F382C !important;
     }
     
-    /* Forzar color oscuro y legible en el texto seleccionado y elementos internos */
+    /* Forzar color oscuro y legible en textos y elementos internos del select */
     div[data-baseweb="select"] *,
     div[data-baseweb="select"] input,
     div[data-baseweb="select"] span {
@@ -102,29 +102,39 @@ st.markdown(
         -webkit-text-fill-color: #0F172A !important;
     }
     
-    /* Contenedor flotante de las opciones del select / multiselect */
+    /* CONTENEDOR FLOTANTE / POPOVER / MENÚS DESPLEGABLES (FORZAR FONDO BLANCO) */
+    div[data-baseweb="popover"],
     div[data-baseweb="popover"] > div, 
     ul[role="listbox"],
     div[data-baseweb="popover"] ul,
-    div[data-baseweb="menu"] {
+    div[data-baseweb="menu"],
+    div.baseui-menu,
+    [data-testid="stMultiSelect"] [data-baseweb="popover"] div {
         background-color: #FFFFFF !important;
+        background: #FFFFFF !important;
         border: 1px solid #CBD5E1 !important;
     }
     
-    /* Opciones individuales de la lista desplegable */
-    li[role="option"] {
+    /* Opciones individuales de la lista desplegable (Select y Multiselect) */
+    li[role="option"], 
+    div[role="option"],
+    [role="listbox"] div {
         background-color: #FFFFFF !important;
+        background: #FFFFFF !important;
     }
     
     li[role="option"] *,
     li[role="option"] span,
-    li[role="option"] div {
+    li[role="option"] div,
+    div[role="option"] *,
+    [role="listbox"] * {
         color: #0F172A !important;
         -webkit-text-fill-color: #0F172A !important;
     }
     
     li[role="option"]:hover,
-    li[role="option"][aria-selected="true"] {
+    li[role="option"][aria-selected="true"],
+    div[role="option"]:hover {
         background-color: #E2E8F0 !important;
     }
     
@@ -669,7 +679,6 @@ else:
         if filtro_codigo_txt: df_filtrado = df_filtrado[df_filtrado["CODIGO INTERNO"].astype(str).str.contains(filtro_codigo_txt, case=False, na=False)]
         if filtro_nombre_txt: df_filtrado = df_filtrado[df_filtrado["NOMBRE"].astype(str).str.contains(filtro_nombre_txt, case=False, na=False)]
 
-        # Corrección exacta de la columna de ordenamiento sin errores de KeyError
         if "FECHA_REGISTRO" in df_filtrado.columns:
             df_filtrado = df_filtrado.sort_values(by="FECHA_REGISTRO", ascending=False)
 
