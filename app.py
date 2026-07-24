@@ -26,7 +26,7 @@ if "usuario_actual" not in st.session_state:
         st.session_state.usuario_actual = None
         st.session_state.rol_actual = None
 
-# CSS GENERAL DEL SISTEMA
+# CSS GENERAL DEL SISTEMA (CON CORRECCIÓN DE COLORES EN DESPLEGABLES)
 st.markdown(
     """
     <style>
@@ -126,9 +126,14 @@ st.markdown(
         background-color: #F1F5F9;
     }
 
+    /* CORRECCIÓN VISIBILIDAD DE LETRAS EN MENÚS DESPLEGABLES (MULTISELECT) */
     ul[role="listbox"] {
+        background-color: #FFFFFF !important;
         max-height: 200px !important;
         overflow-y: auto !important;
+    }
+    ul[role="listbox"] div, ul[role="listbox"] span, ul[role="listbox"] p {
+        color: #0F172A !important;
     }
 
     div[role="dialog"] *, [data-testid="stDialog"] *, [data-testid="stModal"] * {
