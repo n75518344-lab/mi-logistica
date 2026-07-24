@@ -130,55 +130,52 @@ st.markdown(
         background-color: #F1F5F9;
     }
 
-    /* CORRECCIÓN EXTREMA CALENDARIO BASEWEB (STREAMLIT) */
+    /* CORRECCIÓN DEFINITIVA Y LIMPIA PARA EL CALENDARIO DE BASEWEB */
     div[data-baseweb="popover"], div[data-baseweb="calendar"] {
         background-color: #FFFFFF !important;
         color: #0F172A !important;
     }
     
-    /* Forzar texto oscuro en todo el contenido del calendario */
-    div[data-baseweb="calendar"] *, div[data-baseweb="popover"] * {
+    div[data-baseweb="calendar"] * {
         color: #0F172A !important;
     }
 
-    /* Botones y celdas de días en general */
-    div[data-baseweb="calendar"] button,
-    div[data-baseweb="calendar"] [role="button"],
-    div[data-baseweb="calendar"] div[role="gridcell"] {
-        background-color: transparent !important;
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
+    /* Cabecera del calendario (mes y año en negro) */
+    div[data-baseweb="calendar"] [data-testid="stMarkdownContainer"] p,
+    div[data-baseweb="calendar"] svg {
+        color: #0F172A !important;
+        fill: #0F172A !important;
     }
 
-    /* Hover en días normales */
+    /* Todos los botones de días por defecto */
+    div[data-baseweb="calendar"] button {
+        background-color: #FFFFFF !important;
+        color: #0F172A !important;
+        border-radius: 50% !important;
+        border: none !important;
+    }
+
     div[data-baseweb="calendar"] button:hover {
         background-color: #F1F5F9 !important;
         color: #0F382C !important;
-        border-radius: 50% !important;
     }
 
-    /* Días de otros meses (fuera de rango / disabled): Ocultarlos por completo */
-    div[data-baseweb="calendar"] [aria-disabled="true"],
+    /* Días de otros meses (fuera de rango): ocultarlos totalmente */
     div[data-baseweb="calendar"] button[aria-disabled="true"],
     div[data-baseweb="calendar"] div[aria-disabled="true"] {
-        background-color: transparent !important;
-        background: transparent !important;
-        color: transparent !important;
+        background-color: #FFFFFF !important;
+        color: #FFFFFF !important;
         border: none !important;
         opacity: 0 !important;
         pointer-events: none !important;
         visibility: hidden !important;
     }
 
-    /* Fecha seleccionada: Únicamente borde naranja, sin fondos oscuros ni rellenos */
-    div[data-baseweb="calendar"] button[aria-selected="true"],
-    div[data-baseweb="calendar"] [aria-selected="true"] button,
-    div[data-baseweb="calendar"] div[aria-selected="true"] {
-        background-color: transparent !important;
-        background: transparent !important;
+    /* Fecha seleccionada: Fondo blanco con borde naranja puro (sin relleno oscuro) */
+    div[data-baseweb="calendar"] button[aria-selected="true"] {
+        background-color: #FFFFFF !important;
+        background: #FFFFFF !important;
         border: 2px solid #F97316 !important;
-        border-radius: 50% !important;
         color: #0F172A !important;
         font-weight: 700 !important;
         box-shadow: none !important;
