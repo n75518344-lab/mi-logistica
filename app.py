@@ -27,7 +27,7 @@ if "usuario_actual" not in st.session_state:
         st.session_state.usuario_actual = None
         st.session_state.rol_actual = None
 
-# CSS GENERAL DEL SISTEMA Y CORRECCIÓN DE BORDES EN MULTISELECT
+# CSS GENERAL DEL SISTEMA Y CORRECCIÓN DE BORDES Y BOTONES
 st.markdown(
     """
     <style>
@@ -133,10 +133,11 @@ st.markdown(
     
     h1, h2, h3, h4, h5, h6, p, label, span, div { color: #0F172A; }
 
+    /* Estilo general para botones por defecto (Fondo Blanco, Borde Verde Oscuro) */
     div[data-testid="stButton"] > button,
     div[data-testid="stDownloadButton"] > button { 
-        background-color: #1E293B !important;  
-        border: 1px solid #334155 !important;
+        background-color: #FFFFFF !important;  
+        border: 1.5px solid #0F382C !important;
         border-radius: 8px !important; 
         font-weight: 600 !important; 
     }
@@ -149,14 +150,23 @@ st.markdown(
     div[data-testid="stDownloadButton"] > button span,
     div[data-testid="stDownloadButton"] > button p,
     div[data-testid="stDownloadButton"] > button label {
-        color: #FFFFFF !important;    
-        fill: #FFFFFF !important;     
+        color: #0F382C !important;    
+        fill: #0F382C !important;     
     }
 
+    /* Hover de los botones */
     div[data-testid="stButton"] > button:hover,
     div[data-testid="stDownloadButton"] > button:hover { 
         background-color: #0F382C !important; 
         border-color: #0F382C !important; 
+    }
+
+    div[data-testid="stButton"] > button:hover div,
+    div[data-testid="stButton"] > button:hover span,
+    div[data-testid="stButton"] > button:hover p,
+    div[data-testid="stButton"] > button:hover label {
+        color: #FFFFFF !important;
+        fill: #FFFFFF !important;
     }
 
     .tabla-contenedor, .tabla-contenedor-logs {
