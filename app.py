@@ -42,6 +42,21 @@ st.markdown(
         border-right: 1px solid #CBD5E1 !important;
     }
 
+    /* Corrección de colores y visibilidad de textos en los multiselect del Sidebar */
+    [data-testid="stSidebar"] div[data-baseweb="select"] div,
+    [data-testid="stSidebar"] .stMultiSelect span,
+    [data-testid="stSidebar"] .stMultiSelect p {
+        color: #0F172A !important;
+    }
+    
+    [data-testid="stSidebar"] div[data-baseweb="tag"] {
+        background-color: #E2E8F0 !important;
+        border-radius: 6px !important;
+    }
+    [data-testid="stSidebar"] div[data-baseweb="tag"] span {
+        color: #0F172A !important;
+    }
+
     header[data-testid="stHeader"] { 
         display: none !important; 
     }
@@ -440,14 +455,14 @@ else:
         st.markdown("<div style='margin-top: 8px;'></div>", unsafe_allow_html=True)
 
         # ------------------------------------------
-        # FILTROS EN EL SIDEBAR (LATERAL)
+        # FILTROS EN EL SIDEBAR (LATERAL) - ESPACIADO REDUCIDO
         # ------------------------------------------
         with st.sidebar:
-            st.markdown("<h3 style='color: #0F382C; margin-bottom: 5px;'>🔍 Panel de Filtros</h3>", unsafe_allow_html=True)
-            st.markdown("<p style='font-size: 12px; color: #64748B;'>Filtra los registros de envíos de manera rápida.</p>", unsafe_allow_html=True)
-            st.markdown("<hr style='margin: 5px 0px 15px 0px;'>", unsafe_allow_html=True)
+            st.markdown("<h3 style='color: #0F382C; margin-bottom: 2px;'>🔍 Panel de Filtros</h3>", unsafe_allow_html=True)
+            st.markdown("<p style='font-size: 12px; color: #64748B; margin-bottom: 8px;'>Filtra los registros de envíos de manera rápida.</p>", unsafe_allow_html=True)
+            st.markdown("<hr style='margin: 0px 0px 10px 0px;'>", unsafe_allow_html=True)
 
-            st.markdown("<p style='font-weight:700; font-size:13px; color:#0F382C; margin-bottom:4px;'>📅 Rango de Fechas (DD/MM/YYYY):</p>", unsafe_allow_html=True)
+            st.markdown("<p style='font-weight:700; font-size:13px; color:#0F382C; margin-bottom:2px;'>📅 Rango de Fechas (DD/MM/YYYY):</p>", unsafe_allow_html=True)
             txt_fecha_inicio = st.text_input("Fecha Inicial", value="", placeholder="DD/MM/YYYY", key="f_ini")
             txt_fecha_fin = st.text_input("Fecha Final", value="", placeholder="DD/MM/YYYY", key="f_fin")
 
@@ -497,9 +512,9 @@ else:
                 </script>
             """, height=0)
 
-            st.markdown("<hr style='margin: 15px 0px;'>", unsafe_allow_html=True)
+            st.markdown("<hr style='margin: 10px 0px;'>", unsafe_allow_html=True)
 
-            st.markdown("<p style='font-weight:700; font-size:13px; color:#0F382C; margin-bottom:4px;'>📌 Selección Múltiple:</p>", unsafe_allow_html=True)
+            st.markdown("<p style='font-weight:700; font-size:13px; color:#0F382C; margin-bottom:2px;'>📌 Selección Múltiple:</p>", unsafe_allow_html=True)
             
             clientes_unicos = sorted(st.session_state.df_pedidos["CLIENTE"].astype(str).unique().tolist())
             filtro_cliente = st.multiselect("Cliente", options=clientes_unicos, placeholder="Todos")
@@ -516,9 +531,9 @@ else:
             sub_estados_unicos = sorted(st.session_state.df_pedidos["SUB_ESTADO"].astype(str).unique().tolist())
             filtro_sub_estado = st.multiselect("Sub Estado", options=sub_estados_unicos, placeholder="Todos")
 
-            st.markdown("<hr style='margin: 15px 0px;'>", unsafe_allow_html=True)
+            st.markdown("<hr style='margin: 10px 0px;'>", unsafe_allow_html=True)
 
-            st.markdown("<p style='font-weight:700; font-size:13px; color:#0F382C; margin-bottom:4px;'>🔍 Búsqueda por Texto:</p>", unsafe_allow_html=True)
+            st.markdown("<p style='font-weight:700; font-size:13px; color:#0F382C; margin-bottom:2px;'>🔍 Búsqueda por Texto:</p>", unsafe_allow_html=True)
             filtro_codigo_txt = st.text_input("Código Interno", placeholder="Ej: BLC1-480...", key="b_cod")
             filtro_nombre_txt = st.text_input("Nombre Destinatario", placeholder="Ej: Cecilia Loo...", key="b_nom")
 
