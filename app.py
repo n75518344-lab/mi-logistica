@@ -4,7 +4,6 @@ import os
 import textwrap
 import pandas as pd
 import streamlit as st
-from st_aggrid import AgGrid, GridOptionsBuilder
 
 # 1. CONFIGURACIÓN DE PÁGINA
 st.set_page_config(
@@ -415,6 +414,9 @@ else:
 
     st.divider()
 
+    # ==========================================
+    # VISTA 1: PORTAL OPERARIO (CON BUSCADORES NATIVOS EN TIEMPO REAL)
+    # ==========================================
     if st.session_state.rol_actual == "🛠️ Operario":
         col_tit, col_btns = st.columns([3, 2])
         
@@ -430,34 +432,35 @@ else:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        gb = GridOptionsBuilder.from_dataframe(st.session_state.df_pedidos)
+        # BARRA DE FILTROS NATIVA EN TIEMPO REAL (REEMPLAZANDO A AGGRID)
+        st.markdown("<p style='font-weight:700; margin-bottom: 5px;'>🔍 Filtrar Registros Rápido:</p>", unsafe_allow_html=True)
+        c_f1, c_f2, c_f3 = st.columns(3)
         
-        gb.configure_default_column(
-            editable=False,
-            sortable=True,
-            resizable=True,
-            filterable=True,
-            floatingFilter=True,  # <--- BARRAS DE BÚSQUEDA VISIBLES EN CADA COLUMNA
-            flex=1
-        )
+        filtro_codigo = c_f1.text_input("Filtrar por Código Interno", placeholder="Ej: BLC1...")
+        filtro_cliente = c_f2.text_input("Filtrar por Cliente", placeholder="Ej: Unimarket...")
+        filtro_estado = c_f3.selectbox("Filtrar por Estado", ["TODOS", "ENTREGADO", "EN RUTA", "PENDIENTE"])
+
+        # Aplicar filtros dinámicamente sobre el dataframe
+        df_filtrado = st.session_state.df_pedidos.copy()
         
-        gb.configure_column("FECHA_REGISTRO", filter="agSetColumnFilter", sortable=True)
-        gb.configure_column("CODIGO INTERNO", filter="agSetColumnFilter", sortable=True)
-        gb.configure_column("CLIENTE", filter="agSetColumnFilter", sortable=True)
-        gb.configure_column("ESTADO", filter="agSetColumnFilter", sortable=True)
-        gb.configure_column("DISTRITO", filter="agSetColumnFilter", sortable=True)
+        if filtro_codigo:
+            df_filtrado = df_filtrado[df_filtrado["CODIGO INTERNO"].str.contains(filtro_codigo, case=False, na=False)]
+        if filtro_cliente:
+            df_filtrado = df_filtrado[df_filtrado["CLIENTE"].str.contains(filtro_cliente, case=False, na=False)]
+        if filtro_estado != "TODOS":
+            df_filtrado = df_filtrado[df_filtrado["ESTADO"] == filtro_estado]
 
-        gb.configure_pagination(paginationAutoPageSize=False, paginationPageSize=10)
-        grid_options = gb.build()
-
-        AgGrid(
-            st.session_state.df_pedidos,
-            gridOptions=grid_options,
-            height=420,
-            theme="alpine",
-            use_container_width=True
+        # Mostrar tabla nativa limpia, interactiva y con ordenamiento por cabecera nativo de Streamlit
+        st.dataframe(
+            df_filtrado,
+            use_container_width=True,
+            height=400,
+            hide_index=True
         )
 
+    # ==========================================
+    # VISTA 2: PORTAL ADMINISTRADOR
+    # ==========================================
     else:
         tab1, tab2 = st.tabs(["Usuarios y Claves", "Auditoría (Logs)"])
 
