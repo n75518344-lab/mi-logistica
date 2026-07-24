@@ -130,7 +130,7 @@ st.markdown(
         background-color: #F1F5F9;
     }
 
-    /* CORRECCIÓN DEFINITIVA PARA EL MINICALENDARIO DE BASEWEB */
+    /* CORRECCIÓN DEFINITIVA CALENDARIO BASEWEB */
     div[data-baseweb="popover"], div[data-baseweb="calendar"] {
         background-color: #FFFFFF !important;
         color: #0F172A !important;
@@ -138,31 +138,37 @@ st.markdown(
     div[data-baseweb="calendar"] * {
         color: #0F172A !important;
     }
+    
+    /* Botones de días del calendario */
     div[data-baseweb="calendar"] button {
         background-color: transparent !important;
         color: #0F172A !important;
         border-radius: 50% !important;
+        border: none !important;
     }
     div[data-baseweb="calendar"] button:hover {
         background-color: #F1F5F9 !important;
         color: #0F382C !important;
     }
     
-    /* Días de otro mes en blanco (invisibles) */
-    div[data-baseweb="calendar"] [aria-disabled="true"], 
-    div[data-baseweb="calendar"] span[aria-hidden="true"],
-    div[data-baseweb="calendar"] div:has(> span[aria-hidden="true"]) {
+    /* Días de otro mes: totalmente ocultos/en blanco */
+    div[data-baseweb="calendar"] div[aria-disabled="true"],
+    div[data-baseweb="calendar"] button[aria-disabled="true"] {
         background-color: #FFFFFF !important;
         color: #FFFFFF !important;
+        border: none !important;
         pointer-events: none !important;
+        opacity: 0 !important;
     }
     
-    /* Fecha seleccionada: solo borde naranja y fondo transparente */
-    div[data-baseweb="calendar"] [aria-selected="true"] {
+    /* Fecha seleccionada: únicamente borde naranja y fondo transparente */
+    div[data-baseweb="calendar"] button[aria-selected="true"] {
         background-color: transparent !important;
+        background: transparent !important;
         border: 2px solid #F97316 !important;
         color: #0F172A !important;
         font-weight: 700 !important;
+        box-shadow: none !important;
     }
 
     li[role="option"] {
