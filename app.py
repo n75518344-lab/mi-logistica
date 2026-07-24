@@ -30,16 +30,18 @@ if "usuario_actual" not in st.session_state:
 st.markdown(
     """
     <style>
+    /* OCULTAR SCROLLBAR GLOBAL DE LA VENTANA */
+    html, body, .stApp { 
+        overflow: hidden !important; 
+        background-color: #F8FAFC !important; 
+        color: #0F172A !important; 
+    }
+
     /* OCULTAR SIDEBAR Y CABECERA DE STREAMLIT */
     [data-testid="stSidebar"], [data-testid="collapsedControl"], header[data-testid="stHeader"] { 
         display: none !important; 
     }
     
-    /* FONDO Y TEXTOS PRINCIPALES */
-    .stApp { 
-        background-color: #F8FAFC !important; 
-        color: #0F172A !important; 
-    }
     .block-container { 
         max-width: 88% !important; 
         padding-top: 0.5rem !important; 
@@ -52,7 +54,7 @@ st.markdown(
 
     /* CONTENEDORES CON SCROLL INTELIGENTE PARA TABLAS */
     .tabla-contenedor, .tabla-contenedor-logs {
-        max-height: 280px;
+        max-height: 250px;
         height: fit-content;
         overflow-y: auto;
         border: 1px solid #CBD5E1;
@@ -63,7 +65,7 @@ st.markdown(
     }
 
     .tabla-contenedor-logs {
-        max-height: 520px;
+        max-height: 500px;
         margin-top: 15px !important;
     }
 
@@ -119,7 +121,7 @@ st.markdown(
 
     /* LIMITAR ALTURA Y SCROLLBAR PARA MENÚS DESPLEGABLES (SELECTBOX) */
     ul[role="listbox"] {
-        max-height: 220px !important;
+        max-height: 200px !important;
         overflow-y: auto !important;
     }
 
@@ -283,7 +285,7 @@ st.markdown(
         background-color: transparent !important; 
         gap: 28px !important; 
         border-bottom: 2px solid #CBD5E1 !important; 
-        margin-top: 10px !important; 
+        margin-top: 5px !important; 
         padding-bottom: 0px !important;
         width: 100% !important;
     }
@@ -291,7 +293,7 @@ st.markdown(
         background-color: transparent !important; 
         border: none !important;
         border-bottom: 3px solid transparent !important;
-        padding: 10px 4px 12px 4px !important; 
+        padding: 8px 4px 10px 4px !important; 
         border-radius: 0px !important;
         margin-bottom: -2px !important;
     }
@@ -408,7 +410,7 @@ def mostrar_modal_soporte():
 if st.session_state.usuario_actual is None:
   st.markdown(
       """
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <div style="font-size: 28px; font-weight: 900; color: #0F382C;">🌲 ALFA CARGO EXPRESS</div>
         <div style='color: #64748B; font-size: 14px; font-weight: 600;'>🌐 Central Lima, Perú</div>
     </div>
@@ -440,7 +442,7 @@ if st.session_state.usuario_actual is None:
     if img_b64:
       st.markdown(
           f'<img src="data:image/jpeg;base64,{img_b64}" style="width: 100%;'
-          ' max-height: 280px; object-fit: contain; border-radius: 12px;" />',
+          ' max-height: 260px; object-fit: contain; border-radius: 12px;" />',
           unsafe_allow_html=True,
       )
 
