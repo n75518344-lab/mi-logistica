@@ -4,6 +4,7 @@ import os
 import textwrap
 import pandas as pd
 import streamlit as st
+import streamlit.components.v1 as components
 
 # 1. CONFIGURACIÓN DE PÁGINA
 st.set_page_config(
@@ -429,7 +430,7 @@ else:
     st.markdown("<hr style='margin: 8px 0px 12px 0px; border-color: #CBD5E1;'>", unsafe_allow_html=True)
 
     # ==========================================
-    # VISTA 1: PORTAL OPERARIO (CON FILTROS DE FECHA POR TEXTO SEGURO)
+    # VISTA 1: PORTAL OPERARIO (CON AUTO-SLASH EN FECHAS)
     # ==========================================
     if st.session_state.rol_actual == "🛠️ Operario":
         csv = st.session_state.df_pedidos.to_csv(index=False).encode('utf-8')
@@ -447,7 +448,7 @@ else:
 
         st.markdown("<div style='margin-top: 6px;'></div>", unsafe_allow_html=True)
 
-        # PANEL EXPANDIBLE DE FILTRADO AVANZADO CON CAMPOS DE TEXTO PARA FECHAS
+        # PANEL EXPANDIBLE DE FILTRADO AVANZADO CON AUTO-SLASH EN JS
         with st.expander("🔎 Panel de Filtros Avanzados (Selección múltiple, Fechas y Búsqueda)", expanded=True):
             
             st.markdown("<p style='font-weight:800; font-size:14px; color:#0F382C; margin-bottom:8px;'>📅 Rango de Fechas (Formato DD/MM/YYYY):</p>", unsafe_allow_html=True)
@@ -455,11 +456,41 @@ else:
             
             with dc1:
                 st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>FECHA INICIAL:</p>", unsafe_allow_html=True)
-                txt_fecha_inicio = st.text_input("Fecha Inicial", value="", placeholder="Ej: 21/07/2026", label_visibility="collapsed", key="f_ini")
+                txt_fecha_inicio = st.text_input("Fecha Inicial", value="", placeholder="DD/MM/YYYY", label_visibility="collapsed", key="f_ini")
 
             with dc2:
                 st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>FECHA FINAL:</p>", unsafe_allow_html=True)
-                txt_fecha_fin = st.text_input("Fecha Final", value="", placeholder="Ej: 24/07/2026", label_visibility="collapsed", key="f_fin")
+                txt_fecha_fin = st.text_input("Fecha Final", value="", placeholder="DD/MM/YYYY", label_visibility="collapsed", key="f_fin")
+
+            # COMPONENTE JAVASCRIPT PARA AUTO-INSERTAR EL SLASH (/) MIENTRAS ESCRIBE
+            components.html("""
+                <script>
+                const doc = window.parent.document;
+                const inputs = doc.querySelectorAll('input[aria-label="Fecha Inicial"], input[aria-label="Fecha Final"]');
+                
+                inputs.forEach(input => {
+                    if (!input.dataset.masked) {
+                        input.dataset.masked = "true";
+                        input.setAttribute("maxlength", "10");
+                        
+                        input.addEventListener("input", function(e) {
+                            let val = this.value.replace(/\\D/g, "");
+                            let newVal = "";
+                            if (val.length > 0 && val.length <= 2) {
+                                newVal = val;
+                            } else if (val.length > 2 && val.length <= 4) {
+                                newVal = val.slice(0, 2) + "/" + val.slice(2);
+                            } else if (val.length > 4) {
+                                newVal = val.slice(0, 2) + "/" + val.slice(2, 4) + "/" + val.slice(4, 8);
+                            }
+                            this.value = newVal;
+                            this.dispatchEvent(new Event('input', { bubbles: true }));
+                            this.dispatchEvent(new Event('change', { bubbles: true }));
+                        });
+                    }
+                });
+                </script>
+            """, height=0)
 
             st.markdown("<hr style='margin: 15px 0px; border-color: #E2E8F0;'>", unsafe_allow_html=True)
 
@@ -503,7 +534,7 @@ else:
                 st.markdown("<p style='font-weight:700; font-size:12px; margin-bottom:2px;'>Buscar Nombre Destinatario:</p>", unsafe_allow_html=True)
                 filtro_nombre_txt = st.text_input("Nombre", label_visibility="collapsed", placeholder="Ej: Cecilia Loo...", key="b_nom")
 
-        # APLICAR FILTROS (CON VALIDACIÓN SEGURA DE FECHAS EN TEXTO)
+        # APLICAR FILTROS
         df_filtrado = st.session_state.df_pedidos.copy()
 
         if "FECHA_REGISTRO" in df_filtrado.columns:
@@ -514,7 +545,7 @@ else:
                     f_ini_parsed = datetime.strptime(txt_fecha_inicio.strip(), "%d/%m/%Y").date()
                     df_filtrado = df_filtrado[df_filtrado["_fecha_temp"].dt.date >= f_ini_parsed]
                 except ValueError:
-                    pass  # Si escribe mal el formato temporalmente, no rompe la app
+                    pass
 
             if txt_fecha_fin.strip():
                 try:
@@ -541,7 +572,6 @@ else:
         if filtro_nombre_txt:
             df_filtrado = df_filtrado[df_filtrado["NOMBRE"].astype(str).str.contains(filtro_nombre_txt, case=False, na=False)]
 
-        # RENDERIZAR TABLA LIMPIA EN HTML
         if "FECHA_REGISTRO" in df_filtrado.columns:
             df_filtrado = df_filtrado.sort_values(by="FECHA_REGISTRO", ascending=False)
 
