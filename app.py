@@ -26,7 +26,7 @@ if "usuario_actual" not in st.session_state:
         st.session_state.usuario_actual = None
         st.session_state.rol_actual = None
 
-# CSS GENERAL DEL SISTEMA (CON CORRECCIÓN DEFINITIVA DE POPUPS Y MULTISELECT)
+# CSS GENERAL DEL SISTEMA (CON CORRECCIÓN DE EXPANDER)
 st.markdown(
     """
     <style>
@@ -140,6 +140,13 @@ st.markdown(
     li[role="option"]:hover {
         background-color: #F1F5F9 !important;
         color: #0F382C !important;
+    }
+
+    /* CORRECCIÓN PARA EL TÍTULO DEL ST.EXPANDER */
+    [data-testid="stExpander"] summary, 
+    [data-testid="stExpander"] summary *, 
+    [data-testid="stExpander"] [data-testid="stMarkdownContainer"] p {
+        color: #0F172A !important;
     }
 
     div[role="dialog"] *, [data-testid="stDialog"] *, [data-testid="stModal"] * {
