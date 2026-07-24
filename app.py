@@ -37,13 +37,13 @@ st.markdown(
         color: #0F172A !important; 
     }
 
-    /* Sidebar */
+    /* Sidebar - Eliminar padding superior excesivo para subir el contenido */
     [data-testid="stSidebar"] { 
         background-color: #FFFFFF !important;
         border-right: 1px solid #CBD5E1 !important;
     }
     [data-testid="stSidebar"] > div:first-child {
-        padding-top: 1rem !important;
+        padding-top: 0.4rem !important;
         padding-bottom: 1rem !important;
     }
     [data-testid="stSidebar"] .stTextInput, 
@@ -509,10 +509,10 @@ else:
     if st.session_state.rol_actual == "🛠️ Operario":
         csv = st.session_state.df_pedidos.to_csv(index=False).encode('utf-8')
         
-        # 1. Título "Gestión de Envíos" solo en su propia línea arriba a la izquierda
+        # Título "Gestión de Envíos" solo en su propia línea arriba a la izquierda
         st.markdown("<h3 style='margin:0 0 8px 0; padding:0; line-height: 1.2;'>Gestión de Envíos</h3>", unsafe_allow_html=True)
         
-        # 2. Fila exclusiva para los 3 botones alineados a la derecha justo encima de la tabla
+        # Fila exclusiva para los 3 botones alineados a la derecha justo encima de la tabla
         _, col_b1, col_b2, col_b3 = st.columns([2.5, 0.9, 0.9, 0.9])
         
         with col_b1:
@@ -535,7 +535,7 @@ else:
         # FILTROS EN EL SIDEBAR
         # ------------------------------------------
         with st.sidebar:
-            st.markdown("<h3 style='color: #0F382C; margin-bottom: 0px;'>🔍 Panel de Filtros</h3>", unsafe_allow_html=True)
+            st.markdown("<h3 style='color: #0F382C; margin-bottom: 0px; white-space: nowrap;'>🌲 ALFA EXPRESS</h3>", unsafe_allow_html=True)
             st.markdown("<p style='font-size: 12px; color: #64748B; margin-bottom: 4px;'>Filtra los registros de envíos de manera rápida.</p>", unsafe_allow_html=True)
             st.markdown("<hr style='margin: 0px 0px 6px 0px;'>", unsafe_allow_html=True)
 
