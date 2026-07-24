@@ -26,7 +26,7 @@ if "usuario_actual" not in st.session_state:
         st.session_state.usuario_actual = None
         st.session_state.rol_actual = None
 
-# CSS GENERAL DEL SISTEMA (CON CALENDARIO 100% CORREGIDO Y LEGIBLE)
+# CSS GENERAL DEL SISTEMA (CON CALENDARIO 100% CORREGIDO)
 st.markdown(
     """
     <style>
@@ -136,7 +136,6 @@ st.markdown(
         color: #0F172A !important;
     }
     div[data-baseweb="calendar"] * {
-        background-color: transparent !important;
         color: #0F172A !important;
     }
     div[data-baseweb="calendar"] button {
@@ -148,16 +147,22 @@ st.markdown(
         background-color: #F1F5F9 !important;
         color: #0F382C !important;
     }
-    /* Estilo para el día seleccionado */
-    div[data-baseweb="calendar"] [aria-selected="true"] {
-        background-color: #0F382C !important;
-        color: #FFFFFF !important;
-    }
-    /* Días fuera del mes actual */
+    
+    /* Días de otro mes en blanco (invisibles) */
     div[data-baseweb="calendar"] [aria-disabled="true"], 
-    div[data-baseweb="calendar"] span[aria-hidden="true"] {
-        color: #94A3B8 !important;
-        opacity: 0.5 !important;
+    div[data-baseweb="calendar"] span[aria-hidden="true"],
+    div[data-baseweb="calendar"] div:has(> span[aria-hidden="true"]) {
+        background-color: #FFFFFF !important;
+        color: #FFFFFF !important;
+        pointer-events: none !important;
+    }
+    
+    /* Fecha seleccionada: solo borde naranja y fondo transparente */
+    div[data-baseweb="calendar"] [aria-selected="true"] {
+        background-color: transparent !important;
+        border: 2px solid #F97316 !important;
+        color: #0F172A !important;
+        font-weight: 700 !important;
     }
 
     li[role="option"] {
