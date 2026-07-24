@@ -26,7 +26,7 @@ if "usuario_actual" not in st.session_state:
         st.session_state.usuario_actual = None
         st.session_state.rol_actual = None
 
-# CSS GENERAL DEL SISTEMA
+# CSS GENERAL DEL SISTEMA (CON MARGEN SUPERIOR REDUCIDO AL MÁXIMO)
 st.markdown(
     """
     <style>
@@ -46,7 +46,7 @@ st.markdown(
     
     .block-container { 
         max-width: 88% !important; 
-        padding-top: 0.5rem !important; 
+        padding-top: 0.1rem !important; 
         padding-bottom: 2rem !important; 
     }
     
@@ -93,7 +93,7 @@ st.markdown(
 
     .tabla-contenedor-logs {
         max-height: 500px;
-        margin-top: 15px !important;
+        margin-top: 10px !important;
     }
 
     .tabla-contenedor::-webkit-scrollbar,
@@ -427,7 +427,7 @@ else:
         st.markdown(
             f"""
             <div style="font-size: 22px; font-weight: 800; color: #0F382C; margin-bottom: 0px;">🌲 ALFA CARGO EXPRESS — Portal {st.session_state.rol_actual}</div>
-            <div style="font-size: 13px; color: #475569; font-weight: 600; margin-bottom: 5px;">Usuario activo: <strong>{st.session_state.usuario_actual}</strong></div>
+            <div style="font-size: 13px; color: #475569; font-weight: 600; margin-bottom: 2px;">Usuario activo: <strong>{st.session_state.usuario_actual}</strong></div>
             """,
             unsafe_allow_html=True,
         )
@@ -441,19 +441,19 @@ else:
             st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
-    st.divider()
+    # Línea divisoria muy pegada arriba
+    st.markdown("<hr style='margin: 8px 0px 12px 0px; border-color: #CBD5E1;'>", unsafe_allow_html=True)
 
     # ==========================================
     # VISTA 1: PORTAL OPERARIO (FILTROS Y BUSCADOR DE FECHA)
     # ==========================================
     if st.session_state.rol_actual == "🛠️ Operario":
-        # Usamos HTML/Flexbox directo para que la cabecera quede pegada y compacta de forma limpia
         csv = st.session_state.df_pedidos.to_csv(index=False).encode('utf-8')
         
         col_tit, col_b1, col_b2, col_b3 = st.columns([3.4, 0.8, 0.8, 0.8], vertical_alignment="center")
         
         with col_tit:
-            st.markdown("<h3 style='margin:0; padding:0; line-height: 1.2;'>Gestión de Envíos</h3>", unsafe_allow_html=True)
+            st.markdown("<h3 style='margin:0; padding:0; line-height: 1.0;'>Gestión de Envíos</h3>", unsafe_allow_html=True)
         with col_b1:
             st.download_button("📥 Descargar", data=csv, file_name="pedidos.csv", use_container_width=True)
         with col_b2:
@@ -462,7 +462,7 @@ else:
             if st.button("➕ Nuevo", use_container_width=True): modal_add_pedido()
 
         # Espaciador mínimo controlado para separar los botones del panel de filtros
-        st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='margin-top: 6px;'></div>", unsafe_allow_html=True)
 
         # PANEL EXPANDIBLE DE FILTRADO AVANZADO (CON FILTRO DE FECHA INCLUIDO)
         with st.expander("🔎 Panel de Filtros Avanzados (Selección múltiple y búsqueda por texto)", expanded=True):
@@ -547,7 +547,7 @@ else:
             filas_pedidos_html += "</tr>"
 
         tabla_pedidos_html = textwrap.dedent(f"""
-            <div class="tabla-contenedor-logs" style="max-height: 420px; margin-top: 10px !important;">
+            <div class="tabla-contenedor-logs" style="max-height: 420px; margin-top: 6px !important;">
                 <table class="tabla-usuarios">
                     <thead>
                         <tr>
