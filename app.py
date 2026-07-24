@@ -415,7 +415,7 @@ else:
     st.divider()
 
     # ==========================================
-    # VISTA 1: PORTAL OPERARIO (CON BUSCADORES NATIVOS EN TIEMPO REAL)
+    # VISTA 1: PORTAL OPERARIO (BÚSQUEDA DINÁMICA POR COLUMNA)
     # ==========================================
     if st.session_state.rol_actual == "🛠️ Operario":
         col_tit, col_btns = st.columns([3, 2])
@@ -432,25 +432,22 @@ else:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # BARRA DE FILTROS NATIVA EN TIEMPO REAL (REEMPLAZANDO A AGGRID)
-        st.markdown("<p style='font-weight:700; margin-bottom: 5px;'>🔍 Filtrar Registros Rápido:</p>", unsafe_allow_html=True)
-        c_f1, c_f2, c_f3 = st.columns(3)
+        # SELECTOR DE COLUMNA Y CAMPO DE BÚSQUEDA DINÁMICO
+        st.markdown("<p style='font-weight:700; margin-bottom: 5px;'>🔍 Filtrar por columna:</p>", unsafe_allow_html=True)
+        c_columna, c_texto = st.columns([1, 2])
         
-        filtro_codigo = c_f1.text_input("Filtrar por Código Interno", placeholder="Ej: BLC1...")
-        filtro_cliente = c_f2.text_input("Filtrar por Cliente", placeholder="Ej: Unimarket...")
-        filtro_estado = c_f3.selectbox("Filtrar por Estado", ["TODOS", "ENTREGADO", "EN RUTA", "PENDIENTE"])
+        columnas_disponibles = list(st.session_state.df_pedidos.columns)
+        columna_seleccionada = c_columna.selectbox("Elige la columna", columnas_disponibles, label_visibility="collapsed")
+        texto_busqueda = c_texto.text_input("Escribe lo que quieres buscar", placeholder=f"Buscar en {columna_seleccionada}...", label_visibility="collapsed")
 
-        # Aplicar filtros dinámicamente sobre el dataframe
+        # Aplicar el filtro de forma dinámica
         df_filtrado = st.session_state.df_pedidos.copy()
         
-        if filtro_codigo:
-            df_filtrado = df_filtrado[df_filtrado["CODIGO INTERNO"].str.contains(filtro_codigo, case=False, na=False)]
-        if filtro_cliente:
-            df_filtrado = df_filtrado[df_filtrado["CLIENTE"].str.contains(filtro_cliente, case=False, na=False)]
-        if filtro_estado != "TODOS":
-            df_filtrado = df_filtrado[df_filtrado["ESTADO"] == filtro_estado]
+        if texto_busqueda:
+            # Convertimos a string para evitar errores si la columna tiene números u otros tipos
+            df_filtrado = df_filtrado[df_filtrado[columna_seleccionada].astype(str).str.contains(texto_busqueda, case=False, na=False)]
 
-        # Mostrar tabla nativa limpia, interactiva y con ordenamiento por cabecera nativo de Streamlit
+        # Mostrar tabla nativa limpia (sin índices automáticos extraños)
         st.dataframe(
             df_filtrado,
             use_container_width=True,
