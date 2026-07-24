@@ -447,12 +447,13 @@ else:
     # VISTA 1: PORTAL OPERARIO (FILTROS Y BUSCADOR DE FECHA)
     # ==========================================
     if st.session_state.rol_actual == "🛠️ Operario":
+        # Usamos HTML/Flexbox directo para que la cabecera quede pegada y compacta de forma limpia
+        csv = st.session_state.df_pedidos.to_csv(index=False).encode('utf-8')
+        
         col_tit, col_b1, col_b2, col_b3 = st.columns([3.4, 0.8, 0.8, 0.8], vertical_alignment="center")
         
         with col_tit:
-            st.markdown("<h3 style='margin:0;'>Gestión de Envíos</h3>", unsafe_allow_html=True)
-        
-        csv = st.session_state.df_pedidos.to_csv(index=False).encode('utf-8')
+            st.markdown("<h3 style='margin:0; padding:0; line-height: 1.2;'>Gestión de Envíos</h3>", unsafe_allow_html=True)
         with col_b1:
             st.download_button("📥 Descargar", data=csv, file_name="pedidos.csv", use_container_width=True)
         with col_b2:
@@ -460,7 +461,8 @@ else:
         with col_b3:
             if st.button("➕ Nuevo", use_container_width=True): modal_add_pedido()
 
-        st.markdown("<br>", unsafe_allow_html=True)
+        # Espaciador mínimo controlado para separar los botones del panel de filtros
+        st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
 
         # PANEL EXPANDIBLE DE FILTRADO AVANZADO (CON FILTRO DE FECHA INCLUIDO)
         with st.expander("🔎 Panel de Filtros Avanzados (Selección múltiple y búsqueda por texto)", expanded=True):
