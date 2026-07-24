@@ -52,13 +52,13 @@ st.markdown(
     }
 
     /* =========================================================
-       ESTILOS PARA INPUTS, SELECTS Y BORDES VERDE OSCURO
+       ESTILOS PARA INPUTS, SELECTS Y BORDES VERDE OSCURO (2px)
        ========================================================= */
        
     div[data-baseweb="select"] > div {
         background-color: #FFFFFF !important;
         border-color: #0F382C !important;
-        border-width: 1.5px !important;
+        border-width: 2px !important;
     }
     
     div[data-baseweb="select"] > div:focus-within,
@@ -107,7 +107,7 @@ st.markdown(
     .stTextInput input { 
         background-color: #FFFFFF !important; 
         color: #0F172A !important; 
-        border: 1px solid #CBD5E1 !important; 
+        border: 2px solid #0F382C !important; 
         border-radius: 8px !important; 
         padding: 8px 10px !important;
     }
@@ -125,11 +125,11 @@ st.markdown(
     
     h1, h2, h3, h4, h5, h6, p, label, span, div { color: #0F172A; }
 
-    /* Estilo general para botones por defecto (Fondo Blanco, Borde Verde Oscuro) */
+    /* Estilo general para botones por defecto (Fondo Blanco, Borde Verde Oscuro 2px) */
     div[data-testid="stButton"] > button,
     div[data-testid="stDownloadButton"] > button { 
         background-color: #FFFFFF !important;  
-        border: 1.5px solid #0F382C !important;
+        border: 2px solid #0F382C !important;
         border-radius: 8px !important; 
         font-weight: 600 !important; 
     }
@@ -161,10 +161,10 @@ st.markdown(
         fill: #FFFFFF !important;
     }
 
-    /* ESTILO ESPECÍFICO PARA LOS 3 BOTONES SUPERIORES */
+    /* ESTILO ESPECÍFICO PARA LOS 3 BOTONES SUPERIORES (Borde 2px) */
     .contenedor-btn-custom button {
         background-color: #FFFFFF !important;
-        border: 1.5px solid #0F382C !important;
+        border: 2px solid #0F382C !important;
         border-radius: 8px !important;
     }
     .contenedor-btn-custom button div,
@@ -257,7 +257,7 @@ st.markdown(
 
     #logout_btn button {
         background-color: #FFFFFF !important;
-        border: 1.5px solid #0F382C !important;
+        border: 2px solid #0F382C !important;
         border-radius: 8px !important;
     }
     #logout_btn button p, #logout_btn button span { color: #0F382C !important; font-weight: 700 !important; }
@@ -501,7 +501,7 @@ else:
             st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
-    st.markdown("<hr style='margin: 8px 0px 12px 0px; border-color: #CBD5E1;'>", unsafe_allow_html=True)
+    st.markdown("<hr style='margin: 8px 0px 8px 0px; border-color: #CBD5E1;'>", unsafe_allow_html=True)
 
     # ==========================================
     # VISTA 1: PORTAL OPERARIO
@@ -526,7 +526,8 @@ else:
             if st.button("➕ Nuevo Pedido", use_container_width=True): modal_add_pedido()
             st.markdown('</div>', unsafe_allow_html=True)
 
-        st.markdown("<div style='margin-top: 8px;'></div>", unsafe_allow_html=True)
+        # Margen muy reducido para acercar los botones a la tabla
+        st.markdown("<div style='margin-top: 2px;'></div>", unsafe_allow_html=True)
 
         # ------------------------------------------
         # FILTROS EN EL SIDEBAR
@@ -653,7 +654,7 @@ else:
             filas_pedidos_html += "</tr>"
 
         tabla_pedidos_html = textwrap.dedent(f"""
-            <div class="tabla-contenedor-logs" style="max-height: 540px; margin-top: 4px !important;">
+            <div class="tabla-contenedor-logs" style="max-height: 540px; margin-top: 2px !important;">
                 <table class="tabla-usuarios">
                     <thead>
                         <tr>
