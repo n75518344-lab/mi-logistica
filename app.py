@@ -107,7 +107,7 @@ st.markdown(
         color: #0F382C !important;
     }
 
-    /* OCULTAR OPCIONES NO DESEADAS DEL MENÚ DE LA TABLA (STATISTICS, AUTOSIZE, PIN, HIDE) */
+    /* OCULTAR TODAS LAS OPCIONES EXCEPTO ORDENAR (SORT ASCENDING / DESCENDING) */
     div[role="menu"] div:has-text("Statistics"),
     div[role="menu"] div:has-text("Autosize"),
     div[role="menu"] div:has-text("Pin column"),
@@ -630,7 +630,7 @@ else:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # TABLA INTERACTIVA NATIVA CON MENÚ SIMPLIFICADO (ORDENAR, BUSCAR Y FILTRAR)
+        # TABLA INTERACTIVA NATIVA CON MENÚ SIMPLIFICADO (SOLO ORDENAMIENTO)
         st.dataframe(
             st.session_state.df_pedidos,
             use_container_width=True,
