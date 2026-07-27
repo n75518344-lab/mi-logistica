@@ -331,6 +331,58 @@ st.markdown(
         color: #0E2F27 !important; 
         font-weight: 700 !important; 
     }
+
+    /* =========================================================
+        PAGINACIÓN ESTILO GMAIL (1–50 de 62  ‹  ›)
+        ========================================================= */
+    .st-key-gmail_paginacion {
+        display: flex !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+    }
+    .st-key-gmail_paginacion div[data-testid="column"] {
+        display: flex !important;
+        align-items: center !important;
+        width: auto !important;
+        flex: 0 0 auto !important;
+    }
+    .gmail-pag-texto {
+        color: #5F6368;
+        font-size: 13px;
+        white-space: nowrap;
+        padding-right: 4px;
+        font-weight: 500;
+    }
+    .st-key-gmail_paginacion div[data-testid="stButton"] > button {
+        background-color: transparent !important;
+        border: none !important;
+        border-radius: 50% !important;
+        width: 30px !important;
+        height: 30px !important;
+        min-height: 30px !important;
+        padding: 0 !important;
+        margin: 0 2px !important;
+        color: #5F6368 !important;
+        font-size: 18px !important;
+        font-weight: 700 !important;
+        line-height: 1 !important;
+        box-shadow: none !important;
+    }
+    .st-key-gmail_paginacion div[data-testid="stButton"] > button p {
+        color: #5F6368 !important;
+        font-size: 18px !important;
+    }
+    .st-key-gmail_paginacion div[data-testid="stButton"] > button:hover:not(:disabled) {
+        background-color: #E9EEEC !important;
+        border: none !important;
+    }
+    .st-key-gmail_paginacion div[data-testid="stButton"] > button:hover:not(:disabled) p {
+        color: #0E2F27 !important;
+    }
+    .st-key-gmail_paginacion div[data-testid="stButton"] > button:disabled {
+        opacity: 0.35 !important;
+        cursor: default !important;
+    }
     </style>
 """,
     unsafe_allow_html=True,
@@ -720,21 +772,44 @@ else:
             df_filtrado = df_filtrado.sort_values(by="FECHA_REGISTRO", ascending=False)
 
         # ==========================================
-        # LÓGICA DE PAGINACIÓN (BLOQUES DE 50)
+        # LÓGICA DE PAGINACIÓN (BLOQUES DE 50) - ESTILO GMAIL
         # ==========================================
         TAMANO_PAGINA = 50
         total_registros = len(df_filtrado)
         total_paginas = max(1, (total_registros + TAMANO_PAGINA - 1) // TAMANO_PAGINA)
 
+        if "pagina_actual_pedidos" not in st.session_state:
+            st.session_state.pagina_actual_pedidos = 1
+
+        # Si los filtros reducen el total de páginas, no dejar la página fuera de rango
+        if st.session_state.pagina_actual_pedidos > total_paginas:
+            st.session_state.pagina_actual_pedidos = total_paginas
+        if st.session_state.pagina_actual_pedidos < 1:
+            st.session_state.pagina_actual_pedidos = 1
+
+        pagina_actual = st.session_state.pagina_actual_pedidos
+        inicio_idx = (pagina_actual - 1) * TAMANO_PAGINA
+        fin_idx = min(inicio_idx + TAMANO_PAGINA, total_registros)
+        rango_texto = f"{inicio_idx + 1}\u2013{fin_idx} de {total_registros}" if total_registros > 0 else "0 de 0"
+
         col_pag1, col_pag2 = st.columns([3, 1])
         with col_pag1:
-            st.markdown(f"<p style='color: #475569; font-size: 14px; margin-top: 8px;'>Mostrando bloques de 50 registros. Total encontrados: <b>{total_registros}</b>.</p>", unsafe_allow_html=True)
+            st.markdown(f"<p style='color: #475569; font-size: 14px; margin-top: 8px;'>Mostrando bloques de 50 registros.</p>", unsafe_allow_html=True)
         with col_pag2:
-            pagina_actual = st.number_input("Página", min_value=1, max_value=total_paginas, value=1, step=1, label_visibility="collapsed")
+            with st.container(key="gmail_paginacion"):
+                c_txt, c_prev, c_next = st.columns([2.4, 0.8, 0.8])
+                with c_txt:
+                    st.markdown(f"<div class='gmail-pag-texto'>{rango_texto}</div>", unsafe_allow_html=True)
+                with c_prev:
+                    if st.button("‹", key="pag_prev", disabled=(pagina_actual <= 1)):
+                        st.session_state.pagina_actual_pedidos -= 1
+                        st.rerun()
+                with c_next:
+                    if st.button("›", key="pag_next", disabled=(pagina_actual >= total_paginas)):
+                        st.session_state.pagina_actual_pedidos += 1
+                        st.rerun()
 
         # Cortar el DataFrame según la página seleccionada
-        inicio_idx = (pagina_actual - 1) * TAMANO_PAGINA
-        fin_idx = inicio_idx + TAMANO_PAGINA
         df_paginado = df_filtrado.iloc[inicio_idx:fin_idx]
 
         columnas_pedidos = df_paginado.columns.tolist()
