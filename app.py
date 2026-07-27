@@ -74,14 +74,14 @@ st.markdown(
        
     div[data-baseweb="select"] > div {
         background-color: #FFFFFF !important;
-        border-color: #16A34A !important;
+        border-color: #0E2F27 !important;
         border-width: 2px !important;
     }
     
     div[data-baseweb="select"] > div:focus-within,
     div[data-baseweb="select"] > div:hover {
-        border-color: #16A34A !important;
-        box-shadow: 0 0 0 1px #16A34A !important;
+        border-color: #0E2F27 !important;
+        box-shadow: 0 0 0 1px #0E2F27 !important;
     }
     
     /* Forzar color oscuro y legible en textos y elementos internos del select */
@@ -140,14 +140,14 @@ st.markdown(
     
     li[role="option"]:hover *,
     li[role="option"][aria-selected="true"] * {
-        color: #16A34A !important;
-        -webkit-text-fill-color: #16A34A !important;
+        color: #0E2F27 !important;
+        -webkit-text-fill-color: #0E2F27 !important;
     }
 
     .stTextInput input { 
         background-color: #FFFFFF !important; 
         color: #0F172A !important; 
-        border: 2px solid #16A34A !important; 
+        border: 2px solid #0E2F27 !important; 
         border-radius: 8px !important; 
         padding: 6px 10px !important;
     }
@@ -169,7 +169,7 @@ st.markdown(
     div[data-testid="stButton"] > button,
     div[data-testid="stDownloadButton"] > button { 
         background-color: #FFFFFF !important;  
-        border: 2px solid #16A34A !important;
+        border: 2px solid #0E2F27 !important;
         border-radius: 8px !important; 
         font-weight: 600 !important; 
     }
@@ -182,15 +182,15 @@ st.markdown(
     div[data-testid="stDownloadButton"] > button span,
     div[data-testid="stDownloadButton"] > button p,
     div[data-testid="stDownloadButton"] > button label {
-        color: #16A34A !important;    
-        fill: #16A34A !important;     
+        color: #0E2F27 !important;    
+        fill: #0E2F27 !important;     
     }
 
     /* Hover de los botones */
     div[data-testid="stButton"] > button:hover,
     div[data-testid="stDownloadButton"] > button:hover { 
-        background-color: #16A34A !important; 
-        border-color: #16A34A !important; 
+        background-color: #0E2F27 !important; 
+        border-color: #0E2F27 !important; 
     }
 
     div[data-testid="stButton"] > button:hover div,
@@ -204,17 +204,17 @@ st.markdown(
     /* ESTILO ESPECÍFICO PARA LOS 3 BOTONES SUPERIORES (Borde 2px) */
     .contenedor-btn-custom button {
         background-color: #FFFFFF !important;
-        border: 2px solid #16A34A !important;
+        border: 2px solid #0E2F27 !important;
         border-radius: 8px !important;
     }
     .contenedor-btn-custom button div,
     .contenedor-btn-custom button span,
     .contenedor-btn-custom button p {
-        color: #16A34A !important;
+        color: #0E2F27 !important;
         font-weight: 700 !important;
     }
     .contenedor-btn-custom button:hover {
-        background-color: #16A34A !important;
+        background-color: #0E2F27 !important;
     }
     .contenedor-btn-custom button:hover div,
     .contenedor-btn-custom button:hover span,
@@ -245,7 +245,7 @@ st.markdown(
         text-align: left;
     }
     .tabla-usuarios th {
-        background-color: #16A34A;
+        background-color: #0E2F27;
         color: #FFFFFF !important;
         padding: 10px 12px;
         position: sticky;
@@ -266,7 +266,7 @@ st.markdown(
         color: #FFFFFF !important;
     }
     div[role="dialog"] button, [data-testid="stDialog"] button {
-        background-color: #16A34A !important;
+        background-color: #0E2F27 !important;
         border: none !important;
         border-radius: 8px !important;
         padding: 10px 16px !important;
@@ -278,11 +278,11 @@ st.markdown(
         border: 1px solid #E2E8F0 !important; 
         box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.05) !important; 
         padding: 28px !important; 
-        border-top: 6px solid #16A34A !important; 
+        border-top: 6px solid #0E2F27 !important; 
     }
 
     div[data-testid="stFormSubmitButton"] > button { 
-        background-color: #16A34A !important; 
+        background-color: #0E2F27 !important; 
         border-radius: 8px !important; 
         border: none !important; 
         padding: 12px 20px !important; 
@@ -297,11 +297,11 @@ st.markdown(
 
     #logout_btn button {
         background-color: #FFFFFF !important;
-        border: 2px solid #16A34A !important;
+        border: 2px solid #0E2F27 !important;
         border-radius: 8px !important;
     }
-    #logout_btn button p, #logout_btn button span { color: #16A34A !important; font-weight: 700 !important; }
-    #logout_btn button:hover { background-color: #16A34A !important; }
+    #logout_btn button p, #logout_btn button span { color: #0E2F27 !important; font-weight: 700 !important; }
+    #logout_btn button:hover { background-color: #0E2F27 !important; }
     #logout_btn button:hover p, #logout_btn button:hover span { color: #FFFFFF !important; }
 
     #btn_inactivar button {
@@ -328,7 +328,7 @@ st.markdown(
         font-size: 15px !important;
     }
     .stTabs [aria-selected="true"] p { 
-        color: #16A34A !important; 
+        color: #0E2F27 !important; 
         font-weight: 700 !important; 
     }
     </style>
@@ -412,6 +412,13 @@ def obtener_imagen_github(nombre_archivo="alfa_warehouse.jpg"):
             return base64.b64encode(f.read()).decode("utf-8")
     return None
 
+# LOGO OFICIAL ALFA EXPRESS (reemplaza el emoji 🌲 en todo el sistema)
+LOGO_ICON_B64 = obtener_imagen_github("alfa_logo_icon.png")
+if LOGO_ICON_B64:
+    LOGO_HTML = f'<img src="data:image/png;base64,{LOGO_ICON_B64}" style="height:1em; vertical-align:-0.15em; margin-right:8px;">'
+else:
+    LOGO_HTML = "🌲"  # Respaldo si aún no se sube el archivo alfa_logo_icon.png
+
 @st.dialog("📌 Soporte y Recuperación de Credenciales")
 def mostrar_modal_soporte():
     st.markdown(
@@ -476,9 +483,9 @@ def modal_upload():
 
 if st.session_state.usuario_actual is None:
     st.markdown(
-        """
+        f"""
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <div style="font-size: 28px; font-weight: 900; color: #16A34A;">🌲 ALFA CARGO EXPRESS</div>
+        <div style="font-size: 28px; font-weight: 900; color: #0E2F27;">{LOGO_HTML} ALFA CARGO EXPRESS</div>
         <div style='color: #64748B; font-size: 14px; font-weight: 600;'>🌐 Central Lima, Perú</div>
     </div>
     """,
@@ -516,7 +523,7 @@ if st.session_state.usuario_actual is None:
     with col_right:
         with st.form("login_form"):
             st.markdown(
-                '<h3 style="text-align: center; color: #16A34A; font-weight:800;'
+                '<h3 style="text-align: center; color: #0E2F27; font-weight:800;'
                 ' margin-bottom: 20px;">Bienvenido</h3>',
                 unsafe_allow_html=True,
             )
@@ -556,7 +563,7 @@ else:
     with col_nav1:
         st.markdown(
             f"""
-            <div style="font-size: 22px; font-weight: 800; color: #16A34A; margin-bottom: 0px;">🌲 ALFA CARGO EXPRESS — Portal {st.session_state.rol_actual}</div>
+            <div style="font-size: 22px; font-weight: 800; color: #0E2F27; margin-bottom: 0px;">{LOGO_HTML} ALFA CARGO EXPRESS — Portal {st.session_state.rol_actual}</div>
             <div style="font-size: 13px; color: #475569; font-weight: 600; margin-bottom: 2px;">Usuario activo: <strong>{st.session_state.usuario_actual}</strong></div>
             """,
             unsafe_allow_html=True,
@@ -602,11 +609,11 @@ else:
         # FILTROS EN EL SIDEBAR
         # ------------------------------------------
         with st.sidebar:
-            st.markdown("<h2 style='color: #16A34A; margin: 0px 0px 4px 0px; padding: 0px; white-space: nowrap; font-size: 22px; font-weight: 800;'>🌲 ALFA EXPRESS</h2>", unsafe_allow_html=True)
+            st.markdown(f"<h2 style='color: #0E2F27; margin: 0px 0px 4px 0px; padding: 0px; white-space: nowrap; font-size: 22px; font-weight: 800;'>{LOGO_HTML} ALFA EXPRESS</h2>", unsafe_allow_html=True)
             st.markdown("<p style='font-size: 13px; color: #64748B; margin-top: 0px; margin-bottom: 14px; line-height: 1.4;'>Filtra los registros de envíos de manera rápida.</p>", unsafe_allow_html=True)
             st.markdown("<hr style='margin: 0px 0px 14px 0px;'>", unsafe_allow_html=True)
 
-            st.markdown("<p style='font-weight:700; font-size:14px; color:#16A34A; margin:0 0 6px 0;'>📅 Rango de Fechas (DD/MM/YYYY):</p>", unsafe_allow_html=True)
+            st.markdown("<p style='font-weight:700; font-size:14px; color:#0E2F27; margin:0 0 6px 0;'>📅 Rango de Fechas (DD/MM/YYYY):</p>", unsafe_allow_html=True)
             txt_fecha_inicio = st.text_input("Fecha Inicial", value="", placeholder="DD/MM/YYYY", key="f_ini")
             txt_fecha_fin = st.text_input("Fecha Final", value="", placeholder="DD/MM/YYYY", key="f_fin")
 
@@ -647,13 +654,13 @@ else:
 
             st.markdown("<hr style='margin: 14px 0px;'>", unsafe_allow_html=True)
 
-            st.markdown("<p style='font-weight:700; font-size:14px; color:#16A34A; margin:0 0 6px 0;'>🔍 Búsqueda por Texto:</p>", unsafe_allow_html=True)
+            st.markdown("<p style='font-weight:700; font-size:14px; color:#0E2F27; margin:0 0 6px 0;'>🔍 Búsqueda por Texto:</p>", unsafe_allow_html=True)
             filtro_codigo_txt = st.text_input("Código Interno", placeholder="Ej: BLC1-480...", key="b_cod")
             filtro_nombre_txt = st.text_input("Nombre Destinatario", placeholder="Ej: Cecilia Loo...", key="b_nom")
 
             st.markdown("<hr style='margin: 14px 0px;'>", unsafe_allow_html=True)
 
-            st.markdown("<p style='font-weight:700; font-size:14px; color:#16A34A; margin:0 0 6px 0;'>📌 Selección Múltiple:</p>", unsafe_allow_html=True)
+            st.markdown("<p style='font-weight:700; font-size:14px; color:#0E2F27; margin:0 0 6px 0;'>📌 Selección Múltiple:</p>", unsafe_allow_html=True)
             
             clientes_unicos = sorted(st.session_state.df_pedidos["CLIENTE"].astype(str).unique().tolist())
             filtro_cliente = st.multiselect("Cliente", options=clientes_unicos, placeholder="Todos")
