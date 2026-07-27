@@ -383,6 +383,56 @@ st.markdown(
         opacity: 0.35 !important;
         cursor: default !important;
     }
+
+    /* =========================================================
+        LISTA INTERACTIVA DE PEDIDOS (fila clickeable con detalle tipo Airtable)
+        ========================================================= */
+    .st-key-tabla_pedidos_header {
+        background-color: #0E2F27 !important;
+        border-radius: 8px 8px 0 0 !important;
+    }
+    div[class*="st-key-tabla_pedidos_fila_"] {
+        border-bottom: 1px solid #E2E8F0 !important;
+    }
+    div[class*="st-key-tabla_pedidos_fila_"]:hover {
+        background-color: #F8FAFC !important;
+    }
+    div[class*="st-key-tabla_pedidos_fila_"] div[data-testid="stButton"] > button {
+        background-color: transparent !important;
+        border: none !important;
+        color: #94A3B8 !important;
+        font-size: 17px !important;
+        font-weight: 700 !important;
+        padding: 0 !important;
+        min-height: 30px !important;
+        height: 30px !important;
+        box-shadow: none !important;
+    }
+    div[class*="st-key-tabla_pedidos_fila_"] div[data-testid="stButton"] > button:hover {
+        color: #0E2F27 !important;
+        background-color: transparent !important;
+    }
+
+    .st-key-detalle_pedido_nav div[data-testid="stButton"] > button {
+        background-color: transparent !important;
+        border: none !important;
+        border-radius: 50% !important;
+        width: 30px !important;
+        height: 30px !important;
+        min-height: 30px !important;
+        padding: 0 !important;
+        color: #5F6368 !important;
+        font-size: 16px !important;
+        font-weight: 700 !important;
+        box-shadow: none !important;
+    }
+    .st-key-detalle_pedido_nav div[data-testid="stButton"] > button:hover:not(:disabled) {
+        background-color: #E9EEEC !important;
+        color: #0E2F27 !important;
+    }
+    .st-key-detalle_pedido_nav div[data-testid="stButton"] > button:disabled {
+        opacity: 0.35 !important;
+    }
     </style>
 """,
     unsafe_allow_html=True,
@@ -423,11 +473,20 @@ if "usuarios_registrados" not in st.session_state:
 
 if "df_pedidos" not in st.session_state:
     st.session_state.df_pedidos = pd.DataFrame([
-        {"FECHA_REGISTRO": "24/07/2026", "CODIGO INTERNO": "BLC1-48039", "CLIENTE": "UNIMARKET", "ESTADO": "ENTREGADO", "SUB_ESTADO": "ENTREGA EFECTIVA", "NOMBRE": "CECILIA LOO", "DISTRITO": "ATE", "TIPO_SERVICIO": "SAME-DAY"},
-        {"FECHA_REGISTRO": "23/07/2026", "CODIGO INTERNO": "SIN NUMERO", "CLIENTE": "ALICORP", "ESTADO": "EN RUTA", "SUB_ESTADO": "PENDIENTE", "NOMBRE": "LUIS LLOSA", "DISTRITO": "SAN ISIDRO", "TIPO_SERVICIO": "SAME-DAY"},
-        {"FECHA_REGISTRO": "22/07/2026", "CODIGO INTERNO": "BLC2-5014", "CLIENTE": "UNIMARKET", "ESTADO": "ENTREGADO", "SUB_ESTADO": "ENTREGA EFECTIVA", "NOMBRE": "JUAN REYES", "DISTRITO": "MIRAFLORES", "TIPO_SERVICIO": "SAME-DAY"},
-        {"FECHA_REGISTRO": "21/07/2026", "CODIGO INTERNO": "BLC2-5015", "CLIENTE": "GLORIA", "ESTADO": "PENDIENTE", "SUB_ESTADO": "PENDIENTE", "NOMBRE": "MARIA PEREZ", "DISTRITO": "LA MOLINA", "TIPO_SERVICIO": "NEXT-DAY"}
+        {"FECHA_REGISTRO": "24/07/2026", "CODIGO INTERNO": "BLC1-48039", "CLIENTE": "UNIMARKET", "ESTADO": "ENTREGADO", "SUB_ESTADO": "ENTREGA EFECTIVA", "NOMBRE": "CECILIA LOO", "DISTRITO": "ATE", "TIPO_SERVICIO": "SAME-DAY", "DIRECCION": "AV. LA MAR 576", "DEPARTAMENTO": "LIMA", "PROVINCIA": "LIMA", "DOCUMENTO": "TRAMONTINA", "TELEFONO": "999999999", "DESCRIPCION": "CAJAS", "PESO": "1.00", "PLACA": "ABR120", "EVIDENCIA_1": ""},
+        {"FECHA_REGISTRO": "23/07/2026", "CODIGO INTERNO": "SIN NUMERO", "CLIENTE": "ALICORP", "ESTADO": "EN RUTA", "SUB_ESTADO": "PENDIENTE", "NOMBRE": "LUIS LLOSA", "DISTRITO": "SAN ISIDRO", "TIPO_SERVICIO": "SAME-DAY", "DIRECCION": "CALLE LAS BEGONIAS 441", "DEPARTAMENTO": "LIMA", "PROVINCIA": "LIMA", "DOCUMENTO": "ALICORP SAA", "TELEFONO": "988888888", "DESCRIPCION": "PAQUETES", "PESO": "3.50", "PLACA": "ABR120", "EVIDENCIA_1": ""},
+        {"FECHA_REGISTRO": "22/07/2026", "CODIGO INTERNO": "BLC2-5014", "CLIENTE": "UNIMARKET", "ESTADO": "ENTREGADO", "SUB_ESTADO": "ENTREGA EFECTIVA", "NOMBRE": "JUAN REYES", "DISTRITO": "MIRAFLORES", "TIPO_SERVICIO": "SAME-DAY", "DIRECCION": "AV. LARCO 1301", "DEPARTAMENTO": "LIMA", "PROVINCIA": "LIMA", "DOCUMENTO": "TRAMONTINA", "TELEFONO": "977777777", "DESCRIPCION": "CAJAS", "PESO": "2.10", "PLACA": "ABR120", "EVIDENCIA_1": ""},
+        {"FECHA_REGISTRO": "21/07/2026", "CODIGO INTERNO": "BLC2-5015", "CLIENTE": "GLORIA", "ESTADO": "PENDIENTE", "SUB_ESTADO": "PENDIENTE", "NOMBRE": "MARIA PEREZ", "DISTRITO": "LA MOLINA", "TIPO_SERVICIO": "NEXT-DAY", "DIRECCION": "AV. LA MOLINA 1225", "DEPARTAMENTO": "LIMA", "PROVINCIA": "LIMA", "DOCUMENTO": "GLORIA SA", "TELEFONO": "966666666", "DESCRIPCION": "PRODUCTOS LÁCTEOS", "PESO": "5.00", "PLACA": "ABR120", "EVIDENCIA_1": ""},
     ])
+
+# Compatibilidad hacia adelante: si el DataFrame venía sin estas columnas (subida masiva antigua, etc.)
+_columnas_detalle_pedido = ["DIRECCION", "DEPARTAMENTO", "PROVINCIA", "DOCUMENTO", "TELEFONO", "DESCRIPCION", "PESO", "PLACA", "EVIDENCIA_1"]
+for _col in _columnas_detalle_pedido:
+    if _col not in st.session_state.df_pedidos.columns:
+        st.session_state.df_pedidos[_col] = ""
+
+if "detalle_pedido_idx" not in st.session_state:
+    st.session_state.detalle_pedido_idx = None
 
 # POLÍTICA DE ELIMINACIÓN AUTOMÁTICA (MANTENER MÁXIMO 90 DÍAS)
 if not st.session_state.df_pedidos.empty and "FECHA_REGISTRO" in st.session_state.df_pedidos.columns:
@@ -500,11 +559,108 @@ def modal_add_pedido():
         cli = c2.text_input("Cliente")
         nom = st.text_input("Nombre Destinatario")
         est = st.selectbox("Estado", ["ENTREGADO", "EN RUTA", "PENDIENTE"])
+
+        with st.expander("📋 Detalles adicionales del pedido"):
+            c3, c4 = st.columns(2)
+            direccion = c3.text_input("Dirección")
+            documento = c4.text_input("Documento / Empresa")
+            c5, c6 = st.columns(2)
+            departamento = c5.text_input("Departamento", value="LIMA")
+            provincia = c6.text_input("Provincia", value="LIMA")
+            c7, c8 = st.columns(2)
+            telefono = c7.text_input("Teléfono")
+            placa = c8.text_input("Placa del vehículo")
+            c9, c10 = st.columns(2)
+            descripcion = c9.text_input("Descripción de la carga")
+            peso = c10.text_input("Peso (kg)")
+            evidencia_file = st.file_uploader(
+                "Evidencia de entrega (foto subida por el repartidor desde su celular)",
+                type=["jpg", "jpeg", "png"],
+            )
+
         if st.form_submit_button("Guardar Pedido", use_container_width=True):
-            nuevo = pd.DataFrame([{"FECHA_REGISTRO": datetime.now().strftime("%d/%m/%Y"), "CODIGO INTERNO": cod, "CLIENTE": cli, "ESTADO": est, "SUB_ESTADO": "REGISTRADO", "NOMBRE": nom, "DISTRITO": "LIMA", "TIPO_SERVICIO": "SAME-DAY"}])
+            evidencia_b64 = ""
+            if evidencia_file is not None:
+                evidencia_b64 = "data:image/png;base64," + base64.b64encode(evidencia_file.read()).decode("utf-8")
+
+            nuevo = pd.DataFrame([{
+                "FECHA_REGISTRO": datetime.now().strftime("%d/%m/%Y"),
+                "CODIGO INTERNO": cod,
+                "CLIENTE": cli,
+                "ESTADO": est,
+                "SUB_ESTADO": "REGISTRADO",
+                "NOMBRE": nom,
+                "DISTRITO": "LIMA",
+                "TIPO_SERVICIO": "SAME-DAY",
+                "DIRECCION": direccion,
+                "DEPARTAMENTO": departamento,
+                "PROVINCIA": provincia,
+                "DOCUMENTO": documento,
+                "TELEFONO": telefono,
+                "DESCRIPCION": descripcion,
+                "PESO": peso,
+                "PLACA": placa,
+                "EVIDENCIA_1": evidencia_b64,
+            }])
             st.session_state.df_pedidos = pd.concat([st.session_state.df_pedidos, nuevo], ignore_index=True)
             registrar_log(f"Añadió pedido {cod}")
             st.rerun()
+
+@st.dialog("Pedidos filtro")
+def mostrar_detalle_pedido():
+    df = st.session_state.df_pedidos
+    indices = st.session_state.get("detalle_pedido_lista_indices") or df.index.tolist()
+    indices = [i for i in indices if i in df.index]
+
+    if st.session_state.detalle_pedido_idx not in indices:
+        st.session_state.detalle_pedido_idx = None
+        st.rerun()
+        return
+
+    idx_actual = st.session_state.detalle_pedido_idx
+    pos = indices.index(idx_actual)
+    fila = df.loc[idx_actual]
+
+    with st.container(key="detalle_pedido_nav"):
+        c_prev, c_next, c_spacer, c_close = st.columns([0.6, 0.6, 3.8, 0.6])
+        with c_prev:
+            if st.button("‹", key="detalle_prev", disabled=(pos <= 0)):
+                st.session_state.detalle_pedido_idx = indices[pos - 1]
+                st.rerun()
+        with c_next:
+            if st.button("›", key="detalle_next", disabled=(pos >= len(indices) - 1)):
+                st.session_state.detalle_pedido_idx = indices[pos + 1]
+                st.rerun()
+        with c_close:
+            if st.button("✕", key="detalle_close"):
+                st.session_state.detalle_pedido_idx = None
+                st.rerun()
+
+    campos_detalle = [
+        ("NOMBRE", "NOMBRE"), ("DIRECCION", "DIRECCION"), ("DEPARTAMENTO", "DEPARTAMENTO"),
+        ("PROVINCIA", "PROVINCIA"), ("DISTRITO", "DISTRITO"), ("DOCUMENTO", "DOCUMENTO"),
+        ("TELEFONO", "TELEFONO"), ("DESCRIPCION", "DESCRIPCION"), ("PESO", "PESO"),
+        ("TIPO_SERVICIO", "TIPO_SERVICIO"), ("PLACA", "PLACA"),
+    ]
+    filas_detalle_html = ""
+    for etiqueta, columna in campos_detalle:
+        valor = fila[columna] if columna in fila.index and str(fila[columna]).strip() else "—"
+        filas_detalle_html += f"""
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px solid #E2E8F0;">
+            <span style="color:#64748B; font-size:12px; font-weight:700; letter-spacing:0.3px;">{etiqueta}</span>
+            <span style="color:#0F172A; font-size:14px; text-align:right;">{valor}</span>
+        </div>"""
+    st.markdown(filas_detalle_html, unsafe_allow_html=True)
+
+    st.markdown("<p style='color:#64748B; font-size:12px; font-weight:700; margin-top:16px; margin-bottom:6px;'>EVIDENCIA_1</p>", unsafe_allow_html=True)
+    evidencia = fila.get("EVIDENCIA_1", "")
+    if isinstance(evidencia, str) and evidencia.strip():
+        st.image(evidencia, use_container_width=True)
+    else:
+        st.markdown(
+            "<p style='color:#94A3B8; font-size:13px;'>Aún no hay evidencia subida por el repartidor desde su celular para este pedido.</p>",
+            unsafe_allow_html=True,
+        )
 
 @st.dialog("📤 Subir Data Masiva")
 def modal_upload():
@@ -526,7 +682,10 @@ def modal_upload():
                 if faltantes:
                     st.error(f"El archivo no cuenta con las columnas obligatorias requeridas: {', '.join(faltantes)}")
                 else:
-                    st.session_state.df_pedidos = pd.concat([st.session_state.df_pedidos, df_nuevo[columnas_requeridas]], ignore_index=True)
+                    df_a_cargar = df_nuevo[columnas_requeridas].copy()
+                    for _col in _columnas_detalle_pedido:
+                        df_a_cargar[_col] = df_nuevo[_col] if _col in df_nuevo.columns else ""
+                    st.session_state.df_pedidos = pd.concat([st.session_state.df_pedidos, df_a_cargar], ignore_index=True)
                     registrar_log("Subida y carga exitosa de archivo masivo")
                     st.success("¡Datos cargados correctamente!")
                     st.rerun()
@@ -811,31 +970,34 @@ else:
 
         # Cortar el DataFrame según la página seleccionada
         df_paginado = df_filtrado.iloc[inicio_idx:fin_idx]
+        st.session_state.detalle_pedido_lista_indices = df_filtrado.index.tolist()
 
-        columnas_pedidos = df_paginado.columns.tolist()
+        columnas_pedidos_tabla = ["FECHA_REGISTRO", "CODIGO INTERNO", "CLIENTE", "ESTADO", "SUB_ESTADO", "NOMBRE", "DISTRITO", "TIPO_SERVICIO"]
+        anchos_columnas = [1, 1.3, 1.2, 1, 1.3, 1.2, 1, 1, 0.5]
 
-        filas_pedidos_html = ""
-        for _, fila in df_paginado.iterrows():
-            filas_pedidos_html += "<tr>"
-            for col in columnas_pedidos:
-                filas_pedidos_html += f"<td>{fila[col]}</td>"
-            filas_pedidos_html += "</tr>"
+        with st.container(key="tabla_pedidos_header"):
+            cols_header = st.columns(anchos_columnas)
+            for c, nombre_col in zip(cols_header[:-1], columnas_pedidos_tabla):
+                c.markdown(f"<div style='color:#FFFFFF; font-size:12px; font-weight:700; padding:10px 8px; text-transform:uppercase;'>{nombre_col}</div>", unsafe_allow_html=True)
+            cols_header[-1].markdown("<div style='padding:10px 8px;'>&nbsp;</div>", unsafe_allow_html=True)
 
-        tabla_pedidos_html = textwrap.dedent(f"""
-            <div class="tabla-contenedor-logs" style="max-height: 540px; margin-top: 0px !important;">
-                <table class="tabla-usuarios">
-                    <thead>
-                        <tr>
-                            {"".join([f"<th>{col}</th>" for col in columnas_pedidos])}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filas_pedidos_html}
-                    </tbody>
-                </table>
-            </div>
-        """)
-        st.markdown(tabla_pedidos_html, unsafe_allow_html=True)
+        if df_paginado.empty:
+            st.markdown("<p style='color:#94A3B8; font-size:13px; padding:16px 8px;'>No se encontraron pedidos con los filtros aplicados.</p>", unsafe_allow_html=True)
+        else:
+            for idx_real, fila in df_paginado.iterrows():
+                with st.container(key=f"tabla_pedidos_fila_{idx_real}"):
+                    cols_fila = st.columns(anchos_columnas)
+                    for c, nombre_col in zip(cols_fila[:-1], columnas_pedidos_tabla):
+                        valor = fila[nombre_col] if nombre_col in fila.index else ""
+                        c.markdown(f"<div style='color:#0F172A; font-size:13px; padding:9px 8px;'>{valor}</div>", unsafe_allow_html=True)
+                    with cols_fila[-1]:
+                        if st.button("›", key=f"ver_pedido_{idx_real}"):
+                            st.session_state.detalle_pedido_idx = idx_real
+                            st.rerun()
+
+        if st.session_state.detalle_pedido_idx is not None:
+            mostrar_detalle_pedido()
+
 
     # ==========================================
     # VISTA 2: PORTAL ADMINISTRADOR
