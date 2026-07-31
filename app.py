@@ -433,6 +433,25 @@ st.markdown(
     .st-key-detalle_pedido_nav div[data-testid="stButton"] > button:disabled {
         opacity: 0.35 !important;
     }
+
+    .st-key-detalle_pedido_panel {
+        background-color: #FFFFFF !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 10px !important;
+        box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.06) !important;
+        padding: 14px 18px 18px 18px !important;
+        max-height: 620px !important;
+        overflow-y: auto !important;
+    }
+    .detalle-pedido-titulo {
+        color: #0F172A;
+        font-size: 15px;
+        font-weight: 700;
+        padding-top: 4px;
+    }
+    div[class*="st-key-tabla_pedidos_fila_"].fila-pedido-activa {
+        background-color: #EAF3EF !important;
+    }
     </style>
 """,
     unsafe_allow_html=True,
@@ -487,6 +506,8 @@ for _col in _columnas_detalle_pedido:
 
 if "detalle_pedido_idx" not in st.session_state:
     st.session_state.detalle_pedido_idx = None
+if "detalle_panel_expandido" not in st.session_state:
+    st.session_state.detalle_panel_expandido = False
 
 # POLÍTICA DE ELIMINACIÓN AUTOMÁTICA (MANTENER MÁXIMO 90 DÍAS)
 if not st.session_state.df_pedidos.empty and "FECHA_REGISTRO" in st.session_state.df_pedidos.columns:
@@ -606,7 +627,6 @@ def modal_add_pedido():
             registrar_log(f"Añadió pedido {cod}")
             st.rerun()
 
-@st.dialog("Pedidos filtro")
 def mostrar_detalle_pedido():
     df = st.session_state.df_pedidos
     indices = st.session_state.get("detalle_pedido_lista_indices") or df.index.tolist()
@@ -620,47 +640,57 @@ def mostrar_detalle_pedido():
     idx_actual = st.session_state.detalle_pedido_idx
     pos = indices.index(idx_actual)
     fila = df.loc[idx_actual]
+    expandido = st.session_state.get("detalle_panel_expandido", False)
 
-    with st.container(key="detalle_pedido_nav"):
-        c_prev, c_next, c_spacer, c_close = st.columns([0.6, 0.6, 3.8, 0.6])
-        with c_prev:
-            if st.button("‹", key="detalle_prev", disabled=(pos <= 0)):
-                st.session_state.detalle_pedido_idx = indices[pos - 1]
-                st.rerun()
-        with c_next:
-            if st.button("›", key="detalle_next", disabled=(pos >= len(indices) - 1)):
-                st.session_state.detalle_pedido_idx = indices[pos + 1]
-                st.rerun()
-        with c_close:
-            if st.button("✕", key="detalle_close"):
-                st.session_state.detalle_pedido_idx = None
-                st.rerun()
+    with st.container(key="detalle_pedido_panel"):
+        with st.container(key="detalle_pedido_nav"):
+            c_title, c_prev, c_next, c_expand, c_close = st.columns([3.2, 0.6, 0.6, 0.6, 0.6])
+            with c_title:
+                st.markdown("<div class='detalle-pedido-titulo'>Pedidos filtro</div>", unsafe_allow_html=True)
+            with c_prev:
+                if st.button("‹", key="detalle_prev", disabled=(pos <= 0)):
+                    st.session_state.detalle_pedido_idx = indices[pos - 1]
+                    st.rerun()
+            with c_next:
+                if st.button("›", key="detalle_next", disabled=(pos >= len(indices) - 1)):
+                    st.session_state.detalle_pedido_idx = indices[pos + 1]
+                    st.rerun()
+            with c_expand:
+                if st.button("⤢", key="detalle_expand"):
+                    st.session_state.detalle_panel_expandido = not expandido
+                    st.rerun()
+            with c_close:
+                if st.button("✕", key="detalle_close"):
+                    st.session_state.detalle_pedido_idx = None
+                    st.session_state.detalle_panel_expandido = False
+                    st.rerun()
 
-    campos_detalle = [
-        ("NOMBRE", "NOMBRE"), ("DIRECCION", "DIRECCION"), ("DEPARTAMENTO", "DEPARTAMENTO"),
-        ("PROVINCIA", "PROVINCIA"), ("DISTRITO", "DISTRITO"), ("DOCUMENTO", "DOCUMENTO"),
-        ("TELEFONO", "TELEFONO"), ("DESCRIPCION", "DESCRIPCION"), ("PESO", "PESO"),
-        ("TIPO_SERVICIO", "TIPO_SERVICIO"), ("PLACA", "PLACA"),
-    ]
-    filas_detalle_html = ""
-    for etiqueta, columna in campos_detalle:
-        valor = fila[columna] if columna in fila.index and str(fila[columna]).strip() else "—"
-        filas_detalle_html += f"""
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px solid #E2E8F0;">
-            <span style="color:#64748B; font-size:12px; font-weight:700; letter-spacing:0.3px;">{etiqueta}</span>
-            <span style="color:#0F172A; font-size:14px; text-align:right;">{valor}</span>
-        </div>"""
-    st.markdown(filas_detalle_html, unsafe_allow_html=True)
+        campos_detalle = [
+            ("NOMBRE", "NOMBRE"), ("DIRECCION", "DIRECCION"), ("DEPARTAMENTO", "DEPARTAMENTO"),
+            ("PROVINCIA", "PROVINCIA"), ("DISTRITO", "DISTRITO"), ("DOCUMENTO", "DOCUMENTO"),
+            ("TELEFONO", "TELEFONO"), ("DESCRIPCION", "DESCRIPCION"), ("PESO", "PESO"),
+            ("TIPO_SERVICIO", "TIPO_SERVICIO"), ("PLACA", "PLACA"),
+        ]
+        filas_detalle_html = ""
+        for etiqueta, columna in campos_detalle:
+            valor = fila[columna] if columna in fila.index and str(fila[columna]).strip() else "—"
+            filas_detalle_html += f"""
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px solid #E2E8F0;">
+                <span style="color:#64748B; font-size:12px; font-weight:700; letter-spacing:0.3px;">{etiqueta}</span>
+                <span style="color:#0F172A; font-size:14px; text-align:right;">{valor}</span>
+            </div>"""
+        st.markdown(filas_detalle_html, unsafe_allow_html=True)
 
-    st.markdown("<p style='color:#64748B; font-size:12px; font-weight:700; margin-top:16px; margin-bottom:6px;'>EVIDENCIA_1</p>", unsafe_allow_html=True)
-    evidencia = fila.get("EVIDENCIA_1", "")
-    if isinstance(evidencia, str) and evidencia.strip():
-        st.image(evidencia, use_container_width=True)
-    else:
-        st.markdown(
-            "<p style='color:#94A3B8; font-size:13px;'>Aún no hay evidencia subida por el repartidor desde su celular para este pedido.</p>",
-            unsafe_allow_html=True,
-        )
+        st.markdown("<p style='color:#64748B; font-size:12px; font-weight:700; margin-top:16px; margin-bottom:6px;'>EVIDENCIA_1</p>", unsafe_allow_html=True)
+        evidencia = fila.get("EVIDENCIA_1", "")
+        if isinstance(evidencia, str) and evidencia.strip():
+            st.image(evidencia, use_container_width=True)
+        else:
+            st.markdown(
+                "<p style='color:#94A3B8; font-size:13px;'>Aún no hay evidencia subida por el repartidor desde su celular para este pedido.</p>",
+                unsafe_allow_html=True,
+            )
+
 
 @st.dialog("📤 Subir Data Masiva")
 def modal_upload():
@@ -975,28 +1005,45 @@ else:
         columnas_pedidos_tabla = ["FECHA_REGISTRO", "CODIGO INTERNO", "CLIENTE", "ESTADO", "SUB_ESTADO", "NOMBRE", "DISTRITO", "TIPO_SERVICIO"]
         anchos_columnas = [1, 1.3, 1.2, 1, 1.3, 1.2, 1, 1, 0.5]
 
-        with st.container(key="tabla_pedidos_header"):
-            cols_header = st.columns(anchos_columnas)
-            for c, nombre_col in zip(cols_header[:-1], columnas_pedidos_tabla):
-                c.markdown(f"<div style='color:#FFFFFF; font-size:12px; font-weight:700; padding:10px 8px; text-transform:uppercase;'>{nombre_col}</div>", unsafe_allow_html=True)
-            cols_header[-1].markdown("<div style='padding:10px 8px;'>&nbsp;</div>", unsafe_allow_html=True)
+        detalle_abierto = st.session_state.detalle_pedido_idx is not None
+        panel_expandido = st.session_state.get("detalle_panel_expandido", False)
 
-        if df_paginado.empty:
-            st.markdown("<p style='color:#94A3B8; font-size:13px; padding:16px 8px;'>No se encontraron pedidos con los filtros aplicados.</p>", unsafe_allow_html=True)
+        if detalle_abierto and panel_expandido:
+            col_tabla, col_detalle = None, st.container()
+        elif detalle_abierto:
+            col_tabla, col_detalle = st.columns([1.6, 1], gap="medium")
         else:
-            for idx_real, fila in df_paginado.iterrows():
-                with st.container(key=f"tabla_pedidos_fila_{idx_real}"):
-                    cols_fila = st.columns(anchos_columnas)
-                    for c, nombre_col in zip(cols_fila[:-1], columnas_pedidos_tabla):
-                        valor = fila[nombre_col] if nombre_col in fila.index else ""
-                        c.markdown(f"<div style='color:#0F172A; font-size:13px; padding:9px 8px;'>{valor}</div>", unsafe_allow_html=True)
-                    with cols_fila[-1]:
-                        if st.button("›", key=f"ver_pedido_{idx_real}"):
-                            st.session_state.detalle_pedido_idx = idx_real
-                            st.rerun()
+            col_tabla, col_detalle = st.container(), None
 
-        if st.session_state.detalle_pedido_idx is not None:
-            mostrar_detalle_pedido()
+        if col_tabla is not None:
+            with col_tabla:
+                with st.container(key="tabla_pedidos_header"):
+                    cols_header = st.columns(anchos_columnas)
+                    for c, nombre_col in zip(cols_header[:-1], columnas_pedidos_tabla):
+                        c.markdown(f"<div style='color:#FFFFFF; font-size:12px; font-weight:700; padding:10px 8px; text-transform:uppercase;'>{nombre_col}</div>", unsafe_allow_html=True)
+                    cols_header[-1].markdown("<div style='padding:10px 8px;'>&nbsp;</div>", unsafe_allow_html=True)
+
+                if df_paginado.empty:
+                    st.markdown("<p style='color:#94A3B8; font-size:13px; padding:16px 8px;'>No se encontraron pedidos con los filtros aplicados.</p>", unsafe_allow_html=True)
+                else:
+                    for idx_real, fila in df_paginado.iterrows():
+                        es_fila_activa = detalle_abierto and idx_real == st.session_state.detalle_pedido_idx
+                        if es_fila_activa:
+                            st.markdown(f"<style>.st-key-tabla_pedidos_fila_{idx_real} {{ background-color: #EAF3EF !important; }}</style>", unsafe_allow_html=True)
+                        with st.container(key=f"tabla_pedidos_fila_{idx_real}"):
+                            cols_fila = st.columns(anchos_columnas)
+                            for c, nombre_col in zip(cols_fila[:-1], columnas_pedidos_tabla):
+                                valor = fila[nombre_col] if nombre_col in fila.index else ""
+                                c.markdown(f"<div style='color:#0F172A; font-size:13px; padding:9px 8px;'>{valor}</div>", unsafe_allow_html=True)
+                            with cols_fila[-1]:
+                                if st.button("›", key=f"ver_pedido_{idx_real}"):
+                                    st.session_state.detalle_pedido_idx = idx_real
+                                    st.rerun()
+
+        if col_detalle is not None:
+            with col_detalle:
+                mostrar_detalle_pedido()
+
 
 
     # ==========================================
