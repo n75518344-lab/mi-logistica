@@ -387,6 +387,16 @@ st.markdown(
     /* =========================================================
         LISTA INTERACTIVA DE PEDIDOS (fila clickeable con detalle tipo Airtable)
         ========================================================= */
+    .st-key-tabla_pedidos_scroll {
+        overflow-x: auto !important;
+        padding-bottom: 8px !important;
+    }
+    .st-key-tabla_pedidos_header,
+    div[class*="st-key-tabla_pedidos_fila_"] {
+        width: 960px !important;
+        min-width: 960px !important;
+        flex-shrink: 0 !important;
+    }
     .st-key-tabla_pedidos_header {
         background-color: #0E2F27 !important;
         border-radius: 8px 8px 0 0 !important;
@@ -1017,28 +1027,29 @@ else:
 
         if col_tabla is not None:
             with col_tabla:
-                with st.container(key="tabla_pedidos_header"):
-                    cols_header = st.columns(anchos_columnas)
-                    for c, nombre_col in zip(cols_header[:-1], columnas_pedidos_tabla):
-                        c.markdown(f"<div style='color:#FFFFFF; font-size:12px; font-weight:700; padding:10px 8px; text-transform:uppercase;'>{nombre_col}</div>", unsafe_allow_html=True)
-                    cols_header[-1].markdown("<div style='padding:10px 8px;'>&nbsp;</div>", unsafe_allow_html=True)
+                with st.container(key="tabla_pedidos_scroll"):
+                    with st.container(key="tabla_pedidos_header"):
+                        cols_header = st.columns(anchos_columnas)
+                        for c, nombre_col in zip(cols_header[:-1], columnas_pedidos_tabla):
+                            c.markdown(f"<div style='color:#FFFFFF; font-size:12px; font-weight:700; padding:10px 8px; text-transform:uppercase; white-space:nowrap;'>{nombre_col}</div>", unsafe_allow_html=True)
+                        cols_header[-1].markdown("<div style='padding:10px 8px;'>&nbsp;</div>", unsafe_allow_html=True)
 
-                if df_paginado.empty:
-                    st.markdown("<p style='color:#94A3B8; font-size:13px; padding:16px 8px;'>No se encontraron pedidos con los filtros aplicados.</p>", unsafe_allow_html=True)
-                else:
-                    for idx_real, fila in df_paginado.iterrows():
-                        es_fila_activa = detalle_abierto and idx_real == st.session_state.detalle_pedido_idx
-                        if es_fila_activa:
-                            st.markdown(f"<style>.st-key-tabla_pedidos_fila_{idx_real} {{ background-color: #EAF3EF !important; }}</style>", unsafe_allow_html=True)
-                        with st.container(key=f"tabla_pedidos_fila_{idx_real}"):
-                            cols_fila = st.columns(anchos_columnas)
-                            for c, nombre_col in zip(cols_fila[:-1], columnas_pedidos_tabla):
-                                valor = fila[nombre_col] if nombre_col in fila.index else ""
-                                c.markdown(f"<div style='color:#0F172A; font-size:13px; padding:9px 8px;'>{valor}</div>", unsafe_allow_html=True)
-                            with cols_fila[-1]:
-                                if st.button("›", key=f"ver_pedido_{idx_real}"):
-                                    st.session_state.detalle_pedido_idx = idx_real
-                                    st.rerun()
+                    if df_paginado.empty:
+                        st.markdown("<p style='color:#94A3B8; font-size:13px; padding:16px 8px;'>No se encontraron pedidos con los filtros aplicados.</p>", unsafe_allow_html=True)
+                    else:
+                        for idx_real, fila in df_paginado.iterrows():
+                            es_fila_activa = detalle_abierto and idx_real == st.session_state.detalle_pedido_idx
+                            if es_fila_activa:
+                                st.markdown(f"<style>.st-key-tabla_pedidos_fila_{idx_real} {{ background-color: #EAF3EF !important; }}</style>", unsafe_allow_html=True)
+                            with st.container(key=f"tabla_pedidos_fila_{idx_real}"):
+                                cols_fila = st.columns(anchos_columnas)
+                                for c, nombre_col in zip(cols_fila[:-1], columnas_pedidos_tabla):
+                                    valor = fila[nombre_col] if nombre_col in fila.index else ""
+                                    c.markdown(f"<div style='color:#0F172A; font-size:13px; padding:9px 8px; white-space:nowrap;'>{valor}</div>", unsafe_allow_html=True)
+                                with cols_fila[-1]:
+                                    if st.button("›", key=f"ver_pedido_{idx_real}"):
+                                        st.session_state.detalle_pedido_idx = idx_real
+                                        st.rerun()
 
         if col_detalle is not None:
             with col_detalle:
