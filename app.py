@@ -502,14 +502,14 @@ if "usuarios_registrados" not in st.session_state:
 
 if "df_pedidos" not in st.session_state:
     st.session_state.df_pedidos = pd.DataFrame([
-        {"FECHA_REGISTRO": "24/07/2026", "CODIGO INTERNO": "BLC1-48039", "CLIENTE": "UNIMARKET", "ESTADO": "ENTREGADO", "SUB_ESTADO": "ENTREGA EFECTIVA", "NOMBRE": "CECILIA LOO", "DISTRITO": "ATE", "TIPO_SERVICIO": "SAME-DAY", "DIRECCION": "AV. LA MAR 576", "DEPARTAMENTO": "LIMA", "PROVINCIA": "LIMA", "DOCUMENTO": "TRAMONTINA", "TELEFONO": "999999999", "DESCRIPCION": "CAJAS", "PESO": "1.00", "PLACA": "ABR120", "EVIDENCIA_1": ""},
-        {"FECHA_REGISTRO": "23/07/2026", "CODIGO INTERNO": "SIN NUMERO", "CLIENTE": "ALICORP", "ESTADO": "EN RUTA", "SUB_ESTADO": "PENDIENTE", "NOMBRE": "LUIS LLOSA", "DISTRITO": "SAN ISIDRO", "TIPO_SERVICIO": "SAME-DAY", "DIRECCION": "CALLE LAS BEGONIAS 441", "DEPARTAMENTO": "LIMA", "PROVINCIA": "LIMA", "DOCUMENTO": "ALICORP SAA", "TELEFONO": "988888888", "DESCRIPCION": "PAQUETES", "PESO": "3.50", "PLACA": "ABR120", "EVIDENCIA_1": ""},
-        {"FECHA_REGISTRO": "22/07/2026", "CODIGO INTERNO": "BLC2-5014", "CLIENTE": "UNIMARKET", "ESTADO": "ENTREGADO", "SUB_ESTADO": "ENTREGA EFECTIVA", "NOMBRE": "JUAN REYES", "DISTRITO": "MIRAFLORES", "TIPO_SERVICIO": "SAME-DAY", "DIRECCION": "AV. LARCO 1301", "DEPARTAMENTO": "LIMA", "PROVINCIA": "LIMA", "DOCUMENTO": "TRAMONTINA", "TELEFONO": "977777777", "DESCRIPCION": "CAJAS", "PESO": "2.10", "PLACA": "ABR120", "EVIDENCIA_1": ""},
-        {"FECHA_REGISTRO": "21/07/2026", "CODIGO INTERNO": "BLC2-5015", "CLIENTE": "GLORIA", "ESTADO": "PENDIENTE", "SUB_ESTADO": "PENDIENTE", "NOMBRE": "MARIA PEREZ", "DISTRITO": "LA MOLINA", "TIPO_SERVICIO": "NEXT-DAY", "DIRECCION": "AV. LA MOLINA 1225", "DEPARTAMENTO": "LIMA", "PROVINCIA": "LIMA", "DOCUMENTO": "GLORIA SA", "TELEFONO": "966666666", "DESCRIPCION": "PRODUCTOS LÁCTEOS", "PESO": "5.00", "PLACA": "ABR120", "EVIDENCIA_1": ""},
+        {"FECHA_REGISTRO": "24/07/2026", "CODIGO INTERNO": "BLC1-48039", "CLIENTE": "UNIMARKET", "ESTADO": "ENTREGADO", "SUB_ESTADO": "ENTREGA EFECTIVA", "NOMBRE": "CECILIA LOO", "DISTRITO": "ATE", "TIPO_SERVICIO": "SAME-DAY", "DIRECCION": "AV. LA MAR 576", "DEPARTAMENTO": "LIMA", "PROVINCIA": "LIMA", "DOCUMENTO": "TRAMONTINA", "TELEFONO": "999999999", "DESCRIPCION": "CAJAS", "PESO": "1.00", "PLACA": "ABR120", "EVIDENCIA_1": "", "EVIDENCIA_2": "", "EVIDENCIA_3": "", "EVIDENCIA_4": ""},
+        {"FECHA_REGISTRO": "23/07/2026", "CODIGO INTERNO": "SIN NUMERO", "CLIENTE": "ALICORP", "ESTADO": "EN RUTA", "SUB_ESTADO": "PENDIENTE", "NOMBRE": "LUIS LLOSA", "DISTRITO": "SAN ISIDRO", "TIPO_SERVICIO": "SAME-DAY", "DIRECCION": "CALLE LAS BEGONIAS 441", "DEPARTAMENTO": "LIMA", "PROVINCIA": "LIMA", "DOCUMENTO": "ALICORP SAA", "TELEFONO": "988888888", "DESCRIPCION": "PAQUETES", "PESO": "3.50", "PLACA": "ABR120", "EVIDENCIA_1": "", "EVIDENCIA_2": "", "EVIDENCIA_3": "", "EVIDENCIA_4": ""},
+        {"FECHA_REGISTRO": "22/07/2026", "CODIGO INTERNO": "BLC2-5014", "CLIENTE": "UNIMARKET", "ESTADO": "ENTREGADO", "SUB_ESTADO": "ENTREGA EFECTIVA", "NOMBRE": "JUAN REYES", "DISTRITO": "MIRAFLORES", "TIPO_SERVICIO": "SAME-DAY", "DIRECCION": "AV. LARCO 1301", "DEPARTAMENTO": "LIMA", "PROVINCIA": "LIMA", "DOCUMENTO": "TRAMONTINA", "TELEFONO": "977777777", "DESCRIPCION": "CAJAS", "PESO": "2.10", "PLACA": "ABR120", "EVIDENCIA_1": "", "EVIDENCIA_2": "", "EVIDENCIA_3": "", "EVIDENCIA_4": ""},
+        {"FECHA_REGISTRO": "21/07/2026", "CODIGO INTERNO": "BLC2-5015", "CLIENTE": "GLORIA", "ESTADO": "PENDIENTE", "SUB_ESTADO": "PENDIENTE", "NOMBRE": "MARIA PEREZ", "DISTRITO": "LA MOLINA", "TIPO_SERVICIO": "NEXT-DAY", "DIRECCION": "AV. LA MOLINA 1225", "DEPARTAMENTO": "LIMA", "PROVINCIA": "LIMA", "DOCUMENTO": "GLORIA SA", "TELEFONO": "966666666", "DESCRIPCION": "PRODUCTOS LÁCTEOS", "PESO": "5.00", "PLACA": "ABR120", "EVIDENCIA_1": "", "EVIDENCIA_2": "", "EVIDENCIA_3": "", "EVIDENCIA_4": ""},
     ])
 
 # Compatibilidad hacia adelante: si el DataFrame venía sin estas columnas (subida masiva antigua, etc.)
-_columnas_detalle_pedido = ["DIRECCION", "DEPARTAMENTO", "PROVINCIA", "DOCUMENTO", "TELEFONO", "DESCRIPCION", "PESO", "PLACA", "EVIDENCIA_1"]
+_columnas_detalle_pedido = ["DIRECCION", "DEPARTAMENTO", "PROVINCIA", "DOCUMENTO", "TELEFONO", "DESCRIPCION", "PESO", "PLACA", "EVIDENCIA_1", "EVIDENCIA_2", "EVIDENCIA_3", "EVIDENCIA_4"]
 for _col in _columnas_detalle_pedido:
     if _col not in st.session_state.df_pedidos.columns:
         st.session_state.df_pedidos[_col] = ""
@@ -548,6 +548,7 @@ def registrar_log(accion):
         [nuevo_log, st.session_state.historial_acciones], ignore_index=True
     )
 
+@st.cache_data(show_spinner=False)
 def obtener_imagen_github(nombre_archivo="alfa_warehouse.jpg"):
     if os.path.exists(nombre_archivo):
         with open(nombre_archivo, "rb") as f:
@@ -604,15 +605,17 @@ def modal_add_pedido():
             c9, c10 = st.columns(2)
             descripcion = c9.text_input("Descripción de la carga")
             peso = c10.text_input("Peso (kg)")
-            evidencia_file = st.file_uploader(
-                "Evidencia de entrega (foto subida por el repartidor desde su celular)",
+            evidencia_files = st.file_uploader(
+                "Evidencia de entrega (hasta 4 fotos subidas por el repartidor desde su celular)",
                 type=["jpg", "jpeg", "png"],
+                accept_multiple_files=True,
             )
 
         if st.form_submit_button("Guardar Pedido", use_container_width=True):
-            evidencia_b64 = ""
-            if evidencia_file is not None:
-                evidencia_b64 = "data:image/png;base64," + base64.b64encode(evidencia_file.read()).decode("utf-8")
+            evidencias_b64 = ["", "", "", ""]
+            if evidencia_files:
+                for i, archivo in enumerate(evidencia_files[:4]):
+                    evidencias_b64[i] = "data:image/png;base64," + base64.b64encode(archivo.read()).decode("utf-8")
 
             nuevo = pd.DataFrame([{
                 "FECHA_REGISTRO": datetime.now().strftime("%d/%m/%Y"),
@@ -631,7 +634,10 @@ def modal_add_pedido():
                 "DESCRIPCION": descripcion,
                 "PESO": peso,
                 "PLACA": placa,
-                "EVIDENCIA_1": evidencia_b64,
+                "EVIDENCIA_1": evidencias_b64[0],
+                "EVIDENCIA_2": evidencias_b64[1],
+                "EVIDENCIA_3": evidencias_b64[2],
+                "EVIDENCIA_4": evidencias_b64[3],
             }])
             st.session_state.df_pedidos = pd.concat([st.session_state.df_pedidos, nuevo], ignore_index=True)
             registrar_log(f"Añadió pedido {cod}")
@@ -691,10 +697,13 @@ def mostrar_detalle_pedido():
             </div>"""
         st.markdown(filas_detalle_html, unsafe_allow_html=True)
 
-        st.markdown("<p style='color:#64748B; font-size:12px; font-weight:700; margin-top:16px; margin-bottom:6px;'>EVIDENCIA_1</p>", unsafe_allow_html=True)
-        evidencia = fila.get("EVIDENCIA_1", "")
-        if isinstance(evidencia, str) and evidencia.strip():
-            st.image(evidencia, use_container_width=True)
+        st.markdown("<p style='color:#64748B; font-size:12px; font-weight:700; margin-top:16px; margin-bottom:6px;'>EVIDENCIAS (hasta 4 fotos del repartidor)</p>", unsafe_allow_html=True)
+        evidencias = [fila.get(f"EVIDENCIA_{n}", "") for n in range(1, 5)]
+        evidencias_con_foto = [e for e in evidencias if isinstance(e, str) and e.strip()]
+        if evidencias_con_foto:
+            col_ev1, col_ev2 = st.columns(2)
+            for i, foto in enumerate(evidencias_con_foto):
+                (col_ev1 if i % 2 == 0 else col_ev2).image(foto, use_container_width=True)
         else:
             st.markdown(
                 "<p style='color:#94A3B8; font-size:13px;'>Aún no hay evidencia subida por el repartidor desde su celular para este pedido.</p>",
@@ -1013,7 +1022,19 @@ else:
         st.session_state.detalle_pedido_lista_indices = df_filtrado.index.tolist()
 
         columnas_pedidos_tabla = ["FECHA_REGISTRO", "CODIGO INTERNO", "CLIENTE", "ESTADO", "SUB_ESTADO", "NOMBRE", "DISTRITO", "TIPO_SERVICIO"]
-        anchos_columnas = [1, 1.3, 1.2, 1, 1.3, 1.2, 1, 1, 0.5]
+        anchos_columnas_px = [95, 130, 115, 95, 130, 130, 95, 95]  # ancho fijo por columna (en píxeles), en el mismo orden que columnas_pedidos_tabla
+
+        def _fila_pedido_html(valores, es_encabezado):
+            color = "#FFFFFF" if es_encabezado else "#0F172A"
+            peso_fuente = "700" if es_encabezado else "400"
+            tam_fuente = "12px" if es_encabezado else "13px"
+            transform = "text-transform:uppercase;" if es_encabezado else ""
+            celdas = "".join(
+                f"<div style='flex:0 0 {ancho}px; padding:9px 8px; white-space:nowrap; overflow:hidden; "
+                f"text-overflow:ellipsis; color:{color}; font-size:{tam_fuente}; font-weight:{peso_fuente}; {transform}'>{valor}</div>"
+                for valor, ancho in zip(valores, anchos_columnas_px)
+            )
+            return f"<div style='display:flex; align-items:center;'>{celdas}</div>"
 
         detalle_abierto = st.session_state.detalle_pedido_idx is not None
         panel_expandido = st.session_state.get("detalle_panel_expandido", False)
@@ -1029,10 +1050,9 @@ else:
             with col_tabla:
                 with st.container(key="tabla_pedidos_scroll"):
                     with st.container(key="tabla_pedidos_header"):
-                        cols_header = st.columns(anchos_columnas)
-                        for c, nombre_col in zip(cols_header[:-1], columnas_pedidos_tabla):
-                            c.markdown(f"<div style='color:#FFFFFF; font-size:12px; font-weight:700; padding:10px 8px; text-transform:uppercase; white-space:nowrap;'>{nombre_col}</div>", unsafe_allow_html=True)
-                        cols_header[-1].markdown("<div style='padding:10px 8px;'>&nbsp;</div>", unsafe_allow_html=True)
+                        c_txt, c_btn = st.columns([0.94, 0.06])
+                        c_txt.markdown(_fila_pedido_html(columnas_pedidos_tabla, es_encabezado=True), unsafe_allow_html=True)
+                        c_btn.markdown("&nbsp;", unsafe_allow_html=True)
 
                     if df_paginado.empty:
                         st.markdown("<p style='color:#94A3B8; font-size:13px; padding:16px 8px;'>No se encontraron pedidos con los filtros aplicados.</p>", unsafe_allow_html=True)
@@ -1042,11 +1062,10 @@ else:
                             if es_fila_activa:
                                 st.markdown(f"<style>.st-key-tabla_pedidos_fila_{idx_real} {{ background-color: #EAF3EF !important; }}</style>", unsafe_allow_html=True)
                             with st.container(key=f"tabla_pedidos_fila_{idx_real}"):
-                                cols_fila = st.columns(anchos_columnas)
-                                for c, nombre_col in zip(cols_fila[:-1], columnas_pedidos_tabla):
-                                    valor = fila[nombre_col] if nombre_col in fila.index else ""
-                                    c.markdown(f"<div style='color:#0F172A; font-size:13px; padding:9px 8px; white-space:nowrap;'>{valor}</div>", unsafe_allow_html=True)
-                                with cols_fila[-1]:
+                                c_txt, c_btn = st.columns([0.94, 0.06])
+                                valores_fila = [fila[col] if col in fila.index else "" for col in columnas_pedidos_tabla]
+                                c_txt.markdown(_fila_pedido_html(valores_fila, es_encabezado=False), unsafe_allow_html=True)
+                                with c_btn:
                                     if st.button("›", key=f"ver_pedido_{idx_real}"):
                                         st.session_state.detalle_pedido_idx = idx_real
                                         st.rerun()
