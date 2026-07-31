@@ -393,9 +393,8 @@ st.markdown(
     }
     .st-key-tabla_pedidos_header,
     div[class*="st-key-tabla_pedidos_fila_"] {
-        width: 960px !important;
-        min-width: 960px !important;
-        flex-shrink: 0 !important;
+        width: 100% !important;
+        min-width: 1150px !important;
     }
     .st-key-tabla_pedidos_header {
         background-color: #0E2F27 !important;
@@ -1022,7 +1021,7 @@ else:
         st.session_state.detalle_pedido_lista_indices = df_filtrado.index.tolist()
 
         columnas_pedidos_tabla = ["FECHA_REGISTRO", "CODIGO INTERNO", "CLIENTE", "ESTADO", "SUB_ESTADO", "NOMBRE", "DISTRITO", "TIPO_SERVICIO"]
-        anchos_columnas_px = [95, 130, 115, 95, 130, 130, 95, 95]  # ancho fijo por columna (en píxeles), en el mismo orden que columnas_pedidos_tabla
+        anchos_columnas_px = [130, 150, 130, 120, 150, 150, 120, 130]  # ancho MÍNIMO por columna (en píxeles); puede crecer si hay espacio
 
         def _fila_pedido_html(valores, es_encabezado):
             color = "#FFFFFF" if es_encabezado else "#0F172A"
@@ -1030,7 +1029,7 @@ else:
             tam_fuente = "12px" if es_encabezado else "13px"
             transform = "text-transform:uppercase;" if es_encabezado else ""
             celdas = "".join(
-                f"<div style='flex:0 0 {ancho}px; padding:9px 8px; white-space:nowrap; overflow:hidden; "
+                f"<div style='flex:1 0 {ancho}px; padding:9px 8px; white-space:nowrap; overflow:hidden; "
                 f"text-overflow:ellipsis; color:{color}; font-size:{tam_fuente}; font-weight:{peso_fuente}; {transform}'>{valor}</div>"
                 for valor, ancho in zip(valores, anchos_columnas_px)
             )
