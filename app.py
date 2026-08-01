@@ -744,6 +744,48 @@ def modal_upload():
         except Exception as e:
             st.error(f"Ocurrió un error al procesar el archivo: {e}")
 
+def _grafico_barras_html(serie, color="#0E2F27", alto_px=200):
+    if serie.empty or serie.sum() == 0:
+        return "<p style='color:#94A3B8; font-size:13px;'>Sin datos para graficar.</p>"
+
+    valor_max = float(serie.max())
+    pasos = 5
+    paso = max(1, -(-int(valor_max) // pasos))  # redondeo hacia arriba
+    max_eje = paso * pasos
+
+    lineas_y_html = "".join(
+        f"<div style='position:absolute; left:0; right:0; top:{100 - (i/pasos)*100:.2f}%; border-top:1px solid #EEF2F6;'></div>"
+        for i in range(pasos + 1)
+    )
+    etiquetas_y_html = "".join(
+        f"<div style='position:absolute; left:0; top:{100 - (i/pasos)*100:.2f}%; transform:translateY(-50%); font-size:10px; color:#94A3B8;'>{paso * i}</div>"
+        for i in range(pasos + 1)
+    )
+    barras_html = "".join(
+        f"<div style='flex:1; height:100%; display:flex; align-items:flex-end; justify-content:center;'>"
+        f"<div title='{etiqueta}: {int(valor)}' style='width:55%; min-height:2px; border-radius:3px 3px 0 0; "
+        f"background:{color}; height:{(valor / max_eje) * 100:.2f}%;'></div></div>"
+        for etiqueta, valor in serie.items()
+    )
+    etiquetas_x_html = "".join(
+        f"<div style='flex:1; text-align:center; font-size:10px; color:#64748B; white-space:nowrap; "
+        f"overflow:hidden; text-overflow:ellipsis; padding-top:6px;'>{etiqueta}</div>"
+        for etiqueta in serie.index
+    )
+
+    return f"""
+    <div style="display:flex; margin-top:8px;">
+        <div style="position:relative; width:28px; flex-shrink:0; height:{alto_px}px;">{etiquetas_y_html}</div>
+        <div style="flex:1;">
+            <div style="position:relative; height:{alto_px}px; border-left:1px solid #CBD5E1; border-bottom:1px solid #CBD5E1;">
+                {lineas_y_html}
+                <div style="position:absolute; inset:0; display:flex; padding:0 4px;">{barras_html}</div>
+            </div>
+            <div style="display:flex; padding:0 4px;">{etiquetas_x_html}</div>
+        </div>
+    </div>
+    """
+
 def mostrar_dashboard_pedidos(df, filtrado):
     expandido = st.session_state.get("detalle_panel_expandido", False)
 
@@ -811,7 +853,7 @@ def mostrar_dashboard_pedidos(df, filtrado):
             conteo_fecha = df["FECHA_REGISTRO"].astype(str).value_counts()
             fechas_dt = pd.to_datetime(conteo_fecha.index, format="%d/%m/%Y", errors="coerce")
             conteo_fecha = conteo_fecha.iloc[fechas_dt.argsort()]
-            st.bar_chart(conteo_fecha, color="#0E2F27")
+            st.markdown(_grafico_barras_html(conteo_fecha, color="#0E2F27"), unsafe_allow_html=True)
 
 
 
