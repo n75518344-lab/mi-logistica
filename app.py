@@ -773,13 +773,7 @@ def mostrar_dashboard_pedidos(df, filtrado):
 
         conteo_estado = df["ESTADO"].astype(str).value_counts() if "ESTADO" in df.columns else pd.Series(dtype=int)
 
-        c_kpi1, c_kpi2, c_kpi3, c_kpi4 = st.columns(4)
-        c_kpi1.metric("Total", len(df))
-        c_kpi2.metric("Entregados", int(conteo_estado.get("ENTREGADO", 0)))
-        c_kpi3.metric("En Ruta", int(conteo_estado.get("EN RUTA", 0)))
-        c_kpi4.metric("Pendientes", int(conteo_estado.get("PENDIENTE", 0)))
-
-        st.markdown("<p style='font-weight:700; font-size:13px; color:#0E2F27; margin:16px 0 4px 0;'>Avance de Ruta (por Estado)</p>", unsafe_allow_html=True)
+        st.markdown("<p style='font-weight:700; font-size:13px; color:#0E2F27; margin:0 0 4px 0;'>Avance de Ruta (por Estado)</p>", unsafe_allow_html=True)
         if not conteo_estado.empty:
             colores_torta = ["#0E2F27", "#4ADE80", "#94A3B8", "#CBD5E1", "#16A34A", "#0F172A"]
             total_torta = int(conteo_estado.sum())
@@ -812,13 +806,14 @@ def mostrar_dashboard_pedidos(df, filtrado):
             </div>
             """, unsafe_allow_html=True)
 
-        st.markdown("<p style='font-weight:700; font-size:13px; color:#0E2F27; margin:16px 0 4px 0;'>Pedidos por Tipo de Servicio</p>", unsafe_allow_html=True)
-        if "TIPO_SERVICIO" in df.columns:
-            st.bar_chart(df["TIPO_SERVICIO"].astype(str).value_counts(), color="#0E2F27")
+        st.markdown("<p style='font-weight:700; font-size:13px; color:#0E2F27; margin:20px 0 4px 0;'>Cantidad de Pedidos</p>", unsafe_allow_html=True)
+        if "FECHA_REGISTRO" in df.columns:
+            conteo_fecha = df["FECHA_REGISTRO"].astype(str).value_counts()
+            fechas_dt = pd.to_datetime(conteo_fecha.index, format="%d/%m/%Y", errors="coerce")
+            conteo_fecha = conteo_fecha.iloc[fechas_dt.argsort()]
+            st.bar_chart(conteo_fecha, color="#0E2F27")
 
-        st.markdown("<p style='font-weight:700; font-size:13px; color:#0E2F27; margin:16px 0 4px 0;'>Top 5 Distritos</p>", unsafe_allow_html=True)
-        if "DISTRITO" in df.columns:
-            st.bar_chart(df["DISTRITO"].astype(str).value_counts().head(5), color="#0E2F27")
+
 
 if st.session_state.usuario_actual is None:
     st.markdown(
