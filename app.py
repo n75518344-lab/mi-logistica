@@ -742,6 +742,37 @@ def modal_upload():
         except Exception as e:
             st.error(f"Ocurrió un error al procesar el archivo: {e}")
 
+@st.dialog("📊 Dashboard de Resultados")
+def mostrar_dashboard_pedidos(df, filtrado):
+    if filtrado:
+        st.markdown(f"<p style='color:#64748B; font-size:13px; margin-top:-8px;'>Basado en los <b>{len(df)}</b> resultados de tu filtro actual.</p>", unsafe_allow_html=True)
+    else:
+        st.markdown(f"<p style='color:#64748B; font-size:13px; margin-top:-8px;'>Basado en el total de <b>{len(df)}</b> pedidos (sin filtros aplicados).</p>", unsafe_allow_html=True)
+
+    if df.empty:
+        st.markdown("<p style='color:#94A3B8; font-size:13px; padding:20px 0;'>No hay registros para graficar con los filtros actuales.</p>", unsafe_allow_html=True)
+        return
+
+    conteo_estado = df["ESTADO"].astype(str).value_counts() if "ESTADO" in df.columns else pd.Series(dtype=int)
+
+    c_kpi1, c_kpi2, c_kpi3, c_kpi4 = st.columns(4)
+    c_kpi1.metric("Total", len(df))
+    c_kpi2.metric("Entregados", int(conteo_estado.get("ENTREGADO", 0)))
+    c_kpi3.metric("En Ruta", int(conteo_estado.get("EN RUTA", 0)))
+    c_kpi4.metric("Pendientes", int(conteo_estado.get("PENDIENTE", 0)))
+
+    st.markdown("<p style='font-weight:700; font-size:13px; color:#0E2F27; margin:16px 0 4px 0;'>Pedidos por Tipo de Servicio</p>", unsafe_allow_html=True)
+    if "TIPO_SERVICIO" in df.columns:
+        st.bar_chart(df["TIPO_SERVICIO"].astype(str).value_counts(), color="#0E2F27")
+
+    st.markdown("<p style='font-weight:700; font-size:13px; color:#0E2F27; margin:16px 0 4px 0;'>Pedidos por Estado</p>", unsafe_allow_html=True)
+    if not conteo_estado.empty:
+        st.bar_chart(conteo_estado, color="#0E2F27")
+
+    st.markdown("<p style='font-weight:700; font-size:13px; color:#0E2F27; margin:16px 0 4px 0;'>Top 5 Distritos</p>", unsafe_allow_html=True)
+    if "DISTRITO" in df.columns:
+        st.bar_chart(df["DISTRITO"].astype(str).value_counts().head(5), color="#0E2F27")
+
 if st.session_state.usuario_actual is None:
     st.markdown(
         f"""
@@ -1009,13 +1040,18 @@ else:
         fin_idx = min(inicio_idx + TAMANO_PAGINA, total_registros)
         rango_texto = f"{inicio_idx + 1}\u2013{fin_idx} de {total_registros}" if total_registros > 0 else "0 de 0"
 
-        col_pag1, col_pag2 = st.columns([3, 1])
+        col_pag1, col_pag_dash, col_pag2 = st.columns([2.3, 0.9, 1])
         with col_pag1:
             if hay_filtros_activos:
                 texto_resultados = f"🔍 Se encontr{'ó' if total_registros == 1 else 'aron'} <b>{total_registros}</b> resultado{'s' if total_registros != 1 else ''} para tu filtro (de {total_sin_filtrar} en total)."
             else:
                 texto_resultados = f"Mostrando bloques de 50 registros. Total: <b>{total_registros}</b>."
             st.markdown(f"<p style='color: #475569; font-size: 14px; margin-top: 8px;'>{texto_resultados}</p>", unsafe_allow_html=True)
+        with col_pag_dash:
+            st.markdown('<div class="contenedor-btn-custom">', unsafe_allow_html=True)
+            if st.button("📊 Dashboard", use_container_width=True, key="btn_dashboard_pedidos"):
+                mostrar_dashboard_pedidos(df_filtrado, hay_filtros_activos)
+            st.markdown('</div>', unsafe_allow_html=True)
         with col_pag2:
             with st.container(key="gmail_paginacion"):
                 c_txt, c_prev, c_next = st.columns([2.4, 0.8, 0.8])
