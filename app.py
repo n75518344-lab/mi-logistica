@@ -3,7 +3,6 @@ from datetime import datetime, date, timedelta
 import os
 import textwrap
 import pandas as pd
-import matplotlib.pyplot as plt
 import streamlit as st
 import streamlit.components.v1 as components
 
@@ -783,18 +782,35 @@ def mostrar_dashboard_pedidos(df, filtrado):
         st.markdown("<p style='font-weight:700; font-size:13px; color:#0E2F27; margin:16px 0 4px 0;'>Avance de Ruta (por Estado)</p>", unsafe_allow_html=True)
         if not conteo_estado.empty:
             colores_torta = ["#0E2F27", "#4ADE80", "#94A3B8", "#CBD5E1", "#16A34A", "#0F172A"]
-            fig, ax = plt.subplots(figsize=(3, 3))
-            ax.pie(
-                conteo_estado.values,
-                labels=conteo_estado.index,
-                autopct="%1.0f%%",
-                colors=colores_torta[:len(conteo_estado)],
-                textprops={"fontsize": 8, "color": "#0F172A"},
-            )
-            ax.axis("equal")
-            fig.patch.set_alpha(0.0)
-            st.pyplot(fig)
-            plt.close(fig)
+            total_torta = int(conteo_estado.sum())
+            segmentos_css = []
+            leyenda_html = ""
+            acumulado_pct = 0.0
+            for i, (etiqueta, valor) in enumerate(conteo_estado.items()):
+                color = colores_torta[i % len(colores_torta)]
+                pct = (valor / total_torta) * 100 if total_torta else 0
+                inicio = acumulado_pct
+                fin = acumulado_pct + pct
+                segmentos_css.append(f"{color} {inicio:.2f}% {fin:.2f}%")
+                acumulado_pct = fin
+                leyenda_html += (
+                    f"<div style='display:flex; align-items:center; gap:6px; font-size:12px; color:#0F172A; margin-bottom:4px;'>"
+                    f"<span style='width:10px; height:10px; border-radius:2px; background:{color}; display:inline-block;'></span>"
+                    f"{etiqueta} — {valor} ({pct:.0f}%)</div>"
+                )
+            gradiente = ", ".join(segmentos_css)
+            st.markdown(f"""
+            <div style="display:flex; align-items:center; gap:18px; margin-top:6px;">
+                <div style="width:120px; height:120px; border-radius:50%; flex-shrink:0;
+                            background:conic-gradient({gradiente});
+                            display:flex; align-items:center; justify-content:center;">
+                    <div style="width:64px; height:64px; border-radius:50%; background:#FFFFFF;
+                                display:flex; align-items:center; justify-content:center;
+                                font-size:12px; font-weight:700; color:#0E2F27;">{total_torta}</div>
+                </div>
+                <div>{leyenda_html}</div>
+            </div>
+            """, unsafe_allow_html=True)
 
         st.markdown("<p style='font-weight:700; font-size:13px; color:#0E2F27; margin:16px 0 4px 0;'>Pedidos por Tipo de Servicio</p>", unsafe_allow_html=True)
         if "TIPO_SERVICIO" in df.columns:
