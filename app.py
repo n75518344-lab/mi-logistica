@@ -158,7 +158,9 @@ st.markdown(
     [data-testid="stElementToolbar"] { display: none !important; }
     
     .block-container { 
-        max-width: 96% !important; 
+        max-width: 100% !important; 
+        padding-left: 2.2rem !important;
+        padding-right: 2.2rem !important;
         padding-top: 1rem !important; 
         padding-bottom: 2rem !important; 
     }
