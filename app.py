@@ -4,7 +4,6 @@ import os
 import textwrap
 import pandas as pd
 import streamlit as st
-import streamlit.components.v1 as components
 
 # 1. CONFIGURACIÓN DE PÁGINA
 st.set_page_config(
@@ -995,44 +994,9 @@ else:
             st.markdown("<p style='font-size: 13px; color: #64748B; margin-top: 0px; margin-bottom: 14px; line-height: 1.4;'>Filtra los registros de envíos de manera rápida.</p>", unsafe_allow_html=True)
             st.markdown("<hr style='margin: 0px 0px 14px 0px;'>", unsafe_allow_html=True)
 
-            st.markdown("<p style='font-weight:700; font-size:14px; color:#0E2F27; margin:0 0 6px 0;'>📅 Rango de Fechas (DD/MM/YYYY):</p>", unsafe_allow_html=True)
-            txt_fecha_inicio = st.text_input("Fecha Inicial", value="", placeholder="DD/MM/YYYY", key="f_ini")
-            txt_fecha_fin = st.text_input("Fecha Final", value="", placeholder="DD/MM/YYYY", key="f_fin")
-
-            components.html("""
-                <script>
-                const doc = window.parent.document;
-                function aplicarMascaraLimpia(input) {
-                    if (!input.dataset.masked) {
-                        input.dataset.masked = "true";
-                        input.setAttribute("maxlength", "10");
-                        
-                        input.addEventListener("input", function(e) {
-                            let val = this.value.replace(/\\D/g, "");
-                            if (val.length > 8) val = val.slice(0, 8);
-                            
-                            let res = "";
-                            if (val.length > 0) res += val.substring(0, 2);
-                            if (val.length >= 3) res += "/" + val.substring(2, 4);
-                            if (val.length >= 5) res += "/" + val.substring(4, 8);
-
-                            if (this.value !== res) {
-                                this.value = res;
-                                this.dispatchEvent(new Event('input', { bubbles: true }));
-                            }
-                        });
-                    }
-                }
-                function observarInputs() {
-                    doc.querySelectorAll('input').forEach(input => {
-                        if (input.getAttribute('placeholder') === 'DD/MM/YYYY') {
-                            aplicarMascaraLimpia(input);
-                        }
-                    });
-                }
-                setInterval(observarInputs, 300);
-                </script>
-            """, height=0)
+            st.markdown("<p style='font-weight:700; font-size:14px; color:#0E2F27; margin:0 0 6px 0;'>📅 Rango de Fechas:</p>", unsafe_allow_html=True)
+            fecha_inicio_sel = st.date_input("Fecha Inicial", value=None, format="DD/MM/YYYY", key="f_ini")
+            fecha_fin_sel = st.date_input("Fecha Final", value=None, format="DD/MM/YYYY", key="f_fin")
 
             st.markdown("<hr style='margin: 14px 0px;'>", unsafe_allow_html=True)
 
@@ -1065,28 +1029,13 @@ else:
 
         if "FECHA_REGISTRO" in df_filtrado.columns:
             df_filtrado["_fecha_temp"] = pd.to_datetime(df_filtrado["FECHA_REGISTRO"], format="%d/%m/%Y", errors="coerce")
-            
-            f_ini_parsed = None
-            f_fin_parsed = None
 
-            if txt_fecha_inicio.strip():
-                try:
-                    f_ini_parsed = datetime.strptime(txt_fecha_inicio.strip(), "%d/%m/%Y").date()
-                except ValueError:
-                    pass
-
-            if txt_fecha_fin.strip():
-                try:
-                    f_fin_parsed = datetime.strptime(txt_fecha_fin.strip(), "%d/%m/%Y").date()
-                except ValueError:
-                    pass
-
-            if f_ini_parsed and f_fin_parsed:
-                df_filtrado = df_filtrado[(df_filtrado["_fecha_temp"].dt.date >= f_ini_parsed) & (df_filtrado["_fecha_temp"].dt.date <= f_fin_parsed)]
-            elif f_ini_parsed and not f_fin_parsed:
-                df_filtrado = df_filtrado[df_filtrado["_fecha_temp"].dt.date == f_ini_parsed]
-            elif not f_ini_parsed and f_fin_parsed:
-                df_filtrado = df_filtrado[df_filtrado["_fecha_temp"].dt.date <= f_fin_parsed]
+            if fecha_inicio_sel and fecha_fin_sel:
+                df_filtrado = df_filtrado[(df_filtrado["_fecha_temp"].dt.date >= fecha_inicio_sel) & (df_filtrado["_fecha_temp"].dt.date <= fecha_fin_sel)]
+            elif fecha_inicio_sel and not fecha_fin_sel:
+                df_filtrado = df_filtrado[df_filtrado["_fecha_temp"].dt.date == fecha_inicio_sel]
+            elif not fecha_inicio_sel and fecha_fin_sel:
+                df_filtrado = df_filtrado[df_filtrado["_fecha_temp"].dt.date <= fecha_fin_sel]
 
             df_filtrado = df_filtrado.drop(columns=["_fecha_temp"])
 
@@ -1104,7 +1053,7 @@ else:
 
         total_sin_filtrar = len(st.session_state.df_pedidos)
         hay_filtros_activos = any([
-            txt_fecha_inicio.strip(), txt_fecha_fin.strip(),
+            fecha_inicio_sel, fecha_fin_sel,
             filtro_cliente, filtro_distrito, filtro_servicio, filtro_estado, filtro_sub_estado,
             filtro_codigo_txt.strip(), filtro_nombre_txt.strip(),
         ])
