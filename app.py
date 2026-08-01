@@ -166,6 +166,31 @@ st.markdown(
     
     h1, h2, h3, h4, h5, h6, p, label, span, div { color: #0F172A; }
 
+    /* =========================================================
+        CALENDARIO DEL SELECTOR DE FECHA (st.date_input) - forzar tema claro
+        ========================================================= */
+    div[data-baseweb="popover"], div[data-baseweb="calendar"] {
+        background-color: #FFFFFF !important;
+    }
+    div[data-baseweb="calendar"] * {
+        color: #0F172A !important;
+    }
+    div[data-baseweb="calendar"] button {
+        background-color: transparent !important;
+    }
+    div[data-baseweb="calendar"] button:hover {
+        background-color: #EAF3EF !important;
+    }
+    div[data-baseweb="calendar"] [aria-selected="true"] {
+        background-color: #0E2F27 !important;
+    }
+    div[data-baseweb="calendar"] [aria-selected="true"] * {
+        color: #FFFFFF !important;
+    }
+    div[data-baseweb="calendar"] [aria-disabled="true"] {
+        color: #CBD5E1 !important;
+    }
+
     /* Estilo general para botones por defecto (Fondo Blanco, Borde Verde Oscuro 2px) */
     div[data-testid="stButton"] > button,
     div[data-testid="stDownloadButton"] > button { 
