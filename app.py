@@ -3,6 +3,7 @@ from datetime import datetime, date, timedelta
 import os
 import textwrap
 import pandas as pd
+import matplotlib.pyplot as plt
 import streamlit as st
 import streamlit.components.v1 as components
 
@@ -517,6 +518,8 @@ for _col in _columnas_detalle_pedido:
 
 if "detalle_pedido_idx" not in st.session_state:
     st.session_state.detalle_pedido_idx = None
+if "mostrar_dashboard_pedidos" not in st.session_state:
+    st.session_state.mostrar_dashboard_pedidos = False
 if "detalle_panel_expandido" not in st.session_state:
     st.session_state.detalle_panel_expandido = False
 
@@ -742,36 +745,64 @@ def modal_upload():
         except Exception as e:
             st.error(f"Ocurrió un error al procesar el archivo: {e}")
 
-@st.dialog("📊 Dashboard de Resultados")
 def mostrar_dashboard_pedidos(df, filtrado):
-    if filtrado:
-        st.markdown(f"<p style='color:#64748B; font-size:13px; margin-top:-8px;'>Basado en los <b>{len(df)}</b> resultados de tu filtro actual.</p>", unsafe_allow_html=True)
-    else:
-        st.markdown(f"<p style='color:#64748B; font-size:13px; margin-top:-8px;'>Basado en el total de <b>{len(df)}</b> pedidos (sin filtros aplicados).</p>", unsafe_allow_html=True)
+    expandido = st.session_state.get("detalle_panel_expandido", False)
 
-    if df.empty:
-        st.markdown("<p style='color:#94A3B8; font-size:13px; padding:20px 0;'>No hay registros para graficar con los filtros actuales.</p>", unsafe_allow_html=True)
-        return
+    with st.container(key="detalle_pedido_panel"):
+        with st.container(key="detalle_pedido_nav"):
+            c_title, c_expand, c_close = st.columns([4.4, 0.6, 0.6])
+            with c_title:
+                st.markdown("<div class='detalle-pedido-titulo'>📊 Dashboard</div>", unsafe_allow_html=True)
+            with c_expand:
+                if st.button("⤢", key="dashboard_expand"):
+                    st.session_state.detalle_panel_expandido = not expandido
+                    st.rerun()
+            with c_close:
+                if st.button("✕", key="dashboard_close"):
+                    st.session_state.mostrar_dashboard_pedidos = False
+                    st.session_state.detalle_panel_expandido = False
+                    st.rerun()
 
-    conteo_estado = df["ESTADO"].astype(str).value_counts() if "ESTADO" in df.columns else pd.Series(dtype=int)
+        if filtrado:
+            st.markdown(f"<p style='color:#64748B; font-size:13px; margin-top:2px;'>Basado en los <b>{len(df)}</b> resultados de tu filtro actual.</p>", unsafe_allow_html=True)
+        else:
+            st.markdown(f"<p style='color:#64748B; font-size:13px; margin-top:2px;'>Basado en el total de <b>{len(df)}</b> pedidos (sin filtros aplicados).</p>", unsafe_allow_html=True)
 
-    c_kpi1, c_kpi2, c_kpi3, c_kpi4 = st.columns(4)
-    c_kpi1.metric("Total", len(df))
-    c_kpi2.metric("Entregados", int(conteo_estado.get("ENTREGADO", 0)))
-    c_kpi3.metric("En Ruta", int(conteo_estado.get("EN RUTA", 0)))
-    c_kpi4.metric("Pendientes", int(conteo_estado.get("PENDIENTE", 0)))
+        if df.empty:
+            st.markdown("<p style='color:#94A3B8; font-size:13px; padding:20px 0;'>No hay registros para graficar con los filtros actuales.</p>", unsafe_allow_html=True)
+            return
 
-    st.markdown("<p style='font-weight:700; font-size:13px; color:#0E2F27; margin:16px 0 4px 0;'>Pedidos por Tipo de Servicio</p>", unsafe_allow_html=True)
-    if "TIPO_SERVICIO" in df.columns:
-        st.bar_chart(df["TIPO_SERVICIO"].astype(str).value_counts(), color="#0E2F27")
+        conteo_estado = df["ESTADO"].astype(str).value_counts() if "ESTADO" in df.columns else pd.Series(dtype=int)
 
-    st.markdown("<p style='font-weight:700; font-size:13px; color:#0E2F27; margin:16px 0 4px 0;'>Pedidos por Estado</p>", unsafe_allow_html=True)
-    if not conteo_estado.empty:
-        st.bar_chart(conteo_estado, color="#0E2F27")
+        c_kpi1, c_kpi2, c_kpi3, c_kpi4 = st.columns(4)
+        c_kpi1.metric("Total", len(df))
+        c_kpi2.metric("Entregados", int(conteo_estado.get("ENTREGADO", 0)))
+        c_kpi3.metric("En Ruta", int(conteo_estado.get("EN RUTA", 0)))
+        c_kpi4.metric("Pendientes", int(conteo_estado.get("PENDIENTE", 0)))
 
-    st.markdown("<p style='font-weight:700; font-size:13px; color:#0E2F27; margin:16px 0 4px 0;'>Top 5 Distritos</p>", unsafe_allow_html=True)
-    if "DISTRITO" in df.columns:
-        st.bar_chart(df["DISTRITO"].astype(str).value_counts().head(5), color="#0E2F27")
+        st.markdown("<p style='font-weight:700; font-size:13px; color:#0E2F27; margin:16px 0 4px 0;'>Avance de Ruta (por Estado)</p>", unsafe_allow_html=True)
+        if not conteo_estado.empty:
+            colores_torta = ["#0E2F27", "#4ADE80", "#94A3B8", "#CBD5E1", "#16A34A", "#0F172A"]
+            fig, ax = plt.subplots(figsize=(3, 3))
+            ax.pie(
+                conteo_estado.values,
+                labels=conteo_estado.index,
+                autopct="%1.0f%%",
+                colors=colores_torta[:len(conteo_estado)],
+                textprops={"fontsize": 8, "color": "#0F172A"},
+            )
+            ax.axis("equal")
+            fig.patch.set_alpha(0.0)
+            st.pyplot(fig)
+            plt.close(fig)
+
+        st.markdown("<p style='font-weight:700; font-size:13px; color:#0E2F27; margin:16px 0 4px 0;'>Pedidos por Tipo de Servicio</p>", unsafe_allow_html=True)
+        if "TIPO_SERVICIO" in df.columns:
+            st.bar_chart(df["TIPO_SERVICIO"].astype(str).value_counts(), color="#0E2F27")
+
+        st.markdown("<p style='font-weight:700; font-size:13px; color:#0E2F27; margin:16px 0 4px 0;'>Top 5 Distritos</p>", unsafe_allow_html=True)
+        if "DISTRITO" in df.columns:
+            st.bar_chart(df["DISTRITO"].astype(str).value_counts().head(5), color="#0E2F27")
 
 if st.session_state.usuario_actual is None:
     st.markdown(
@@ -880,7 +911,7 @@ else:
         
         st.markdown("<h3 style='margin:0 0 8px 0; padding:0; line-height: 1.2;'>Gestión de Envíos</h3>", unsafe_allow_html=True)
         
-        _, col_b1, col_b2, col_b3 = st.columns([2.5, 0.9, 0.9, 0.9])
+        _, col_b1, col_b2, col_b3, col_b4 = st.columns([1.8, 0.9, 0.9, 0.9, 0.9])
         
         with col_b1:
             st.markdown('<div class="contenedor-btn-custom">', unsafe_allow_html=True)
@@ -893,6 +924,12 @@ else:
         with col_b3:
             st.markdown('<div class="contenedor-btn-custom">', unsafe_allow_html=True)
             if st.button("➕ Nuevo Pedido", use_container_width=True): modal_add_pedido()
+            st.markdown('</div>', unsafe_allow_html=True)
+        with col_b4:
+            st.markdown('<div class="contenedor-btn-custom">', unsafe_allow_html=True)
+            if st.button("📊 Dashboard", use_container_width=True, key="btn_dashboard_pedidos"):
+                st.session_state.mostrar_dashboard_pedidos = True
+                st.session_state.detalle_pedido_idx = None
             st.markdown('</div>', unsafe_allow_html=True)
 
         st.markdown("<div style='margin-top: 2px;'></div>", unsafe_allow_html=True)
@@ -1040,18 +1077,13 @@ else:
         fin_idx = min(inicio_idx + TAMANO_PAGINA, total_registros)
         rango_texto = f"{inicio_idx + 1}\u2013{fin_idx} de {total_registros}" if total_registros > 0 else "0 de 0"
 
-        col_pag1, col_pag_dash, col_pag2 = st.columns([2.3, 0.9, 1])
+        col_pag1, col_pag2 = st.columns([3, 1])
         with col_pag1:
             if hay_filtros_activos:
                 texto_resultados = f"🔍 Se encontr{'ó' if total_registros == 1 else 'aron'} <b>{total_registros}</b> resultado{'s' if total_registros != 1 else ''} para tu filtro (de {total_sin_filtrar} en total)."
             else:
                 texto_resultados = f"Mostrando bloques de 50 registros. Total: <b>{total_registros}</b>."
             st.markdown(f"<p style='color: #475569; font-size: 14px; margin-top: 8px;'>{texto_resultados}</p>", unsafe_allow_html=True)
-        with col_pag_dash:
-            st.markdown('<div class="contenedor-btn-custom">', unsafe_allow_html=True)
-            if st.button("📊 Dashboard", use_container_width=True, key="btn_dashboard_pedidos"):
-                mostrar_dashboard_pedidos(df_filtrado, hay_filtros_activos)
-            st.markdown('</div>', unsafe_allow_html=True)
         with col_pag2:
             with st.container(key="gmail_paginacion"):
                 c_txt, c_prev, c_next = st.columns([2.4, 0.8, 0.8])
@@ -1086,11 +1118,13 @@ else:
             return f"<div style='display:flex; align-items:center;'>{celdas}</div>"
 
         detalle_abierto = st.session_state.detalle_pedido_idx is not None
+        dashboard_abierto = st.session_state.mostrar_dashboard_pedidos
+        panel_abierto = detalle_abierto or dashboard_abierto
         panel_expandido = st.session_state.get("detalle_panel_expandido", False)
 
-        if detalle_abierto and panel_expandido:
+        if panel_abierto and panel_expandido:
             col_tabla, col_detalle = None, st.container()
-        elif detalle_abierto:
+        elif panel_abierto:
             col_tabla, col_detalle = st.columns([1.6, 1], gap="medium")
         else:
             col_tabla, col_detalle = st.container(), None
@@ -1117,11 +1151,15 @@ else:
                                 with c_btn:
                                     if st.button("›", key=f"ver_pedido_{idx_real}"):
                                         st.session_state.detalle_pedido_idx = idx_real
+                                        st.session_state.mostrar_dashboard_pedidos = False
                                         st.rerun()
 
         if col_detalle is not None:
             with col_detalle:
-                mostrar_detalle_pedido()
+                if dashboard_abierto:
+                    mostrar_dashboard_pedidos(df_filtrado, hay_filtros_activos)
+                else:
+                    mostrar_detalle_pedido()
 
 
 
