@@ -172,11 +172,11 @@ st.markdown(
     div[data-baseweb="popover"], div[data-baseweb="calendar"] {
         background-color: #FFFFFF !important;
     }
-    div[data-baseweb="calendar"] * {
+    div[data-baseweb="calendar"] *,
+    div[data-baseweb="popover"] * {
+        background-color: #FFFFFF !important;
         color: #0F172A !important;
-    }
-    div[data-baseweb="calendar"] button {
-        background-color: transparent !important;
+        fill: #0F172A !important;
     }
     div[data-baseweb="calendar"] button:hover {
         background-color: #EAF3EF !important;
@@ -185,9 +185,11 @@ st.markdown(
         background-color: #0E2F27 !important;
     }
     div[data-baseweb="calendar"] [aria-selected="true"] * {
+        background-color: #0E2F27 !important;
         color: #FFFFFF !important;
     }
-    div[data-baseweb="calendar"] [aria-disabled="true"] {
+    div[data-baseweb="calendar"] [aria-disabled="true"],
+    div[data-baseweb="calendar"] [aria-disabled="true"] * {
         color: #CBD5E1 !important;
     }
 
