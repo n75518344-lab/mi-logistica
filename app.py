@@ -824,7 +824,7 @@ else:
     with col_nav1:
         st.markdown(
             f"""
-            <div style="font-size: 22px; font-weight: 800; color: #0E2F27; margin-bottom: 0px;">{LOGO_HTML} ALFA CARGO EXPRESS — Portal {st.session_state.rol_actual}</div>
+            <div style="font-size: 22px; font-weight: 800; color: #0E2F27; margin-bottom: 0px;">{LOGO_HTML} PORTAL {str(st.session_state.usuario_actual).upper()}</div>
             <div style="font-size: 13px; color: #475569; font-weight: 600; margin-bottom: 2px;">Usuario activo: <strong>{st.session_state.usuario_actual}</strong></div>
             """,
             unsafe_allow_html=True,
@@ -929,7 +929,8 @@ else:
             distritos_unicos = sorted(st.session_state.df_pedidos["DISTRITO"].astype(str).unique().tolist())
             filtro_distrito = st.multiselect("Distrito", options=distritos_unicos, placeholder="Todos")
 
-            servicios_unicos = sorted(st.session_state.df_pedidos["TIPO_SERVICIO"].astype(str).unique().tolist())
+            TIPOS_SERVICIO_VALIDOS = ["NEXT-DAY", "SAME-DAY", "LOGISTICA INVERSA"]
+            servicios_unicos = sorted(set(TIPOS_SERVICIO_VALIDOS) | set(st.session_state.df_pedidos["TIPO_SERVICIO"].astype(str).unique().tolist()))
             filtro_servicio = st.multiselect("Tipo de Servicio", options=servicios_unicos, placeholder="Todos")
 
             estados_unicos = sorted(st.session_state.df_pedidos["ESTADO"].astype(str).unique().tolist())
@@ -980,6 +981,13 @@ else:
         if "FECHA_REGISTRO" in df_filtrado.columns:
             df_filtrado = df_filtrado.sort_values(by="FECHA_REGISTRO", ascending=False)
 
+        total_sin_filtrar = len(st.session_state.df_pedidos)
+        hay_filtros_activos = any([
+            txt_fecha_inicio.strip(), txt_fecha_fin.strip(),
+            filtro_cliente, filtro_distrito, filtro_servicio, filtro_estado, filtro_sub_estado,
+            filtro_codigo_txt.strip(), filtro_nombre_txt.strip(),
+        ])
+
         # ==========================================
         # LÓGICA DE PAGINACIÓN (BLOQUES DE 50) - ESTILO GMAIL
         # ==========================================
@@ -1003,7 +1011,11 @@ else:
 
         col_pag1, col_pag2 = st.columns([3, 1])
         with col_pag1:
-            st.markdown(f"<p style='color: #475569; font-size: 14px; margin-top: 8px;'>Mostrando bloques de 50 registros.</p>", unsafe_allow_html=True)
+            if hay_filtros_activos:
+                texto_resultados = f"🔍 Se encontr{'ó' if total_registros == 1 else 'aron'} <b>{total_registros}</b> resultado{'s' if total_registros != 1 else ''} para tu filtro (de {total_sin_filtrar} en total)."
+            else:
+                texto_resultados = f"Mostrando bloques de 50 registros. Total: <b>{total_registros}</b>."
+            st.markdown(f"<p style='color: #475569; font-size: 14px; margin-top: 8px;'>{texto_resultados}</p>", unsafe_allow_html=True)
         with col_pag2:
             with st.container(key="gmail_paginacion"):
                 c_txt, c_prev, c_next = st.columns([2.4, 0.8, 0.8])
