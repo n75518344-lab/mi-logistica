@@ -206,10 +206,14 @@ st.markdown(
     div[data-testid="stButton"] > button span,
     div[data-testid="stButton"] > button p,
     div[data-testid="stButton"] > button label,
+    div[data-testid="stButton"] > button svg,
+    div[data-testid="stButton"] > button svg path,
     div[data-testid="stDownloadButton"] > button div,
     div[data-testid="stDownloadButton"] > button span,
     div[data-testid="stDownloadButton"] > button p,
-    div[data-testid="stDownloadButton"] > button label {
+    div[data-testid="stDownloadButton"] > button label,
+    div[data-testid="stDownloadButton"] > button svg,
+    div[data-testid="stDownloadButton"] > button svg path {
         color: #0E2F27 !important;    
         fill: #0E2F27 !important;     
     }
@@ -224,7 +228,15 @@ st.markdown(
     div[data-testid="stButton"] > button:hover div,
     div[data-testid="stButton"] > button:hover span,
     div[data-testid="stButton"] > button:hover p,
-    div[data-testid="stButton"] > button:hover label {
+    div[data-testid="stButton"] > button:hover label,
+    div[data-testid="stButton"] > button:hover svg,
+    div[data-testid="stButton"] > button:hover svg path,
+    div[data-testid="stDownloadButton"] > button:hover div,
+    div[data-testid="stDownloadButton"] > button:hover span,
+    div[data-testid="stDownloadButton"] > button:hover p,
+    div[data-testid="stDownloadButton"] > button:hover label,
+    div[data-testid="stDownloadButton"] > button:hover svg,
+    div[data-testid="stDownloadButton"] > button:hover svg path {
         color: #FFFFFF !important;
         fill: #FFFFFF !important;
     }
@@ -241,6 +253,10 @@ st.markdown(
         color: #0E2F27 !important;
         font-weight: 700 !important;
     }
+    .contenedor-btn-custom button svg,
+    .contenedor-btn-custom button svg path {
+        fill: #0E2F27 !important;
+    }
     .contenedor-btn-custom button:hover {
         background-color: #0E2F27 !important;
     }
@@ -248,6 +264,10 @@ st.markdown(
     .contenedor-btn-custom button:hover span,
     .contenedor-btn-custom button:hover p {
         color: #FFFFFF !important;
+    }
+    .contenedor-btn-custom button:hover svg,
+    .contenedor-btn-custom button:hover svg path {
+        fill: #FFFFFF !important;
     }
 
     .tabla-contenedor, .tabla-contenedor-logs {
@@ -884,35 +904,39 @@ def mostrar_dashboard_pedidos(df, filtrado):
 
 
 if st.session_state.usuario_actual is None:
-    # Imagen de fondo impactante para la pantalla de inicio de sesión
-    BG_LOGIN_B64 = obtener_imagen_github("alfa_login_bg.png")
-    bg_layer = f'url("data:image/png;base64,{BG_LOGIN_B64}")' if BG_LOGIN_B64 else "none"
-
+    # Fondo verde minimalista (gradiente + resplandor, sin logo ni íconos de logística)
     st.markdown(
-        f"""
+        """
         <style>
-        .stApp {{
-            background-image: linear-gradient(180deg, rgba(2,15,11,0.45) 0%, rgba(2,15,11,0.78) 100%), {bg_layer} !important;
-            background-size: cover !important;
-            background-position: center center !important;
-            background-repeat: no-repeat !important;
+        .stApp {
+            background:
+                radial-gradient(circle at 50% 32%, rgba(74, 222, 128, 0.22) 0%, rgba(74, 222, 128, 0) 45%),
+                linear-gradient(160deg, #03110C 0%, #0E2F27 48%, #0B2A22 75%, #04140F 100%) !important;
             background-attachment: fixed !important;
-        }}
+        }
 
-        [data-testid="stForm"] {{
-            background-color: rgba(255, 255, 255, 0.98) !important;
-            border-radius: 22px !important;
-            padding: 42px 40px 28px 40px !important;
-            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55) !important;
-            border: none !important;
-        }}
+        [data-testid="stForm"] {
+            background-color: rgba(255, 255, 255, 0.99) !important;
+            border-radius: 20px !important;
+            padding: 44px 40px 30px 40px !important;
+            box-shadow: 0 35px 80px rgba(0, 0, 0, 0.5) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        }
 
-        div.login-ayuda-wrap button {{
-            background-color: rgba(255, 255, 255, 0.95) !important;
-            border-radius: 14px !important;
-            border: none !important;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35) !important;
-        }}
+        div.login-ayuda-wrap button {
+            background-color: transparent !important;
+            color: #DCFCE7 !important;
+            border-radius: 12px !important;
+            border: 1px solid rgba(220, 252, 231, 0.35) !important;
+            box-shadow: none !important;
+        }
+        div.login-ayuda-wrap button:hover {
+            border-color: rgba(220, 252, 231, 0.7) !important;
+            color: #FFFFFF !important;
+        }
+        div.login-ayuda-wrap button p {
+            color: inherit !important;
+        }
         </style>
         """,
         unsafe_allow_html=True,
@@ -920,22 +944,22 @@ if st.session_state.usuario_actual is None:
 
     st.markdown(
         f"""
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6vh;">
-        <div style="font-size: 28px; font-weight: 900; color: #FFFFFF; text-shadow: 0 2px 10px rgba(0,0,0,0.6);">{LOGO_HTML} ALFA CARGO EXPRESS</div>
-        <div style='color: #E2E8F0; font-size: 14px; font-weight: 600; text-shadow: 0 2px 8px rgba(0,0,0,0.6);'>🌐 Central Lima, Perú</div>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 7vh;">
+        <div style="font-size: 26px; font-weight: 900; color: #FFFFFF; letter-spacing: 0.3px;">{LOGO_HTML} ALFA CARGO EXPRESS</div>
+        <div style='color: #A7F3D0; font-size: 13px; font-weight: 600;'>🌐 Central Lima, Perú</div>
     </div>
     """,
         unsafe_allow_html=True,
     )
 
-    st.markdown("<div style='height: 6vh;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height: 5vh;'></div>", unsafe_allow_html=True)
 
-    col_izq, col_centro, col_der = st.columns([1, 1.1, 1])
+    col_izq, col_centro, col_der = st.columns([1, 1.05, 1])
     with col_centro:
         with st.form("login_form"):
             st.markdown(
                 '<h3 style="text-align: center; color: #0E2F27; font-weight:800;'
-                ' margin-bottom: 20px;">Bienvenido</h3>',
+                ' margin-bottom: 24px;">Bienvenido</h3>',
                 unsafe_allow_html=True,
             )
             input_user = st.text_input("Usuario", placeholder="Ingresa tu usuario", key="u_login")
@@ -965,7 +989,7 @@ if st.session_state.usuario_actual is None:
                     registrar_log("Inicio de sesión exitoso")
                     st.rerun()
 
-        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("<div style='height: 18px;'></div>", unsafe_allow_html=True)
         st.markdown('<div class="login-ayuda-wrap">', unsafe_allow_html=True)
         if st.button("❓ ¿Necesitas ayuda con tu acceso o contraseña?", use_container_width=True):
             mostrar_modal_soporte()
