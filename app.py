@@ -884,45 +884,54 @@ def mostrar_dashboard_pedidos(df, filtrado):
 
 
 if st.session_state.usuario_actual is None:
+    # Imagen de fondo impactante para la pantalla de inicio de sesión
+    BG_LOGIN_B64 = obtener_imagen_github("alfa_login_bg.png")
+    bg_layer = f'url("data:image/png;base64,{BG_LOGIN_B64}")' if BG_LOGIN_B64 else "none"
+
     st.markdown(
         f"""
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <div style="font-size: 28px; font-weight: 900; color: #0E2F27;">{LOGO_HTML} ALFA CARGO EXPRESS</div>
-        <div style='color: #64748B; font-size: 14px; font-weight: 600;'>🌐 Central Lima, Perú</div>
+        <style>
+        .stApp {{
+            background-image: linear-gradient(180deg, rgba(2,15,11,0.45) 0%, rgba(2,15,11,0.78) 100%), {bg_layer} !important;
+            background-size: cover !important;
+            background-position: center center !important;
+            background-repeat: no-repeat !important;
+            background-attachment: fixed !important;
+        }}
+
+        [data-testid="stForm"] {{
+            background-color: rgba(255, 255, 255, 0.98) !important;
+            border-radius: 22px !important;
+            padding: 42px 40px 28px 40px !important;
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55) !important;
+            border: none !important;
+        }}
+
+        div.login-ayuda-wrap button {{
+            background-color: rgba(255, 255, 255, 0.95) !important;
+            border-radius: 14px !important;
+            border: none !important;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35) !important;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        f"""
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6vh;">
+        <div style="font-size: 28px; font-weight: 900; color: #FFFFFF; text-shadow: 0 2px 10px rgba(0,0,0,0.6);">{LOGO_HTML} ALFA CARGO EXPRESS</div>
+        <div style='color: #E2E8F0; font-size: 14px; font-weight: 600; text-shadow: 0 2px 8px rgba(0,0,0,0.6);'>🌐 Central Lima, Perú</div>
     </div>
     """,
         unsafe_allow_html=True,
     )
 
-    col_left, col_right = st.columns([1.2, 1.0], gap="large")
+    st.markdown("<div style='height: 6vh;'></div>", unsafe_allow_html=True)
 
-    with col_left:
-        st.markdown(
-            '<div style="color: #0F172A; font-size: 22px; font-weight: 700;'
-            ' margin-bottom: 15px;">Módulo de Administración del Sistema</div>',
-            unsafe_allow_html=True,
-        )
-        st.markdown(
-            """
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
-            <div style="color: #334155; font-weight: 600; font-size: 14px;">▌ Control de Accesos y Roles</div>
-            <div style="color: #334155; font-weight: 600; font-size: 14px;">▌ Gestión de Claves Directa</div>
-            <div style="color: #334155; font-weight: 600; font-size: 14px;">▌ Auditoría y Registros (Logs)</div>
-            <div style="color: #334155; font-weight: 600; font-size: 14px;">▌ Seguridad Operativa</div>
-        </div>
-        """,
-            unsafe_allow_html=True,
-        )
-
-        img_b64 = obtener_imagen_github("alfa_warehouse.jpg")
-        if img_b64:
-            st.markdown(
-                f'<img src="data:image/jpeg;base64,{img_b64}" style="width: 100%;'
-                ' max-height: 260px; object-fit: contain; border-radius: 12px;" />',
-                unsafe_allow_html=True,
-            )
-
-    with col_right:
+    col_izq, col_centro, col_der = st.columns([1, 1.1, 1])
+    with col_centro:
         with st.form("login_form"):
             st.markdown(
                 '<h3 style="text-align: center; color: #0E2F27; font-weight:800;'
@@ -932,7 +941,7 @@ if st.session_state.usuario_actual is None:
             input_user = st.text_input("Usuario", placeholder="Ingresa tu usuario", key="u_login")
             input_pass = st.text_input("Contraseña", type="password", placeholder="Ingresa tu contraseña", key="p_login")
             remember = st.checkbox("Recordar inicio de sesión", value=True)
-            submit_btn = st.form_submit_button("Ingresar al Portal")
+            submit_btn = st.form_submit_button("Ingresar al Portal", use_container_width=True)
 
             if submit_btn:
                 df_users = st.session_state.usuarios_registrados
@@ -957,8 +966,10 @@ if st.session_state.usuario_actual is None:
                     st.rerun()
 
         st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown('<div class="login-ayuda-wrap">', unsafe_allow_html=True)
         if st.button("❓ ¿Necesitas ayuda con tu acceso o contraseña?", use_container_width=True):
             mostrar_modal_soporte()
+        st.markdown("</div>", unsafe_allow_html=True)
 
 else:
     col_nav1, col_nav2 = st.columns([5, 1])
