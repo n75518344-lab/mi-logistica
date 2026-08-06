@@ -539,7 +539,14 @@ if "usuarios_registrados" not in st.session_state:
             "ÚLTIMA CONEXIÓN": "Nunca",
         },
         {
-            "USUARIO": "cliente_global",
+            "USUARIO": "unimarket",
+            "PASS": "123",
+            "ROL": "🏢 Cliente",
+            "ESTADO": "Activo",
+            "ÚLTIMA CONEXIÓN": "Nunca",
+        },
+        {
+            "USUARIO": "gloria",
             "PASS": "123",
             "ROL": "🏢 Cliente",
             "ESTADO": "Activo",
@@ -555,7 +562,6 @@ if "df_pedidos" not in st.session_state:
         {"FECHA_REGISTRO": "21/07/2026", "CODIGO INTERNO": "BLC2-5015", "CLIENTE": "GLORIA", "ESTADO": "PENDIENTE", "SUB_ESTADO": "PENDIENTE", "NOMBRE": "MARIA PEREZ", "DISTRITO": "LA MOLINA", "TIPO_SERVICIO": "NEXT-DAY", "DIRECCION": "AV. LA MOLINA 1225", "DEPARTAMENTO": "LIMA", "PROVINCIA": "LIMA", "DOCUMENTO": "GLORIA SA", "TELEFONO": "966666666", "DESCRIPCION": "PRODUCTOS LÁCTEOS", "PESO": "5.00", "PLACA": "ABR120", "EVIDENCIA_1": "", "EVIDENCIA_2": "", "EVIDENCIA_3": "", "EVIDENCIA_4": ""},
     ])
 
-# Compatibilidad hacia adelante: si el DataFrame venía sin estas columnas (subida masiva antigua, etc.)
 _columnas_detalle_pedido = ["DIRECCION", "DEPARTAMENTO", "PROVINCIA", "DOCUMENTO", "TELEFONO", "DESCRIPCION", "PESO", "PLACA", "EVIDENCIA_1", "EVIDENCIA_2", "EVIDENCIA_3", "EVIDENCIA_4"]
 for _col in _columnas_detalle_pedido:
     if _col not in st.session_state.df_pedidos.columns:
@@ -604,12 +610,11 @@ def obtener_imagen_github(nombre_archivo="alfa_warehouse.jpg"):
             return base64.b64encode(f.read()).decode("utf-8")
     return None
 
-# LOGO OFICIAL ALFA EXPRESS (reemplaza el emoji 🌲 en todo el sistema)
 LOGO_ICON_B64 = obtener_imagen_github("alfa_logo_icon.png")
 if LOGO_ICON_B64:
     LOGO_HTML = f'<img src="data:image/png;base64,{LOGO_ICON_B64}" style="height:1em; vertical-align:-0.15em; margin-right:8px;">'
 else:
-    LOGO_HTML = "🌲"  # Respaldo si aún no se sube el archivo alfa_logo_icon.png
+    LOGO_HTML = "🌲"
 
 @st.dialog("📌 Soporte y Recuperación de Credenciales")
 def mostrar_modal_soporte():
@@ -759,7 +764,6 @@ def mostrar_detalle_pedido():
                 unsafe_allow_html=True,
             )
 
-
 @st.dialog("📤 Subir Data Masiva")
 def modal_upload():
     uploaded_file = st.file_uploader("Selecciona archivo Excel o CSV", type=["xlsx", "csv"])
@@ -772,8 +776,6 @@ def modal_upload():
             
             if st.button("Procesar y Cargar"):
                 columnas_requeridas = ["FECHA_REGISTRO", "CODIGO INTERNO", "CLIENTE", "ESTADO", "SUB_ESTADO", "NOMBRE", "DISTRITO", "TIPO_SERVICIO"]
-                
-                # Normalizar nombres de columnas a mayúsculas por si acaso
                 df_nuevo.columns = [str(c).strip().upper() for c in df_nuevo.columns]
                 
                 faltantes = [col for col in columnas_requeridas if col not in df_nuevo.columns]
@@ -796,7 +798,7 @@ def _grafico_barras_html(serie, color="#0E2F27", alto_px=200):
 
     valor_max = float(serie.max())
     pasos = 5
-    paso = max(1, -(-int(valor_max) // pasos))  # redondeo hacia arriba
+    paso = max(1, -(-int(valor_max) // pasos))
     max_eje = paso * pasos
 
     lineas_y_html = "".join(
@@ -901,10 +903,7 @@ def mostrar_dashboard_pedidos(df, filtrado):
             conteo_fecha = conteo_fecha.iloc[fechas_dt.argsort()]
             st.markdown(_grafico_barras_html(conteo_fecha, color="#0E2F27"), unsafe_allow_html=True)
 
-
-
 if st.session_state.usuario_actual is None:
-    # Fondo verde minimalista (gradiente + resplandor, sin logo ni íconos de logística)
     st.markdown(
         """
         <style>
@@ -1018,9 +1017,11 @@ else:
     st.markdown("<hr style='margin: 8px 0px 8px 0px; border-color: #CBD5E1;'>", unsafe_allow_html=True)
 
     # ==========================================
-    # VISTA 1: PORTAL OPERARIO
+    # VISTA 1: PORTAL OPERARIO / PORTAL CLIENTE
     # ==========================================
-    if st.session_state.rol_actual == "🛠️ Operario":
+    if st.session_state.rol_actual in ["🛠️ Operario", "🏢 Cliente"]:
+        is_cliente = (st.session_state.rol_actual == "🏢 Cliente")
+        
         csv = st.session_state.df_pedidos.to_csv(index=False).encode('utf-8')
         
         st.markdown("<h3 style='margin:0 0 8px 0; padding:0; line-height: 1.2;'>Gestión de Envíos</h3>", unsafe_allow_html=True)
@@ -1033,11 +1034,11 @@ else:
             st.markdown('</div>', unsafe_allow_html=True)
         with col_b2:
             st.markdown('<div class="contenedor-btn-custom">', unsafe_allow_html=True)
-            if st.button("📤 Cargar Data", use_container_width=True): modal_upload()
+            if st.button("📤 Cargar Data", use_container_width=True, disabled=is_cliente): modal_upload()
             st.markdown('</div>', unsafe_allow_html=True)
         with col_b3:
             st.markdown('<div class="contenedor-btn-custom">', unsafe_allow_html=True)
-            if st.button("➕ Nuevo Pedido", use_container_width=True): modal_add_pedido()
+            if st.button("➕ Nuevo Pedido", use_container_width=True, disabled=is_cliente): modal_add_pedido()
             st.markdown('</div>', unsafe_allow_html=True)
         with col_b4:
             st.markdown('<div class="contenedor-btn-custom">', unsafe_allow_html=True)
@@ -1070,8 +1071,12 @@ else:
 
             st.markdown("<p style='font-weight:700; font-size:14px; color:#0E2F27; margin:0 0 6px 0;'>📌 Selección Múltiple:</p>", unsafe_allow_html=True)
             
-            clientes_unicos = sorted(st.session_state.df_pedidos["CLIENTE"].astype(str).unique().tolist())
-            filtro_cliente = st.multiselect("Cliente", options=clientes_unicos, placeholder="Todos")
+            # FILTRO DE CLIENTE: Solo disponible para el operario; desaparece por completo para el rol de cliente
+            if not is_cliente:
+                clientes_unicos = sorted(st.session_state.df_pedidos["CLIENTE"].astype(str).unique().tolist())
+                filtro_cliente = st.multiselect("Cliente", options=clientes_unicos, placeholder="Todos")
+            else:
+                filtro_cliente = []
 
             distritos_unicos = sorted(st.session_state.df_pedidos["DISTRITO"].astype(str).unique().tolist())
             filtro_distrito = st.multiselect("Distrito", options=distritos_unicos, placeholder="Todos")
@@ -1089,6 +1094,11 @@ else:
         # APLICAR FILTROS
         df_filtrado = st.session_state.df_pedidos.copy()
 
+        # RESTRICCIÓN OBLIGATORIA DEL CLIENTE: Solo puede ver sus propios pedidos basados en su usuario actual
+        if is_cliente:
+            nombre_cliente_actual = str(st.session_state.usuario_actual).strip().upper()
+            df_filtrado = df_filtrado[df_filtrado["CLIENTE"].astype(str).str.upper() == nombre_cliente_actual]
+
         if "FECHA_REGISTRO" in df_filtrado.columns:
             df_filtrado["_fecha_temp"] = pd.to_datetime(df_filtrado["FECHA_REGISTRO"], format="%d/%m/%Y", errors="coerce")
 
@@ -1101,7 +1111,9 @@ else:
 
             df_filtrado = df_filtrado.drop(columns=["_fecha_temp"])
 
-        if filtro_cliente: df_filtrado = df_filtrado[df_filtrado["CLIENTE"].astype(str).isin(filtro_cliente)]
+        if not is_cliente and filtro_cliente: 
+            df_filtrado = df_filtrado[df_filtrado["CLIENTE"].astype(str).isin(filtro_cliente)]
+        
         if filtro_distrito: df_filtrado = df_filtrado[df_filtrado["DISTRITO"].astype(str).isin(filtro_distrito)]
         if filtro_servicio: df_filtrado = df_filtrado[df_filtrado["TIPO_SERVICIO"].astype(str).isin(filtro_servicio)]
         if filtro_estado: df_filtrado = df_filtrado[df_filtrado["ESTADO"].astype(str).isin(filtro_estado)]
@@ -1113,10 +1125,12 @@ else:
         if "FECHA_REGISTRO" in df_filtrado.columns:
             df_filtrado = df_filtrado.sort_values(by="FECHA_REGISTRO", ascending=False)
 
-        total_sin_filtrar = len(st.session_state.df_pedidos)
+        total_sin_filtrar = len(st.session_state.df_pedidos[st.session_state.df_pedidos["CLIENTE"].astype(str).str.upper() == str(st.session_state.usuario_actual).strip().upper()]) if is_cliente else len(st.session_state.df_pedidos)
+        
         hay_filtros_activos = any([
             fecha_inicio_sel, fecha_fin_sel,
-            filtro_cliente, filtro_distrito, filtro_servicio, filtro_estado, filtro_sub_estado,
+            filtro_cliente if not is_cliente else False, 
+            filtro_distrito, filtro_servicio, filtro_estado, filtro_sub_estado,
             filtro_codigo_txt.strip(), filtro_nombre_txt.strip(),
         ])
 
@@ -1130,7 +1144,6 @@ else:
         if "pagina_actual_pedidos" not in st.session_state:
             st.session_state.pagina_actual_pedidos = 1
 
-        # Si los filtros reducen el total de páginas, no dejar la página fuera de rango
         if st.session_state.pagina_actual_pedidos > total_paginas:
             st.session_state.pagina_actual_pedidos = total_paginas
         if st.session_state.pagina_actual_pedidos < 1:
@@ -1162,12 +1175,11 @@ else:
                         st.session_state.pagina_actual_pedidos += 1
                         st.rerun()
 
-        # Cortar el DataFrame según la página seleccionada
         df_paginado = df_filtrado.iloc[inicio_idx:fin_idx]
         st.session_state.detalle_pedido_lista_indices = df_filtrado.index.tolist()
 
         columnas_pedidos_tabla = ["FECHA_REGISTRO", "CODIGO INTERNO", "CLIENTE", "ESTADO", "SUB_ESTADO", "NOMBRE", "DISTRITO", "TIPO_SERVICIO"]
-        anchos_columnas_px = [130, 150, 130, 120, 150, 150, 120, 130]  # ancho MÍNIMO por columna (en píxeles); puede crecer si hay espacio
+        anchos_columnas_px = [130, 150, 130, 120, 150, 150, 120, 130]
 
         def _fila_pedido_html(valores, es_encabezado):
             color = "#FFFFFF" if es_encabezado else "#0F172A"
@@ -1225,8 +1237,6 @@ else:
                 else:
                     mostrar_detalle_pedido()
 
-
-
     # ==========================================
     # VISTA 2: PORTAL ADMINISTRADOR
     # ==========================================
@@ -1241,8 +1251,6 @@ else:
                 col_u1, col_u2, col_u3 = st.columns(3)
                 nuevo_usuario = col_u1.text_input("Nombre de Usuario")
                 nuevo_pass = col_u2.text_input("Contraseña Temporal", type="password")
-                
-                # --- LÍNEA CORREGIDA ---
                 nr = st.selectbox("Rol Asignado", options=["👨‍💼 Portal Administrador", "🛠️ Operario", "🛵 Repartidor (App)", "🏢 Cliente"])
                 
                 if st.form_submit_button("Crear / Actualizar Usuario", use_container_width=True):
