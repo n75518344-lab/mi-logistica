@@ -167,6 +167,19 @@ st.markdown(
     h1, h2, h3, h4, h5, h6, p, label, span, div { color: #0F172A; }
 
     /* =========================================================
+        TARJETA DE LOGIN CON EFECTO VIDRIO (sobre el fondo del logo)
+        ========================================================= */
+    .st-key-tarjeta_login {
+        background: rgba(255, 255, 255, 0.94) !important;
+        backdrop-filter: blur(6px) !important;
+        -webkit-backdrop-filter: blur(6px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.6) !important;
+        border-radius: 16px !important;
+        padding: 32px 30px 20px 30px !important;
+        box-shadow: 0px 20px 45px rgba(0, 0, 0, 0.35) !important;
+    }
+
+    /* =========================================================
         CALENDARIO DEL SELECTOR DE FECHA (st.date_input) - forzar tema claro
         ========================================================= */
     div[data-baseweb="popover"], div[data-baseweb="calendar"] {
@@ -206,14 +219,10 @@ st.markdown(
     div[data-testid="stButton"] > button span,
     div[data-testid="stButton"] > button p,
     div[data-testid="stButton"] > button label,
-    div[data-testid="stButton"] > button svg,
-    div[data-testid="stButton"] > button svg path,
     div[data-testid="stDownloadButton"] > button div,
     div[data-testid="stDownloadButton"] > button span,
     div[data-testid="stDownloadButton"] > button p,
-    div[data-testid="stDownloadButton"] > button label,
-    div[data-testid="stDownloadButton"] > button svg,
-    div[data-testid="stDownloadButton"] > button svg path {
+    div[data-testid="stDownloadButton"] > button label {
         color: #0E2F27 !important;    
         fill: #0E2F27 !important;     
     }
@@ -228,15 +237,7 @@ st.markdown(
     div[data-testid="stButton"] > button:hover div,
     div[data-testid="stButton"] > button:hover span,
     div[data-testid="stButton"] > button:hover p,
-    div[data-testid="stButton"] > button:hover label,
-    div[data-testid="stButton"] > button:hover svg,
-    div[data-testid="stButton"] > button:hover svg path,
-    div[data-testid="stDownloadButton"] > button:hover div,
-    div[data-testid="stDownloadButton"] > button:hover span,
-    div[data-testid="stDownloadButton"] > button:hover p,
-    div[data-testid="stDownloadButton"] > button:hover label,
-    div[data-testid="stDownloadButton"] > button:hover svg,
-    div[data-testid="stDownloadButton"] > button:hover svg path {
+    div[data-testid="stButton"] > button:hover label {
         color: #FFFFFF !important;
         fill: #FFFFFF !important;
     }
@@ -253,10 +254,6 @@ st.markdown(
         color: #0E2F27 !important;
         font-weight: 700 !important;
     }
-    .contenedor-btn-custom button svg,
-    .contenedor-btn-custom button svg path {
-        fill: #0E2F27 !important;
-    }
     .contenedor-btn-custom button:hover {
         background-color: #0E2F27 !important;
     }
@@ -264,10 +261,6 @@ st.markdown(
     .contenedor-btn-custom button:hover span,
     .contenedor-btn-custom button:hover p {
         color: #FFFFFF !important;
-    }
-    .contenedor-btn-custom button:hover svg,
-    .contenedor-btn-custom button:hover svg path {
-        fill: #FFFFFF !important;
     }
 
     .tabla-contenedor, .tabla-contenedor-logs {
@@ -539,14 +532,7 @@ if "usuarios_registrados" not in st.session_state:
             "ÚLTIMA CONEXIÓN": "Nunca",
         },
         {
-            "USUARIO": "unimarket",
-            "PASS": "123",
-            "ROL": "🏢 Cliente",
-            "ESTADO": "Activo",
-            "ÚLTIMA CONEXIÓN": "Nunca",
-        },
-        {
-            "USUARIO": "gloria",
+            "USUARIO": "cliente_global",
             "PASS": "123",
             "ROL": "🏢 Cliente",
             "ESTADO": "Activo",
@@ -562,6 +548,7 @@ if "df_pedidos" not in st.session_state:
         {"FECHA_REGISTRO": "21/07/2026", "CODIGO INTERNO": "BLC2-5015", "CLIENTE": "GLORIA", "ESTADO": "PENDIENTE", "SUB_ESTADO": "PENDIENTE", "NOMBRE": "MARIA PEREZ", "DISTRITO": "LA MOLINA", "TIPO_SERVICIO": "NEXT-DAY", "DIRECCION": "AV. LA MOLINA 1225", "DEPARTAMENTO": "LIMA", "PROVINCIA": "LIMA", "DOCUMENTO": "GLORIA SA", "TELEFONO": "966666666", "DESCRIPCION": "PRODUCTOS LÁCTEOS", "PESO": "5.00", "PLACA": "ABR120", "EVIDENCIA_1": "", "EVIDENCIA_2": "", "EVIDENCIA_3": "", "EVIDENCIA_4": ""},
     ])
 
+# Compatibilidad hacia adelante: si el DataFrame venía sin estas columnas (subida masiva antigua, etc.)
 _columnas_detalle_pedido = ["DIRECCION", "DEPARTAMENTO", "PROVINCIA", "DOCUMENTO", "TELEFONO", "DESCRIPCION", "PESO", "PLACA", "EVIDENCIA_1", "EVIDENCIA_2", "EVIDENCIA_3", "EVIDENCIA_4"]
 for _col in _columnas_detalle_pedido:
     if _col not in st.session_state.df_pedidos.columns:
@@ -610,11 +597,12 @@ def obtener_imagen_github(nombre_archivo="alfa_warehouse.jpg"):
             return base64.b64encode(f.read()).decode("utf-8")
     return None
 
+# LOGO OFICIAL ALFA EXPRESS (reemplaza el emoji 🌲 en todo el sistema)
 LOGO_ICON_B64 = obtener_imagen_github("alfa_logo_icon.png")
 if LOGO_ICON_B64:
     LOGO_HTML = f'<img src="data:image/png;base64,{LOGO_ICON_B64}" style="height:1em; vertical-align:-0.15em; margin-right:8px;">'
 else:
-    LOGO_HTML = "🌲"
+    LOGO_HTML = "🌲"  # Respaldo si aún no se sube el archivo alfa_logo_icon.png
 
 @st.dialog("📌 Soporte y Recuperación de Credenciales")
 def mostrar_modal_soporte():
@@ -764,6 +752,7 @@ def mostrar_detalle_pedido():
                 unsafe_allow_html=True,
             )
 
+
 @st.dialog("📤 Subir Data Masiva")
 def modal_upload():
     uploaded_file = st.file_uploader("Selecciona archivo Excel o CSV", type=["xlsx", "csv"])
@@ -776,6 +765,8 @@ def modal_upload():
             
             if st.button("Procesar y Cargar"):
                 columnas_requeridas = ["FECHA_REGISTRO", "CODIGO INTERNO", "CLIENTE", "ESTADO", "SUB_ESTADO", "NOMBRE", "DISTRITO", "TIPO_SERVICIO"]
+                
+                # Normalizar nombres de columnas a mayúsculas por si acaso
                 df_nuevo.columns = [str(c).strip().upper() for c in df_nuevo.columns]
                 
                 faltantes = [col for col in columnas_requeridas if col not in df_nuevo.columns]
@@ -798,7 +789,7 @@ def _grafico_barras_html(serie, color="#0E2F27", alto_px=200):
 
     valor_max = float(serie.max())
     pasos = 5
-    paso = max(1, -(-int(valor_max) // pasos))
+    paso = max(1, -(-int(valor_max) // pasos))  # redondeo hacia arriba
     max_eje = paso * pasos
 
     lineas_y_html = "".join(
@@ -903,96 +894,80 @@ def mostrar_dashboard_pedidos(df, filtrado):
             conteo_fecha = conteo_fecha.iloc[fechas_dt.argsort()]
             st.markdown(_grafico_barras_html(conteo_fecha, color="#0E2F27"), unsafe_allow_html=True)
 
+
+
 if st.session_state.usuario_actual is None:
-    st.markdown(
-        """
-        <style>
-        .stApp {
-            background:
-                radial-gradient(circle at 50% 32%, rgba(74, 222, 128, 0.22) 0%, rgba(74, 222, 128, 0) 45%),
-                linear-gradient(160deg, #03110C 0%, #0E2F27 48%, #0B2A22 75%, #04140F 100%) !important;
-            background-attachment: fixed !important;
-        }
-
-        [data-testid="stForm"] {
-            background-color: rgba(255, 255, 255, 0.99) !important;
-            border-radius: 20px !important;
-            padding: 44px 40px 30px 40px !important;
-            box-shadow: 0 35px 80px rgba(0, 0, 0, 0.5) !important;
-            border: 1px solid rgba(255, 255, 255, 0.15) !important;
-        }
-
-        div.login-ayuda-wrap button {
-            background-color: transparent !important;
-            color: #DCFCE7 !important;
-            border-radius: 12px !important;
-            border: 1px solid rgba(220, 252, 231, 0.35) !important;
-            box-shadow: none !important;
-        }
-        div.login-ayuda-wrap button:hover {
-            border-color: rgba(220, 252, 231, 0.7) !important;
-            color: #FFFFFF !important;
-        }
-        div.login-ayuda-wrap button p {
-            color: inherit !important;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
+    FONDO_LOGIN_B64 = obtener_imagen_github("alfa_fondo_login.jpg")
+    if FONDO_LOGIN_B64:
+        st.markdown(
+            f"""
+            <style>
+            .stApp {{
+                background-image: linear-gradient(rgba(1,20,20,0.55), rgba(1,20,20,0.72)),
+                                   url("data:image/jpeg;base64,{FONDO_LOGIN_B64}") !important;
+                background-size: cover !important;
+                background-position: center !important;
+                background-repeat: no-repeat !important;
+                background-attachment: fixed !important;
+            }}
+            .block-container {{ padding-top: 2rem !important; }}
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
 
     st.markdown(
         f"""
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 7vh;">
-        <div style="font-size: 26px; font-weight: 900; color: #FFFFFF; letter-spacing: 0.3px;">{LOGO_HTML} ALFA CARGO EXPRESS</div>
-        <div style='color: #A7F3D0; font-size: 13px; font-weight: 600;'>🌐 Central Lima, Perú</div>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div style="font-size: 26px; font-weight: 900; color: #FFFFFF; text-shadow: 0px 2px 6px rgba(0,0,0,0.4);">{LOGO_HTML} ALFA CARGO EXPRESS</div>
+        <div style='color: #E2E8F0; font-size: 14px; font-weight: 600; text-shadow: 0px 1px 4px rgba(0,0,0,0.4);'>🌐 Central Lima, Perú</div>
     </div>
     """,
         unsafe_allow_html=True,
     )
 
-    st.markdown("<div style='height: 5vh;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height: 6vh;'></div>", unsafe_allow_html=True)
 
-    col_izq, col_centro, col_der = st.columns([1, 1.05, 1])
+    _, col_centro, _ = st.columns([1, 1.1, 1])
+
     with col_centro:
-        with st.form("login_form"):
-            st.markdown(
-                '<h3 style="text-align: center; color: #0E2F27; font-weight:800;'
-                ' margin-bottom: 24px;">Bienvenido</h3>',
-                unsafe_allow_html=True,
-            )
-            input_user = st.text_input("Usuario", placeholder="Ingresa tu usuario", key="u_login")
-            input_pass = st.text_input("Contraseña", type="password", placeholder="Ingresa tu contraseña", key="p_login")
-            remember = st.checkbox("Recordar inicio de sesión", value=True)
-            submit_btn = st.form_submit_button("Ingresar al Portal", use_container_width=True)
+        with st.container(key="tarjeta_login"):
+            with st.form("login_form"):
+                st.markdown(
+                    '<h3 style="text-align: center; color: #0E2F27; font-weight:800;'
+                    ' margin-bottom: 20px;">Bienvenido</h3>',
+                    unsafe_allow_html=True,
+                )
+                input_user = st.text_input("Usuario", placeholder="Ingresa tu usuario", key="u_login")
+                input_pass = st.text_input("Contraseña", type="password", placeholder="Ingresa tu contraseña", key="p_login")
+                remember = st.checkbox("Recordar inicio de sesión", value=True)
+                submit_btn = st.form_submit_button("Ingresar al Portal")
 
-            if submit_btn:
-                df_users = st.session_state.usuarios_registrados
-                user_match = df_users[
-                    (df_users["USUARIO"] == input_user)
-                    & (df_users["PASS"] == input_pass)
-                ]
+                if submit_btn:
+                    df_users = st.session_state.usuarios_registrados
+                    user_match = df_users[
+                        (df_users["USUARIO"] == input_user)
+                        & (df_users["PASS"] == input_pass)
+                    ]
 
-                if not user_match.empty:
-                    st.session_state.usuario_actual = input_user
-                    st.session_state.rol_actual = user_match.iloc[0]["ROL"]
-                    st.session_state.usuarios_registrados.loc[
-                        st.session_state.usuarios_registrados["USUARIO"] == input_user,
-                        "ÚLTIMA CONEXIÓN",
-                    ] = datetime.now().strftime("%Y-%m-%d %H:%M")
+                    if not user_match.empty:
+                        st.session_state.usuario_actual = input_user
+                        st.session_state.rol_actual = user_match.iloc[0]["ROL"]
+                        st.session_state.usuarios_registrados.loc[
+                            st.session_state.usuarios_registrados["USUARIO"] == input_user,
+                            "ÚLTIMA CONEXIÓN",
+                        ] = datetime.now().strftime("%Y-%m-%d %H:%M")
 
-                    if remember:
-                        st.query_params["saved_user"] = input_user
-                        st.query_params["saved_rol"] = st.session_state.rol_actual
+                        if remember:
+                            st.query_params["saved_user"] = input_user
+                            st.query_params["saved_rol"] = st.session_state.rol_actual
 
-                    registrar_log("Inicio de sesión exitoso")
-                    st.rerun()
+                        registrar_log("Inicio de sesión exitoso")
+                        st.rerun()
 
-        st.markdown("<div style='height: 18px;'></div>", unsafe_allow_html=True)
-        st.markdown('<div class="login-ayuda-wrap">', unsafe_allow_html=True)
-        if st.button("❓ ¿Necesitas ayuda con tu acceso o contraseña?", use_container_width=True):
-            mostrar_modal_soporte()
-        st.markdown("</div>", unsafe_allow_html=True)
+            st.markdown("<br>", unsafe_allow_html=True)
+            if st.button("❓ ¿Necesitas ayuda con tu acceso o contraseña?", use_container_width=True):
+                mostrar_modal_soporte()
 
 else:
     col_nav1, col_nav2 = st.columns([5, 1])
@@ -1017,11 +992,9 @@ else:
     st.markdown("<hr style='margin: 8px 0px 8px 0px; border-color: #CBD5E1;'>", unsafe_allow_html=True)
 
     # ==========================================
-    # VISTA 1: PORTAL OPERARIO / PORTAL CLIENTE
+    # VISTA 1: PORTAL OPERARIO
     # ==========================================
-    if st.session_state.rol_actual in ["🛠️ Operario", "🏢 Cliente"]:
-        is_cliente = (st.session_state.rol_actual == "🏢 Cliente")
-        
+    if st.session_state.rol_actual == "🛠️ Operario":
         csv = st.session_state.df_pedidos.to_csv(index=False).encode('utf-8')
         
         st.markdown("<h3 style='margin:0 0 8px 0; padding:0; line-height: 1.2;'>Gestión de Envíos</h3>", unsafe_allow_html=True)
@@ -1034,11 +1007,11 @@ else:
             st.markdown('</div>', unsafe_allow_html=True)
         with col_b2:
             st.markdown('<div class="contenedor-btn-custom">', unsafe_allow_html=True)
-            if st.button("📤 Cargar Data", use_container_width=True, disabled=is_cliente): modal_upload()
+            if st.button("📤 Cargar Data", use_container_width=True): modal_upload()
             st.markdown('</div>', unsafe_allow_html=True)
         with col_b3:
             st.markdown('<div class="contenedor-btn-custom">', unsafe_allow_html=True)
-            if st.button("➕ Nuevo Pedido", use_container_width=True, disabled=is_cliente): modal_add_pedido()
+            if st.button("➕ Nuevo Pedido", use_container_width=True): modal_add_pedido()
             st.markdown('</div>', unsafe_allow_html=True)
         with col_b4:
             st.markdown('<div class="contenedor-btn-custom">', unsafe_allow_html=True)
@@ -1071,12 +1044,8 @@ else:
 
             st.markdown("<p style='font-weight:700; font-size:14px; color:#0E2F27; margin:0 0 6px 0;'>📌 Selección Múltiple:</p>", unsafe_allow_html=True)
             
-            # FILTRO DE CLIENTE: Solo disponible para el operario; desaparece por completo para el rol de cliente
-            if not is_cliente:
-                clientes_unicos = sorted(st.session_state.df_pedidos["CLIENTE"].astype(str).unique().tolist())
-                filtro_cliente = st.multiselect("Cliente", options=clientes_unicos, placeholder="Todos")
-            else:
-                filtro_cliente = []
+            clientes_unicos = sorted(st.session_state.df_pedidos["CLIENTE"].astype(str).unique().tolist())
+            filtro_cliente = st.multiselect("Cliente", options=clientes_unicos, placeholder="Todos")
 
             distritos_unicos = sorted(st.session_state.df_pedidos["DISTRITO"].astype(str).unique().tolist())
             filtro_distrito = st.multiselect("Distrito", options=distritos_unicos, placeholder="Todos")
@@ -1094,11 +1063,6 @@ else:
         # APLICAR FILTROS
         df_filtrado = st.session_state.df_pedidos.copy()
 
-        # RESTRICCIÓN OBLIGATORIA DEL CLIENTE: Solo puede ver sus propios pedidos basados en su usuario actual
-        if is_cliente:
-            nombre_cliente_actual = str(st.session_state.usuario_actual).strip().upper()
-            df_filtrado = df_filtrado[df_filtrado["CLIENTE"].astype(str).str.upper() == nombre_cliente_actual]
-
         if "FECHA_REGISTRO" in df_filtrado.columns:
             df_filtrado["_fecha_temp"] = pd.to_datetime(df_filtrado["FECHA_REGISTRO"], format="%d/%m/%Y", errors="coerce")
 
@@ -1111,9 +1075,7 @@ else:
 
             df_filtrado = df_filtrado.drop(columns=["_fecha_temp"])
 
-        if not is_cliente and filtro_cliente: 
-            df_filtrado = df_filtrado[df_filtrado["CLIENTE"].astype(str).isin(filtro_cliente)]
-        
+        if filtro_cliente: df_filtrado = df_filtrado[df_filtrado["CLIENTE"].astype(str).isin(filtro_cliente)]
         if filtro_distrito: df_filtrado = df_filtrado[df_filtrado["DISTRITO"].astype(str).isin(filtro_distrito)]
         if filtro_servicio: df_filtrado = df_filtrado[df_filtrado["TIPO_SERVICIO"].astype(str).isin(filtro_servicio)]
         if filtro_estado: df_filtrado = df_filtrado[df_filtrado["ESTADO"].astype(str).isin(filtro_estado)]
@@ -1125,12 +1087,10 @@ else:
         if "FECHA_REGISTRO" in df_filtrado.columns:
             df_filtrado = df_filtrado.sort_values(by="FECHA_REGISTRO", ascending=False)
 
-        total_sin_filtrar = len(st.session_state.df_pedidos[st.session_state.df_pedidos["CLIENTE"].astype(str).str.upper() == str(st.session_state.usuario_actual).strip().upper()]) if is_cliente else len(st.session_state.df_pedidos)
-        
+        total_sin_filtrar = len(st.session_state.df_pedidos)
         hay_filtros_activos = any([
             fecha_inicio_sel, fecha_fin_sel,
-            filtro_cliente if not is_cliente else False, 
-            filtro_distrito, filtro_servicio, filtro_estado, filtro_sub_estado,
+            filtro_cliente, filtro_distrito, filtro_servicio, filtro_estado, filtro_sub_estado,
             filtro_codigo_txt.strip(), filtro_nombre_txt.strip(),
         ])
 
@@ -1144,6 +1104,7 @@ else:
         if "pagina_actual_pedidos" not in st.session_state:
             st.session_state.pagina_actual_pedidos = 1
 
+        # Si los filtros reducen el total de páginas, no dejar la página fuera de rango
         if st.session_state.pagina_actual_pedidos > total_paginas:
             st.session_state.pagina_actual_pedidos = total_paginas
         if st.session_state.pagina_actual_pedidos < 1:
@@ -1175,11 +1136,12 @@ else:
                         st.session_state.pagina_actual_pedidos += 1
                         st.rerun()
 
+        # Cortar el DataFrame según la página seleccionada
         df_paginado = df_filtrado.iloc[inicio_idx:fin_idx]
         st.session_state.detalle_pedido_lista_indices = df_filtrado.index.tolist()
 
         columnas_pedidos_tabla = ["FECHA_REGISTRO", "CODIGO INTERNO", "CLIENTE", "ESTADO", "SUB_ESTADO", "NOMBRE", "DISTRITO", "TIPO_SERVICIO"]
-        anchos_columnas_px = [130, 150, 130, 120, 150, 150, 120, 130]
+        anchos_columnas_px = [130, 150, 130, 120, 150, 150, 120, 130]  # ancho MÍNIMO por columna (en píxeles); puede crecer si hay espacio
 
         def _fila_pedido_html(valores, es_encabezado):
             color = "#FFFFFF" if es_encabezado else "#0F172A"
@@ -1237,6 +1199,8 @@ else:
                 else:
                     mostrar_detalle_pedido()
 
+
+
     # ==========================================
     # VISTA 2: PORTAL ADMINISTRADOR
     # ==========================================
@@ -1251,6 +1215,8 @@ else:
                 col_u1, col_u2, col_u3 = st.columns(3)
                 nuevo_usuario = col_u1.text_input("Nombre de Usuario")
                 nuevo_pass = col_u2.text_input("Contraseña Temporal", type="password")
+                
+                # --- LÍNEA CORREGIDA ---
                 nr = st.selectbox("Rol Asignado", options=["👨‍💼 Portal Administrador", "🛠️ Operario", "🛵 Repartidor (App)", "🏢 Cliente"])
                 
                 if st.form_submit_button("Crear / Actualizar Usuario", use_container_width=True):
