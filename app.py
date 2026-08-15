@@ -724,7 +724,86 @@ def modal_add_pedido():
             registrar_log(f"Añadió pedido {cod}")
             st.rerun()
 
-def mostrar_detalle_pedido():
+@st.dialog("✏️ Editar Pedido")
+def modal_editar_pedido(idx_pedido, es_cliente):
+    df = st.session_state.df_pedidos
+    if idx_pedido not in df.index:
+        st.error("Este pedido ya no existe.")
+        return
+    fila = df.loc[idx_pedido]
+
+    if es_cliente:
+        st.markdown(
+            "<p style='color:#64748B; font-size:13px; margin-top:-6px;'>Como cliente puedes corregir los datos de tu envío. "
+            "Los campos operativos (código, estado, servicio, placa) los administra el operador.</p>",
+            unsafe_allow_html=True,
+        )
+
+    with st.form(f"editar_pedido_{idx_pedido}"):
+        c1, c2 = st.columns(2)
+        cod = c1.text_input("Código Interno", value=str(fila.get("CODIGO INTERNO", "")), disabled=es_cliente)
+        cli = c2.text_input("Cliente", value=str(fila.get("CLIENTE", "")), disabled=es_cliente)
+
+        nom = st.text_input("Nombre Destinatario", value=str(fila.get("NOMBRE", "")))
+
+        c3, c4 = st.columns(2)
+        estados_disponibles = ["ENTREGADO", "EN RUTA", "PENDIENTE"]
+        estado_actual = str(fila.get("ESTADO", "PENDIENTE"))
+        idx_estado = estados_disponibles.index(estado_actual) if estado_actual in estados_disponibles else 2
+        est = c3.selectbox("Estado", estados_disponibles, index=idx_estado, disabled=es_cliente)
+        sub_est = c4.text_input("Sub Estado", value=str(fila.get("SUB_ESTADO", "")), disabled=es_cliente)
+
+        c5, c6 = st.columns(2)
+        distrito = c5.text_input("Distrito", value=str(fila.get("DISTRITO", "")))
+        TIPOS_SERVICIO_VALIDOS = ["NEXT-DAY", "SAME-DAY", "LOGISTICA INVERSA"]
+        tipo_serv_actual = str(fila.get("TIPO_SERVICIO", "SAME-DAY"))
+        idx_serv = TIPOS_SERVICIO_VALIDOS.index(tipo_serv_actual) if tipo_serv_actual in TIPOS_SERVICIO_VALIDOS else 1
+        tipo_serv = c6.selectbox("Tipo de Servicio", TIPOS_SERVICIO_VALIDOS, index=idx_serv, disabled=es_cliente)
+
+        with st.expander("📋 Detalles adicionales del pedido", expanded=True):
+            c7, c8 = st.columns(2)
+            direccion = c7.text_input("Dirección", value=str(fila.get("DIRECCION", "")))
+            documento = c8.text_input("Documento / Empresa", value=str(fila.get("DOCUMENTO", "")))
+            c9, c10 = st.columns(2)
+            departamento = c9.text_input("Departamento", value=str(fila.get("DEPARTAMENTO", "")))
+            provincia = c10.text_input("Provincia", value=str(fila.get("PROVINCIA", "")))
+            c11, c12 = st.columns(2)
+            telefono = c11.text_input("Teléfono", value=str(fila.get("TELEFONO", "")))
+            placa = c12.text_input("Placa del vehículo", value=str(fila.get("PLACA", "")), disabled=es_cliente)
+            c13, c14 = st.columns(2)
+            descripcion = c13.text_input("Descripción de la carga", value=str(fila.get("DESCRIPCION", "")))
+            peso = c14.text_input("Peso (kg)", value=str(fila.get("PESO", "")))
+
+        if st.form_submit_button("Guardar Cambios", use_container_width=True):
+            cambios = {
+                "NOMBRE": nom,
+                "DISTRITO": distrito,
+                "DIRECCION": direccion,
+                "DOCUMENTO": documento,
+                "DEPARTAMENTO": departamento,
+                "PROVINCIA": provincia,
+                "TELEFONO": telefono,
+                "DESCRIPCION": descripcion,
+                "PESO": peso,
+            }
+            if not es_cliente:
+                cambios.update({
+                    "CODIGO INTERNO": cod,
+                    "CLIENTE": cli,
+                    "ESTADO": est,
+                    "SUB_ESTADO": sub_est,
+                    "TIPO_SERVICIO": tipo_serv,
+                    "PLACA": placa,
+                })
+
+            for campo, valor in cambios.items():
+                st.session_state.df_pedidos.loc[idx_pedido, campo] = valor
+
+            registrar_log(f"Editó el pedido {fila.get('CODIGO INTERNO', idx_pedido)}")
+            st.success("¡Pedido actualizado correctamente!")
+            st.rerun()
+
+def mostrar_detalle_pedido(es_cliente=False):
     df = st.session_state.df_pedidos
     indices = st.session_state.get("detalle_pedido_lista_indices") or df.index.tolist()
     indices = [i for i in indices if i in df.index]
@@ -741,9 +820,12 @@ def mostrar_detalle_pedido():
 
     with st.container(key="detalle_pedido_panel"):
         with st.container(key="detalle_pedido_nav"):
-            c_title, c_prev, c_next, c_expand, c_close = st.columns([3.2, 0.6, 0.6, 0.6, 0.6])
+            c_title, c_edit, c_prev, c_next, c_expand, c_close = st.columns([2.6, 0.7, 0.6, 0.6, 0.6, 0.6])
             with c_title:
                 st.markdown("<div class='detalle-pedido-titulo'>Pedidos filtro</div>", unsafe_allow_html=True)
+            with c_edit:
+                if st.button("✏️", key="detalle_editar"):
+                    modal_editar_pedido(idx_actual, es_cliente)
             with c_prev:
                 if st.button("‹", key="detalle_prev", disabled=(pos <= 0)):
                     st.session_state.detalle_pedido_idx = indices[pos - 1]
@@ -1310,7 +1392,7 @@ else:
 
             if col_detalle is not None:
                 with col_detalle:
-                    mostrar_detalle_pedido()
+                    mostrar_detalle_pedido(es_cliente=is_cliente)
 
     # ==========================================
     # VISTA 2: PORTAL ADMINISTRADOR
