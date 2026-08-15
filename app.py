@@ -167,19 +167,6 @@ st.markdown(
     h1, h2, h3, h4, h5, h6, p, label, span, div { color: #0F172A; }
 
     /* =========================================================
-        TARJETA DE LOGIN CON EFECTO VIDRIO (sobre el fondo del logo)
-        ========================================================= */
-    .st-key-tarjeta_login {
-        background: rgba(255, 255, 255, 0.94) !important;
-        backdrop-filter: blur(6px) !important;
-        -webkit-backdrop-filter: blur(6px) !important;
-        border: 1px solid rgba(255, 255, 255, 0.6) !important;
-        border-radius: 16px !important;
-        padding: 32px 30px 20px 30px !important;
-        box-shadow: 0px 20px 45px rgba(0, 0, 0, 0.35) !important;
-    }
-
-    /* =========================================================
         CALENDARIO DEL SELECTOR DE FECHA (st.date_input) - forzar tema claro
         ========================================================= */
     div[data-baseweb="popover"], div[data-baseweb="calendar"] {
@@ -219,10 +206,14 @@ st.markdown(
     div[data-testid="stButton"] > button span,
     div[data-testid="stButton"] > button p,
     div[data-testid="stButton"] > button label,
+    div[data-testid="stButton"] > button svg,
+    div[data-testid="stButton"] > button svg path,
     div[data-testid="stDownloadButton"] > button div,
     div[data-testid="stDownloadButton"] > button span,
     div[data-testid="stDownloadButton"] > button p,
-    div[data-testid="stDownloadButton"] > button label {
+    div[data-testid="stDownloadButton"] > button label,
+    div[data-testid="stDownloadButton"] > button svg,
+    div[data-testid="stDownloadButton"] > button svg path {
         color: #0E2F27 !important;    
         fill: #0E2F27 !important;     
     }
@@ -237,7 +228,15 @@ st.markdown(
     div[data-testid="stButton"] > button:hover div,
     div[data-testid="stButton"] > button:hover span,
     div[data-testid="stButton"] > button:hover p,
-    div[data-testid="stButton"] > button:hover label {
+    div[data-testid="stButton"] > button:hover label,
+    div[data-testid="stButton"] > button:hover svg,
+    div[data-testid="stButton"] > button:hover svg path,
+    div[data-testid="stDownloadButton"] > button:hover div,
+    div[data-testid="stDownloadButton"] > button:hover span,
+    div[data-testid="stDownloadButton"] > button:hover p,
+    div[data-testid="stDownloadButton"] > button:hover label,
+    div[data-testid="stDownloadButton"] > button:hover svg,
+    div[data-testid="stDownloadButton"] > button:hover svg path {
         color: #FFFFFF !important;
         fill: #FFFFFF !important;
     }
@@ -254,6 +253,10 @@ st.markdown(
         color: #0E2F27 !important;
         font-weight: 700 !important;
     }
+    .contenedor-btn-custom button svg,
+    .contenedor-btn-custom button svg path {
+        fill: #0E2F27 !important;
+    }
     .contenedor-btn-custom button:hover {
         background-color: #0E2F27 !important;
     }
@@ -261,6 +264,10 @@ st.markdown(
     .contenedor-btn-custom button:hover span,
     .contenedor-btn-custom button:hover p {
         color: #FFFFFF !important;
+    }
+    .contenedor-btn-custom button:hover svg,
+    .contenedor-btn-custom button:hover svg path {
+        fill: #FFFFFF !important;
     }
 
     .tabla-contenedor, .tabla-contenedor-logs {
@@ -502,6 +509,33 @@ st.markdown(
     div[class*="st-key-tabla_pedidos_fila_"].fila-pedido-activa {
         background-color: #EAF3EF !important;
     }
+
+    /* =========================================================
+        DASHBOARD DE PÁGINA COMPLETA
+        ========================================================= */
+    div[class*="st-key-dash_card_"] {
+        background-color: #FFFFFF !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 12px !important;
+        padding: 20px 22px !important;
+        box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.05) !important;
+        margin-bottom: 20px !important;
+    }
+    div[class*="st-key-dash_kpi_"] {
+        background-color: #FFFFFF !important;
+        border: 1px solid #E2E8F0 !important;
+        border-left: 5px solid #0E2F27 !important;
+        border-radius: 10px !important;
+        padding: 14px 16px !important;
+        box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.04) !important;
+    }
+    .st-key-dash_volver_btn div[data-testid="stButton"] > button {
+        background-color: #FFFFFF !important;
+        border: 2px solid #0E2F27 !important;
+        border-radius: 8px !important;
+        color: #0E2F27 !important;
+        font-weight: 700 !important;
+    }
     </style>
 """,
     unsafe_allow_html=True,
@@ -532,7 +566,14 @@ if "usuarios_registrados" not in st.session_state:
             "ÚLTIMA CONEXIÓN": "Nunca",
         },
         {
-            "USUARIO": "cliente_global",
+            "USUARIO": "unimarket",
+            "PASS": "123",
+            "ROL": "🏢 Cliente",
+            "ESTADO": "Activo",
+            "ÚLTIMA CONEXIÓN": "Nunca",
+        },
+        {
+            "USUARIO": "gloria",
             "PASS": "123",
             "ROL": "🏢 Cliente",
             "ESTADO": "Activo",
@@ -548,7 +589,6 @@ if "df_pedidos" not in st.session_state:
         {"FECHA_REGISTRO": "21/07/2026", "CODIGO INTERNO": "BLC2-5015", "CLIENTE": "GLORIA", "ESTADO": "PENDIENTE", "SUB_ESTADO": "PENDIENTE", "NOMBRE": "MARIA PEREZ", "DISTRITO": "LA MOLINA", "TIPO_SERVICIO": "NEXT-DAY", "DIRECCION": "AV. LA MOLINA 1225", "DEPARTAMENTO": "LIMA", "PROVINCIA": "LIMA", "DOCUMENTO": "GLORIA SA", "TELEFONO": "966666666", "DESCRIPCION": "PRODUCTOS LÁCTEOS", "PESO": "5.00", "PLACA": "ABR120", "EVIDENCIA_1": "", "EVIDENCIA_2": "", "EVIDENCIA_3": "", "EVIDENCIA_4": ""},
     ])
 
-# Compatibilidad hacia adelante: si el DataFrame venía sin estas columnas (subida masiva antigua, etc.)
 _columnas_detalle_pedido = ["DIRECCION", "DEPARTAMENTO", "PROVINCIA", "DOCUMENTO", "TELEFONO", "DESCRIPCION", "PESO", "PLACA", "EVIDENCIA_1", "EVIDENCIA_2", "EVIDENCIA_3", "EVIDENCIA_4"]
 for _col in _columnas_detalle_pedido:
     if _col not in st.session_state.df_pedidos.columns:
@@ -597,12 +637,11 @@ def obtener_imagen_github(nombre_archivo="alfa_warehouse.jpg"):
             return base64.b64encode(f.read()).decode("utf-8")
     return None
 
-# LOGO OFICIAL ALFA EXPRESS (reemplaza el emoji 🌲 en todo el sistema)
 LOGO_ICON_B64 = obtener_imagen_github("alfa_logo_icon.png")
 if LOGO_ICON_B64:
     LOGO_HTML = f'<img src="data:image/png;base64,{LOGO_ICON_B64}" style="height:1em; vertical-align:-0.15em; margin-right:8px;">'
 else:
-    LOGO_HTML = "🌲"  # Respaldo si aún no se sube el archivo alfa_logo_icon.png
+    LOGO_HTML = "🌲"
 
 @st.dialog("📌 Soporte y Recuperación de Credenciales")
 def mostrar_modal_soporte():
@@ -752,7 +791,6 @@ def mostrar_detalle_pedido():
                 unsafe_allow_html=True,
             )
 
-
 @st.dialog("📤 Subir Data Masiva")
 def modal_upload():
     uploaded_file = st.file_uploader("Selecciona archivo Excel o CSV", type=["xlsx", "csv"])
@@ -765,8 +803,6 @@ def modal_upload():
             
             if st.button("Procesar y Cargar"):
                 columnas_requeridas = ["FECHA_REGISTRO", "CODIGO INTERNO", "CLIENTE", "ESTADO", "SUB_ESTADO", "NOMBRE", "DISTRITO", "TIPO_SERVICIO"]
-                
-                # Normalizar nombres de columnas a mayúsculas por si acaso
                 df_nuevo.columns = [str(c).strip().upper() for c in df_nuevo.columns]
                 
                 faltantes = [col for col in columnas_requeridas if col not in df_nuevo.columns]
@@ -789,7 +825,7 @@ def _grafico_barras_html(serie, color="#0E2F27", alto_px=200):
 
     valor_max = float(serie.max())
     pasos = 5
-    paso = max(1, -(-int(valor_max) // pasos))  # redondeo hacia arriba
+    paso = max(1, -(-int(valor_max) // pasos))
     max_eje = paso * pasos
 
     lineas_y_html = "".join(
@@ -825,149 +861,211 @@ def _grafico_barras_html(serie, color="#0E2F27", alto_px=200):
     </div>
     """
 
-def mostrar_dashboard_pedidos(df, filtrado):
-    expandido = st.session_state.get("detalle_panel_expandido", False)
+def mostrar_dashboard_pagina_completa(df, filtrado, es_cliente):
+    with st.container(key="dash_volver_btn"):
+        if st.button("← Volver a Pedidos", key="dash_volver"):
+            st.session_state.mostrar_dashboard_pedidos = False
+            st.rerun()
 
-    with st.container(key="detalle_pedido_panel"):
-        with st.container(key="detalle_pedido_nav"):
-            c_title, c_expand, c_close = st.columns([4.4, 0.6, 0.6])
-            with c_title:
-                st.markdown("<div class='detalle-pedido-titulo'>📊 Dashboard</div>", unsafe_allow_html=True)
-            with c_expand:
-                if st.button("⤢", key="dashboard_expand"):
-                    st.session_state.detalle_panel_expandido = not expandido
-                    st.rerun()
-            with c_close:
-                if st.button("✕", key="dashboard_close"):
-                    st.session_state.mostrar_dashboard_pedidos = False
-                    st.session_state.detalle_panel_expandido = False
-                    st.rerun()
+    st.markdown("<h2 style='margin:14px 0 2px 0; color:#0E2F27;'>📊 Dashboard de Envíos</h2>", unsafe_allow_html=True)
+    if filtrado:
+        st.markdown(f"<p style='color:#64748B; font-size:14px; margin-bottom:20px;'>Basado en los <b>{len(df)}</b> resultados de tu filtro actual.</p>", unsafe_allow_html=True)
+    else:
+        st.markdown(f"<p style='color:#64748B; font-size:14px; margin-bottom:20px;'>Basado en el total de <b>{len(df)}</b> pedidos (sin filtros aplicados).</p>", unsafe_allow_html=True)
 
-        if filtrado:
-            st.markdown(f"<p style='color:#64748B; font-size:13px; margin-top:2px;'>Basado en los <b>{len(df)}</b> resultados de tu filtro actual.</p>", unsafe_allow_html=True)
-        else:
-            st.markdown(f"<p style='color:#64748B; font-size:13px; margin-top:2px;'>Basado en el total de <b>{len(df)}</b> pedidos (sin filtros aplicados).</p>", unsafe_allow_html=True)
+    if df.empty:
+        st.markdown("<p style='color:#94A3B8; font-size:14px; padding:30px 0;'>No hay registros para graficar con los filtros actuales.</p>", unsafe_allow_html=True)
+        return
 
-        if df.empty:
-            st.markdown("<p style='color:#94A3B8; font-size:13px; padding:20px 0;'>No hay registros para graficar con los filtros actuales.</p>", unsafe_allow_html=True)
-            return
+    conteo_estado = df["ESTADO"].astype(str).value_counts() if "ESTADO" in df.columns else pd.Series(dtype=int)
+    total = len(df)
+    entregados = int(conteo_estado.get("ENTREGADO", 0))
+    en_ruta = int(conteo_estado.get("EN RUTA", 0))
+    pendientes = int(conteo_estado.get("PENDIENTE", 0))
+    tasa_efectividad = (entregados / total * 100) if total else 0
+    peso_total = pd.to_numeric(df["PESO"], errors="coerce").sum() if "PESO" in df.columns else 0
 
-        conteo_estado = df["ESTADO"].astype(str).value_counts() if "ESTADO" in df.columns else pd.Series(dtype=int)
+    # ---- FILA DE KPIs LOGÍSTICOS ----
+    kpis = [
+        ("Total Pedidos", f"{total}"),
+        ("Entregados", f"{entregados}"),
+        ("En Ruta", f"{en_ruta}"),
+        ("Pendientes", f"{pendientes}"),
+        ("Efectividad de Entrega", f"{tasa_efectividad:.0f}%"),
+        ("Peso Total (kg)", f"{peso_total:.1f}"),
+    ]
+    cols_kpi = st.columns(6)
+    for i, (etiqueta, valor) in enumerate(kpis):
+        with cols_kpi[i]:
+            with st.container(key=f"dash_kpi_{i}"):
+                st.metric(etiqueta, valor)
 
-        st.markdown("<p style='font-weight:700; font-size:13px; color:#0E2F27; margin:0 0 4px 0;'>Avance de Ruta (por Estado)</p>", unsafe_allow_html=True)
-        if not conteo_estado.empty:
-            colores_torta = ["#0E2F27", "#4ADE80", "#94A3B8", "#CBD5E1", "#16A34A", "#0F172A"]
-            total_torta = int(conteo_estado.sum())
-            segmentos_css = []
-            leyenda_html = ""
-            acumulado_pct = 0.0
-            for i, (etiqueta, valor) in enumerate(conteo_estado.items()):
-                color = colores_torta[i % len(colores_torta)]
-                pct = (valor / total_torta) * 100 if total_torta else 0
-                inicio = acumulado_pct
-                fin = acumulado_pct + pct
-                segmentos_css.append(f"{color} {inicio:.2f}% {fin:.2f}%")
-                acumulado_pct = fin
-                leyenda_html += (
-                    f"<div style='display:flex; align-items:center; gap:6px; font-size:12px; color:#0F172A; margin-bottom:4px;'>"
-                    f"<span style='width:10px; height:10px; border-radius:2px; background:{color}; display:inline-block;'></span>"
-                    f"{etiqueta} — {valor} ({pct:.0f}%)</div>"
-                )
-            gradiente = ", ".join(segmentos_css)
-            st.markdown(f"""
-            <div style="display:flex; align-items:center; gap:18px; margin-top:6px;">
-                <div style="width:120px; height:120px; border-radius:50%; flex-shrink:0;
-                            background:conic-gradient({gradiente});
-                            display:flex; align-items:center; justify-content:center;">
-                    <div style="width:64px; height:64px; border-radius:50%; background:#FFFFFF;
-                                display:flex; align-items:center; justify-content:center;
-                                font-size:12px; font-weight:700; color:#0E2F27;">{total_torta}</div>
+    st.markdown("<div style='height:6px;'></div>", unsafe_allow_html=True)
+
+    # ---- FILA 1: AVANCE DE RUTA + TENDENCIA DE PEDIDOS ----
+    col_a, col_b = st.columns(2, gap="large")
+    with col_a:
+        with st.container(key="dash_card_1"):
+            st.markdown("<p style='font-weight:700; font-size:15px; color:#0E2F27; margin:0 0 12px 0;'>Avance de Ruta (por Estado)</p>", unsafe_allow_html=True)
+            if not conteo_estado.empty:
+                colores_torta = ["#0E2F27", "#4ADE80", "#94A3B8", "#CBD5E1", "#16A34A", "#0F172A"]
+                total_torta = int(conteo_estado.sum())
+                segmentos_css, leyenda_html, acumulado_pct = [], "", 0.0
+                for i, (etiqueta, valor) in enumerate(conteo_estado.items()):
+                    color = colores_torta[i % len(colores_torta)]
+                    pct = (valor / total_torta) * 100 if total_torta else 0
+                    inicio, fin = acumulado_pct, acumulado_pct + pct
+                    segmentos_css.append(f"{color} {inicio:.2f}% {fin:.2f}%")
+                    acumulado_pct = fin
+                    leyenda_html += (
+                        f"<div style='display:flex; align-items:center; gap:6px; font-size:13px; color:#0F172A; margin-bottom:6px;'>"
+                        f"<span style='width:10px; height:10px; border-radius:2px; background:{color}; display:inline-block;'></span>"
+                        f"{etiqueta} — {valor} ({pct:.0f}%)</div>"
+                    )
+                gradiente = ", ".join(segmentos_css)
+                st.markdown(f"""
+                <div style="display:flex; align-items:center; gap:24px; margin-top:6px;">
+                    <div style="width:150px; height:150px; border-radius:50%; flex-shrink:0;
+                                background:conic-gradient({gradiente});
+                                display:flex; align-items:center; justify-content:center;">
+                        <div style="width:82px; height:82px; border-radius:50%; background:#FFFFFF;
+                                    display:flex; align-items:center; justify-content:center;
+                                    font-size:15px; font-weight:700; color:#0E2F27;">{total_torta}</div>
+                    </div>
+                    <div>{leyenda_html}</div>
                 </div>
-                <div>{leyenda_html}</div>
-            </div>
-            """, unsafe_allow_html=True)
+                """, unsafe_allow_html=True)
 
-        st.markdown("<p style='font-weight:700; font-size:13px; color:#0E2F27; margin:20px 0 4px 0;'>Cantidad de Pedidos</p>", unsafe_allow_html=True)
-        if "FECHA_REGISTRO" in df.columns:
-            conteo_fecha = df["FECHA_REGISTRO"].astype(str).value_counts()
-            fechas_dt = pd.to_datetime(conteo_fecha.index, format="%d/%m/%Y", errors="coerce")
-            conteo_fecha = conteo_fecha.iloc[fechas_dt.argsort()]
-            st.markdown(_grafico_barras_html(conteo_fecha, color="#0E2F27"), unsafe_allow_html=True)
+    with col_b:
+        with st.container(key="dash_card_2"):
+            st.markdown("<p style='font-weight:700; font-size:15px; color:#0E2F27; margin:0 0 4px 0;'>Cantidad de Pedidos por Fecha</p>", unsafe_allow_html=True)
+            if "FECHA_REGISTRO" in df.columns:
+                conteo_fecha = df["FECHA_REGISTRO"].astype(str).value_counts()
+                fechas_dt = pd.to_datetime(conteo_fecha.index, format="%d/%m/%Y", errors="coerce")
+                conteo_fecha = conteo_fecha.iloc[fechas_dt.argsort()]
+                st.markdown(_grafico_barras_html(conteo_fecha, color="#0E2F27", alto_px=190), unsafe_allow_html=True)
+
+    # ---- FILA 2: TOP DISTRITOS + TIPO DE SERVICIO ----
+    col_c, col_d = st.columns(2, gap="large")
+    with col_c:
+        with st.container(key="dash_card_3"):
+            st.markdown("<p style='font-weight:700; font-size:15px; color:#0E2F27; margin:0 0 4px 0;'>Top Distritos de Entrega</p>", unsafe_allow_html=True)
+            if "DISTRITO" in df.columns:
+                conteo_distrito = df["DISTRITO"].astype(str).value_counts().head(8)
+                st.markdown(_grafico_barras_html(conteo_distrito, color="#16A34A", alto_px=190), unsafe_allow_html=True)
+
+    with col_d:
+        with st.container(key="dash_card_4"):
+            st.markdown("<p style='font-weight:700; font-size:15px; color:#0E2F27; margin:0 0 4px 0;'>Pedidos por Tipo de Servicio</p>", unsafe_allow_html=True)
+            if "TIPO_SERVICIO" in df.columns:
+                conteo_servicio = df["TIPO_SERVICIO"].astype(str).value_counts()
+                st.markdown(_grafico_barras_html(conteo_servicio, color="#0E2F27", alto_px=190), unsafe_allow_html=True)
+
+    # ---- FILA 3: TOP CLIENTES (solo Operario/Admin) O TOP DESTINATARIOS (Cliente) ----
+    with st.container(key="dash_card_5"):
+        if es_cliente:
+            st.markdown("<p style='font-weight:700; font-size:15px; color:#0E2F27; margin:0 0 4px 0;'>Top Destinatarios</p>", unsafe_allow_html=True)
+            if "NOMBRE" in df.columns:
+                conteo_nombre = df["NOMBRE"].astype(str).value_counts().head(10)
+                st.markdown(_grafico_barras_html(conteo_nombre, color="#16A34A", alto_px=190), unsafe_allow_html=True)
+        else:
+            st.markdown("<p style='font-weight:700; font-size:15px; color:#0E2F27; margin:0 0 4px 0;'>Top Clientes por Volumen de Pedidos</p>", unsafe_allow_html=True)
+            if "CLIENTE" in df.columns:
+                conteo_cliente = df["CLIENTE"].astype(str).value_counts().head(10)
+                st.markdown(_grafico_barras_html(conteo_cliente, color="#16A34A", alto_px=190), unsafe_allow_html=True)
 
 
 
 if st.session_state.usuario_actual is None:
-    FONDO_LOGIN_B64 = obtener_imagen_github("alfa_fondo_login.jpg")
-    if FONDO_LOGIN_B64:
-        st.markdown(
-            f"""
-            <style>
-            .stApp {{
-                background-image: linear-gradient(rgba(1,20,20,0.55), rgba(1,20,20,0.72)),
-                                   url("data:image/jpeg;base64,{FONDO_LOGIN_B64}") !important;
-                background-size: cover !important;
-                background-position: center !important;
-                background-repeat: no-repeat !important;
-                background-attachment: fixed !important;
-            }}
-            .block-container {{ padding-top: 2rem !important; }}
-            </style>
-            """,
-            unsafe_allow_html=True,
-        )
+    st.markdown(
+        """
+        <style>
+        .stApp {
+            background:
+                radial-gradient(circle at 50% 32%, rgba(74, 222, 128, 0.22) 0%, rgba(74, 222, 128, 0) 45%),
+                linear-gradient(160deg, #03110C 0%, #0E2F27 48%, #0B2A22 75%, #04140F 100%) !important;
+            background-attachment: fixed !important;
+        }
+
+        [data-testid="stForm"] {
+            background-color: rgba(255, 255, 255, 0.99) !important;
+            border-radius: 20px !important;
+            padding: 44px 40px 30px 40px !important;
+            box-shadow: 0 35px 80px rgba(0, 0, 0, 0.5) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        }
+
+        div.login-ayuda-wrap button {
+            background-color: transparent !important;
+            color: #DCFCE7 !important;
+            border-radius: 12px !important;
+            border: 1px solid rgba(220, 252, 231, 0.35) !important;
+            box-shadow: none !important;
+        }
+        div.login-ayuda-wrap button:hover {
+            border-color: rgba(220, 252, 231, 0.7) !important;
+            color: #FFFFFF !important;
+        }
+        div.login-ayuda-wrap button p {
+            color: inherit !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
 
     st.markdown(
         f"""
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <div style="font-size: 26px; font-weight: 900; color: #FFFFFF; text-shadow: 0px 2px 6px rgba(0,0,0,0.4);">{LOGO_HTML} ALFA CARGO EXPRESS</div>
-        <div style='color: #E2E8F0; font-size: 14px; font-weight: 600; text-shadow: 0px 1px 4px rgba(0,0,0,0.4);'>🌐 Central Lima, Perú</div>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 7vh;">
+        <div style="font-size: 26px; font-weight: 900; color: #FFFFFF; letter-spacing: 0.3px;">{LOGO_HTML} ALFA CARGO EXPRESS</div>
+        <div style='color: #A7F3D0; font-size: 13px; font-weight: 600;'>🌐 Central Lima, Perú</div>
     </div>
     """,
         unsafe_allow_html=True,
     )
 
-    st.markdown("<div style='height: 6vh;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height: 5vh;'></div>", unsafe_allow_html=True)
 
-    _, col_centro, _ = st.columns([1, 1.1, 1])
-
+    col_izq, col_centro, col_der = st.columns([1, 1.05, 1])
     with col_centro:
-        with st.container(key="tarjeta_login"):
-            with st.form("login_form"):
-                st.markdown(
-                    '<h3 style="text-align: center; color: #0E2F27; font-weight:800;'
-                    ' margin-bottom: 20px;">Bienvenido</h3>',
-                    unsafe_allow_html=True,
-                )
-                input_user = st.text_input("Usuario", placeholder="Ingresa tu usuario", key="u_login")
-                input_pass = st.text_input("Contraseña", type="password", placeholder="Ingresa tu contraseña", key="p_login")
-                remember = st.checkbox("Recordar inicio de sesión", value=True)
-                submit_btn = st.form_submit_button("Ingresar al Portal")
+        with st.form("login_form"):
+            st.markdown(
+                '<h3 style="text-align: center; color: #0E2F27; font-weight:800;'
+                ' margin-bottom: 24px;">Bienvenido</h3>',
+                unsafe_allow_html=True,
+            )
+            input_user = st.text_input("Usuario", placeholder="Ingresa tu usuario", key="u_login")
+            input_pass = st.text_input("Contraseña", type="password", placeholder="Ingresa tu contraseña", key="p_login")
+            remember = st.checkbox("Recordar inicio de sesión", value=True)
+            submit_btn = st.form_submit_button("Ingresar al Portal", use_container_width=True)
 
-                if submit_btn:
-                    df_users = st.session_state.usuarios_registrados
-                    user_match = df_users[
-                        (df_users["USUARIO"] == input_user)
-                        & (df_users["PASS"] == input_pass)
-                    ]
+            if submit_btn:
+                df_users = st.session_state.usuarios_registrados
+                user_match = df_users[
+                    (df_users["USUARIO"] == input_user)
+                    & (df_users["PASS"] == input_pass)
+                ]
 
-                    if not user_match.empty:
-                        st.session_state.usuario_actual = input_user
-                        st.session_state.rol_actual = user_match.iloc[0]["ROL"]
-                        st.session_state.usuarios_registrados.loc[
-                            st.session_state.usuarios_registrados["USUARIO"] == input_user,
-                            "ÚLTIMA CONEXIÓN",
-                        ] = datetime.now().strftime("%Y-%m-%d %H:%M")
+                if not user_match.empty:
+                    st.session_state.usuario_actual = input_user
+                    st.session_state.rol_actual = user_match.iloc[0]["ROL"]
+                    st.session_state.usuarios_registrados.loc[
+                        st.session_state.usuarios_registrados["USUARIO"] == input_user,
+                        "ÚLTIMA CONEXIÓN",
+                    ] = datetime.now().strftime("%Y-%m-%d %H:%M")
 
-                        if remember:
-                            st.query_params["saved_user"] = input_user
-                            st.query_params["saved_rol"] = st.session_state.rol_actual
+                    if remember:
+                        st.query_params["saved_user"] = input_user
+                        st.query_params["saved_rol"] = st.session_state.rol_actual
 
-                        registrar_log("Inicio de sesión exitoso")
-                        st.rerun()
+                    registrar_log("Inicio de sesión exitoso")
+                    st.rerun()
 
-            st.markdown("<br>", unsafe_allow_html=True)
-            if st.button("❓ ¿Necesitas ayuda con tu acceso o contraseña?", use_container_width=True):
-                mostrar_modal_soporte()
+        st.markdown("<div style='height: 18px;'></div>", unsafe_allow_html=True)
+        st.markdown('<div class="login-ayuda-wrap">', unsafe_allow_html=True)
+        if st.button("❓ ¿Necesitas ayuda con tu acceso o contraseña?", use_container_width=True):
+            mostrar_modal_soporte()
+        st.markdown("</div>", unsafe_allow_html=True)
 
 else:
     col_nav1, col_nav2 = st.columns([5, 1])
@@ -992,38 +1090,15 @@ else:
     st.markdown("<hr style='margin: 8px 0px 8px 0px; border-color: #CBD5E1;'>", unsafe_allow_html=True)
 
     # ==========================================
-    # VISTA 1: PORTAL OPERARIO
+    # VISTA 1: PORTAL OPERARIO / PORTAL CLIENTE
     # ==========================================
-    if st.session_state.rol_actual == "🛠️ Operario":
-        csv = st.session_state.df_pedidos.to_csv(index=False).encode('utf-8')
-        
-        st.markdown("<h3 style='margin:0 0 8px 0; padding:0; line-height: 1.2;'>Gestión de Envíos</h3>", unsafe_allow_html=True)
-        
-        _, col_b1, col_b2, col_b3, col_b4 = st.columns([1.8, 0.9, 0.9, 0.9, 0.9])
-        
-        with col_b1:
-            st.markdown('<div class="contenedor-btn-custom">', unsafe_allow_html=True)
-            st.download_button("📥 Descargar", data=csv, file_name="pedidos.csv", use_container_width=True)
-            st.markdown('</div>', unsafe_allow_html=True)
-        with col_b2:
-            st.markdown('<div class="contenedor-btn-custom">', unsafe_allow_html=True)
-            if st.button("📤 Cargar Data", use_container_width=True): modal_upload()
-            st.markdown('</div>', unsafe_allow_html=True)
-        with col_b3:
-            st.markdown('<div class="contenedor-btn-custom">', unsafe_allow_html=True)
-            if st.button("➕ Nuevo Pedido", use_container_width=True): modal_add_pedido()
-            st.markdown('</div>', unsafe_allow_html=True)
-        with col_b4:
-            st.markdown('<div class="contenedor-btn-custom">', unsafe_allow_html=True)
-            if st.button("📊 Dashboard", use_container_width=True, key="btn_dashboard_pedidos"):
-                st.session_state.mostrar_dashboard_pedidos = True
-                st.session_state.detalle_pedido_idx = None
-            st.markdown('</div>', unsafe_allow_html=True)
+    if st.session_state.rol_actual in ["🛠️ Operario", "🏢 Cliente"]:
+        is_cliente = (st.session_state.rol_actual == "🏢 Cliente")
 
-        st.markdown("<div style='margin-top: 2px;'></div>", unsafe_allow_html=True)
+        csv = st.session_state.df_pedidos.to_csv(index=False).encode('utf-8')
 
         # ------------------------------------------
-        # FILTROS EN EL SIDEBAR
+        # FILTROS EN EL SIDEBAR (disponibles tanto para la tabla como para el Dashboard)
         # ------------------------------------------
         with st.sidebar:
             st.markdown(f"<h2 style='color: #0E2F27; margin: 0px 0px 4px 0px; padding: 0px; white-space: nowrap; font-size: 22px; font-weight: 800;'>{LOGO_HTML} ALFA EXPRESS</h2>", unsafe_allow_html=True)
@@ -1044,8 +1119,12 @@ else:
 
             st.markdown("<p style='font-weight:700; font-size:14px; color:#0E2F27; margin:0 0 6px 0;'>📌 Selección Múltiple:</p>", unsafe_allow_html=True)
             
-            clientes_unicos = sorted(st.session_state.df_pedidos["CLIENTE"].astype(str).unique().tolist())
-            filtro_cliente = st.multiselect("Cliente", options=clientes_unicos, placeholder="Todos")
+            # FILTRO DE CLIENTE: Solo disponible para el operario; desaparece por completo para el rol de cliente
+            if not is_cliente:
+                clientes_unicos = sorted(st.session_state.df_pedidos["CLIENTE"].astype(str).unique().tolist())
+                filtro_cliente = st.multiselect("Cliente", options=clientes_unicos, placeholder="Todos")
+            else:
+                filtro_cliente = []
 
             distritos_unicos = sorted(st.session_state.df_pedidos["DISTRITO"].astype(str).unique().tolist())
             filtro_distrito = st.multiselect("Distrito", options=distritos_unicos, placeholder="Todos")
@@ -1063,6 +1142,11 @@ else:
         # APLICAR FILTROS
         df_filtrado = st.session_state.df_pedidos.copy()
 
+        # RESTRICCIÓN OBLIGATORIA DEL CLIENTE: Solo puede ver sus propios pedidos basados en su usuario actual
+        if is_cliente:
+            nombre_cliente_actual = str(st.session_state.usuario_actual).strip().upper()
+            df_filtrado = df_filtrado[df_filtrado["CLIENTE"].astype(str).str.upper() == nombre_cliente_actual]
+
         if "FECHA_REGISTRO" in df_filtrado.columns:
             df_filtrado["_fecha_temp"] = pd.to_datetime(df_filtrado["FECHA_REGISTRO"], format="%d/%m/%Y", errors="coerce")
 
@@ -1075,7 +1159,9 @@ else:
 
             df_filtrado = df_filtrado.drop(columns=["_fecha_temp"])
 
-        if filtro_cliente: df_filtrado = df_filtrado[df_filtrado["CLIENTE"].astype(str).isin(filtro_cliente)]
+        if not is_cliente and filtro_cliente: 
+            df_filtrado = df_filtrado[df_filtrado["CLIENTE"].astype(str).isin(filtro_cliente)]
+        
         if filtro_distrito: df_filtrado = df_filtrado[df_filtrado["DISTRITO"].astype(str).isin(filtro_distrito)]
         if filtro_servicio: df_filtrado = df_filtrado[df_filtrado["TIPO_SERVICIO"].astype(str).isin(filtro_servicio)]
         if filtro_estado: df_filtrado = df_filtrado[df_filtrado["ESTADO"].astype(str).isin(filtro_estado)]
@@ -1087,119 +1173,144 @@ else:
         if "FECHA_REGISTRO" in df_filtrado.columns:
             df_filtrado = df_filtrado.sort_values(by="FECHA_REGISTRO", ascending=False)
 
-        total_sin_filtrar = len(st.session_state.df_pedidos)
+        total_sin_filtrar = len(st.session_state.df_pedidos[st.session_state.df_pedidos["CLIENTE"].astype(str).str.upper() == str(st.session_state.usuario_actual).strip().upper()]) if is_cliente else len(st.session_state.df_pedidos)
+        
         hay_filtros_activos = any([
             fecha_inicio_sel, fecha_fin_sel,
-            filtro_cliente, filtro_distrito, filtro_servicio, filtro_estado, filtro_sub_estado,
+            filtro_cliente if not is_cliente else False, 
+            filtro_distrito, filtro_servicio, filtro_estado, filtro_sub_estado,
             filtro_codigo_txt.strip(), filtro_nombre_txt.strip(),
         ])
 
         # ==========================================
-        # LÓGICA DE PAGINACIÓN (BLOQUES DE 50) - ESTILO GMAIL
+        # BIFURCACIÓN: DASHBOARD DE PÁGINA COMPLETA O TABLA DE PEDIDOS
         # ==========================================
-        TAMANO_PAGINA = 50
-        total_registros = len(df_filtrado)
-        total_paginas = max(1, (total_registros + TAMANO_PAGINA - 1) // TAMANO_PAGINA)
+        if st.session_state.mostrar_dashboard_pedidos:
+            mostrar_dashboard_pagina_completa(df_filtrado, hay_filtros_activos, is_cliente)
 
-        if "pagina_actual_pedidos" not in st.session_state:
-            st.session_state.pagina_actual_pedidos = 1
-
-        # Si los filtros reducen el total de páginas, no dejar la página fuera de rango
-        if st.session_state.pagina_actual_pedidos > total_paginas:
-            st.session_state.pagina_actual_pedidos = total_paginas
-        if st.session_state.pagina_actual_pedidos < 1:
-            st.session_state.pagina_actual_pedidos = 1
-
-        pagina_actual = st.session_state.pagina_actual_pedidos
-        inicio_idx = (pagina_actual - 1) * TAMANO_PAGINA
-        fin_idx = min(inicio_idx + TAMANO_PAGINA, total_registros)
-        rango_texto = f"{inicio_idx + 1}\u2013{fin_idx} de {total_registros}" if total_registros > 0 else "0 de 0"
-
-        col_pag1, col_pag2 = st.columns([3, 1])
-        with col_pag1:
-            if hay_filtros_activos:
-                texto_resultados = f"🔍 Se encontr{'ó' if total_registros == 1 else 'aron'} <b>{total_registros}</b> resultado{'s' if total_registros != 1 else ''} para tu filtro (de {total_sin_filtrar} en total)."
-            else:
-                texto_resultados = f"Mostrando bloques de 50 registros. Total: <b>{total_registros}</b>."
-            st.markdown(f"<p style='color: #475569; font-size: 14px; margin-top: 8px;'>{texto_resultados}</p>", unsafe_allow_html=True)
-        with col_pag2:
-            with st.container(key="gmail_paginacion"):
-                c_txt, c_prev, c_next = st.columns([2.4, 0.8, 0.8])
-                with c_txt:
-                    st.markdown(f"<div class='gmail-pag-texto'>{rango_texto}</div>", unsafe_allow_html=True)
-                with c_prev:
-                    if st.button("‹", key="pag_prev", disabled=(pagina_actual <= 1)):
-                        st.session_state.pagina_actual_pedidos -= 1
-                        st.rerun()
-                with c_next:
-                    if st.button("›", key="pag_next", disabled=(pagina_actual >= total_paginas)):
-                        st.session_state.pagina_actual_pedidos += 1
-                        st.rerun()
-
-        # Cortar el DataFrame según la página seleccionada
-        df_paginado = df_filtrado.iloc[inicio_idx:fin_idx]
-        st.session_state.detalle_pedido_lista_indices = df_filtrado.index.tolist()
-
-        columnas_pedidos_tabla = ["FECHA_REGISTRO", "CODIGO INTERNO", "CLIENTE", "ESTADO", "SUB_ESTADO", "NOMBRE", "DISTRITO", "TIPO_SERVICIO"]
-        anchos_columnas_px = [130, 150, 130, 120, 150, 150, 120, 130]  # ancho MÍNIMO por columna (en píxeles); puede crecer si hay espacio
-
-        def _fila_pedido_html(valores, es_encabezado):
-            color = "#FFFFFF" if es_encabezado else "#0F172A"
-            peso_fuente = "700" if es_encabezado else "400"
-            tam_fuente = "12px" if es_encabezado else "13px"
-            transform = "text-transform:uppercase;" if es_encabezado else ""
-            celdas = "".join(
-                f"<div style='flex:1 0 {ancho}px; padding:9px 8px; white-space:nowrap; overflow:hidden; "
-                f"text-overflow:ellipsis; color:{color}; font-size:{tam_fuente}; font-weight:{peso_fuente}; {transform}'>{valor}</div>"
-                for valor, ancho in zip(valores, anchos_columnas_px)
-            )
-            return f"<div style='display:flex; align-items:center;'>{celdas}</div>"
-
-        detalle_abierto = st.session_state.detalle_pedido_idx is not None
-        dashboard_abierto = st.session_state.mostrar_dashboard_pedidos
-        panel_abierto = detalle_abierto or dashboard_abierto
-        panel_expandido = st.session_state.get("detalle_panel_expandido", False)
-
-        if panel_abierto and panel_expandido:
-            col_tabla, col_detalle = None, st.container()
-        elif panel_abierto:
-            col_tabla, col_detalle = st.columns([1.6, 1], gap="medium")
         else:
-            col_tabla, col_detalle = st.container(), None
+            st.markdown("<h3 style='margin:0 0 8px 0; padding:0; line-height: 1.2;'>Gestión de Envíos</h3>", unsafe_allow_html=True)
 
-        if col_tabla is not None:
-            with col_tabla:
-                with st.container(key="tabla_pedidos_scroll"):
-                    with st.container(key="tabla_pedidos_header"):
-                        c_txt, c_btn = st.columns([0.94, 0.06])
-                        c_txt.markdown(_fila_pedido_html(columnas_pedidos_tabla, es_encabezado=True), unsafe_allow_html=True)
-                        c_btn.markdown("&nbsp;", unsafe_allow_html=True)
+            _, col_b1, col_b2, col_b3, col_b4 = st.columns([1.8, 0.9, 0.9, 0.9, 0.9])
 
-                    if df_paginado.empty:
-                        st.markdown("<p style='color:#94A3B8; font-size:13px; padding:16px 8px;'>No se encontraron pedidos con los filtros aplicados.</p>", unsafe_allow_html=True)
-                    else:
-                        for idx_real, fila in df_paginado.iterrows():
-                            es_fila_activa = detalle_abierto and idx_real == st.session_state.detalle_pedido_idx
-                            if es_fila_activa:
-                                st.markdown(f"<style>.st-key-tabla_pedidos_fila_{idx_real} {{ background-color: #EAF3EF !important; }}</style>", unsafe_allow_html=True)
-                            with st.container(key=f"tabla_pedidos_fila_{idx_real}"):
-                                c_txt, c_btn = st.columns([0.94, 0.06])
-                                valores_fila = [fila[col] if col in fila.index else "" for col in columnas_pedidos_tabla]
-                                c_txt.markdown(_fila_pedido_html(valores_fila, es_encabezado=False), unsafe_allow_html=True)
-                                with c_btn:
-                                    if st.button("›", key=f"ver_pedido_{idx_real}"):
-                                        st.session_state.detalle_pedido_idx = idx_real
-                                        st.session_state.mostrar_dashboard_pedidos = False
-                                        st.rerun()
+            with col_b1:
+                st.markdown('<div class="contenedor-btn-custom">', unsafe_allow_html=True)
+                st.download_button("📥 Descargar", data=csv, file_name="pedidos.csv", use_container_width=True)
+                st.markdown('</div>', unsafe_allow_html=True)
+            with col_b2:
+                st.markdown('<div class="contenedor-btn-custom">', unsafe_allow_html=True)
+                if st.button("📤 Cargar Data", use_container_width=True, disabled=is_cliente): modal_upload()
+                st.markdown('</div>', unsafe_allow_html=True)
+            with col_b3:
+                st.markdown('<div class="contenedor-btn-custom">', unsafe_allow_html=True)
+                if st.button("➕ Nuevo Pedido", use_container_width=True, disabled=is_cliente): modal_add_pedido()
+                st.markdown('</div>', unsafe_allow_html=True)
+            with col_b4:
+                st.markdown('<div class="contenedor-btn-custom">', unsafe_allow_html=True)
+                if st.button("📊 Dashboard", use_container_width=True, key="btn_dashboard_pedidos"):
+                    st.session_state.mostrar_dashboard_pedidos = True
+                    st.session_state.detalle_pedido_idx = None
+                    st.rerun()
+                st.markdown('</div>', unsafe_allow_html=True)
 
-        if col_detalle is not None:
-            with col_detalle:
-                if dashboard_abierto:
-                    mostrar_dashboard_pedidos(df_filtrado, hay_filtros_activos)
+            st.markdown("<div style='margin-top: 2px;'></div>", unsafe_allow_html=True)
+
+            # ==========================================
+            # LÓGICA DE PAGINACIÓN (BLOQUES DE 50) - ESTILO GMAIL
+            # ==========================================
+            TAMANO_PAGINA = 50
+            total_registros = len(df_filtrado)
+            total_paginas = max(1, (total_registros + TAMANO_PAGINA - 1) // TAMANO_PAGINA)
+
+            if "pagina_actual_pedidos" not in st.session_state:
+                st.session_state.pagina_actual_pedidos = 1
+
+            if st.session_state.pagina_actual_pedidos > total_paginas:
+                st.session_state.pagina_actual_pedidos = total_paginas
+            if st.session_state.pagina_actual_pedidos < 1:
+                st.session_state.pagina_actual_pedidos = 1
+
+            pagina_actual = st.session_state.pagina_actual_pedidos
+            inicio_idx = (pagina_actual - 1) * TAMANO_PAGINA
+            fin_idx = min(inicio_idx + TAMANO_PAGINA, total_registros)
+            rango_texto = f"{inicio_idx + 1}\u2013{fin_idx} de {total_registros}" if total_registros > 0 else "0 de 0"
+
+            col_pag1, col_pag2 = st.columns([3, 1])
+            with col_pag1:
+                if hay_filtros_activos:
+                    texto_resultados = f"🔍 Se encontr{'ó' if total_registros == 1 else 'aron'} <b>{total_registros}</b> resultado{'s' if total_registros != 1 else ''} para tu filtro (de {total_sin_filtrar} en total)."
                 else:
+                    texto_resultados = f"Mostrando bloques de 50 registros. Total: <b>{total_registros}</b>."
+                st.markdown(f"<p style='color: #475569; font-size: 14px; margin-top: 8px;'>{texto_resultados}</p>", unsafe_allow_html=True)
+            with col_pag2:
+                with st.container(key="gmail_paginacion"):
+                    c_txt, c_prev, c_next = st.columns([2.4, 0.8, 0.8])
+                    with c_txt:
+                        st.markdown(f"<div class='gmail-pag-texto'>{rango_texto}</div>", unsafe_allow_html=True)
+                    with c_prev:
+                        if st.button("‹", key="pag_prev", disabled=(pagina_actual <= 1)):
+                            st.session_state.pagina_actual_pedidos -= 1
+                            st.rerun()
+                    with c_next:
+                        if st.button("›", key="pag_next", disabled=(pagina_actual >= total_paginas)):
+                            st.session_state.pagina_actual_pedidos += 1
+                            st.rerun()
+
+            df_paginado = df_filtrado.iloc[inicio_idx:fin_idx]
+            st.session_state.detalle_pedido_lista_indices = df_filtrado.index.tolist()
+
+            columnas_pedidos_tabla = ["FECHA_REGISTRO", "CODIGO INTERNO", "CLIENTE", "ESTADO", "SUB_ESTADO", "NOMBRE", "DISTRITO", "TIPO_SERVICIO"]
+            anchos_columnas_px = [130, 150, 130, 120, 150, 150, 120, 130]
+
+            def _fila_pedido_html(valores, es_encabezado):
+                color = "#FFFFFF" if es_encabezado else "#0F172A"
+                peso_fuente = "700" if es_encabezado else "400"
+                tam_fuente = "12px" if es_encabezado else "13px"
+                transform = "text-transform:uppercase;" if es_encabezado else ""
+                celdas = "".join(
+                    f"<div style='flex:1 0 {ancho}px; padding:9px 8px; white-space:nowrap; overflow:hidden; "
+                    f"text-overflow:ellipsis; color:{color}; font-size:{tam_fuente}; font-weight:{peso_fuente}; {transform}'>{valor}</div>"
+                    for valor, ancho in zip(valores, anchos_columnas_px)
+                )
+                return f"<div style='display:flex; align-items:center;'>{celdas}</div>"
+
+            detalle_abierto = st.session_state.detalle_pedido_idx is not None
+            panel_expandido = st.session_state.get("detalle_panel_expandido", False)
+
+            if detalle_abierto and panel_expandido:
+                col_tabla, col_detalle = None, st.container()
+            elif detalle_abierto:
+                col_tabla, col_detalle = st.columns([1.6, 1], gap="medium")
+            else:
+                col_tabla, col_detalle = st.container(), None
+
+            if col_tabla is not None:
+                with col_tabla:
+                    with st.container(key="tabla_pedidos_scroll"):
+                        with st.container(key="tabla_pedidos_header"):
+                            c_txt, c_btn = st.columns([0.94, 0.06])
+                            c_txt.markdown(_fila_pedido_html(columnas_pedidos_tabla, es_encabezado=True), unsafe_allow_html=True)
+                            c_btn.markdown("&nbsp;", unsafe_allow_html=True)
+
+                        if df_paginado.empty:
+                            st.markdown("<p style='color:#94A3B8; font-size:13px; padding:16px 8px;'>No se encontraron pedidos con los filtros aplicados.</p>", unsafe_allow_html=True)
+                        else:
+                            for idx_real, fila in df_paginado.iterrows():
+                                es_fila_activa = detalle_abierto and idx_real == st.session_state.detalle_pedido_idx
+                                if es_fila_activa:
+                                    st.markdown(f"<style>.st-key-tabla_pedidos_fila_{idx_real} {{ background-color: #EAF3EF !important; }}</style>", unsafe_allow_html=True)
+                                with st.container(key=f"tabla_pedidos_fila_{idx_real}"):
+                                    c_txt, c_btn = st.columns([0.94, 0.06])
+                                    valores_fila = [fila[col] if col in fila.index else "" for col in columnas_pedidos_tabla]
+                                    c_txt.markdown(_fila_pedido_html(valores_fila, es_encabezado=False), unsafe_allow_html=True)
+                                    with c_btn:
+                                        if st.button("›", key=f"ver_pedido_{idx_real}"):
+                                            st.session_state.detalle_pedido_idx = idx_real
+                                            st.rerun()
+
+            if col_detalle is not None:
+                with col_detalle:
                     mostrar_detalle_pedido()
-
-
 
     # ==========================================
     # VISTA 2: PORTAL ADMINISTRADOR
@@ -1215,8 +1326,6 @@ else:
                 col_u1, col_u2, col_u3 = st.columns(3)
                 nuevo_usuario = col_u1.text_input("Nombre de Usuario")
                 nuevo_pass = col_u2.text_input("Contraseña Temporal", type="password")
-                
-                # --- LÍNEA CORREGIDA ---
                 nr = st.selectbox("Rol Asignado", options=["👨‍💼 Portal Administrador", "🛠️ Operario", "🛵 Repartidor (App)", "🏢 Cliente"])
                 
                 if st.form_submit_button("Crear / Actualizar Usuario", use_container_width=True):
