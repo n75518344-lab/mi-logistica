@@ -681,7 +681,7 @@ def modal_add_pedido():
             departamento = c5.text_input("Departamento", value="LIMA")
             provincia = c6.text_input("Provincia", value="LIMA")
             c7, c8 = st.columns(2)
-            telefono = c7.text_input("Teléfono")
+            telefono = c7.text_input("Teléfono", max_chars=9, placeholder="999999999")
             placa = c8.text_input("Placa del vehículo")
             c9, c10 = st.columns(2)
             descripcion = c9.text_input("Descripción de la carga")
@@ -693,36 +693,39 @@ def modal_add_pedido():
             )
 
         if st.form_submit_button("Guardar Pedido", use_container_width=True):
-            evidencias_b64 = ["", "", "", ""]
-            if evidencia_files:
-                for i, archivo in enumerate(evidencia_files[:4]):
-                    evidencias_b64[i] = "data:image/png;base64," + base64.b64encode(archivo.read()).decode("utf-8")
+            if not (telefono.strip().isdigit() and len(telefono.strip()) == 9):
+                st.error("El teléfono debe tener exactamente 9 dígitos (ni uno más, ni uno menos).")
+            else:
+                evidencias_b64 = ["", "", "", ""]
+                if evidencia_files:
+                    for i, archivo in enumerate(evidencia_files[:4]):
+                        evidencias_b64[i] = "data:image/png;base64," + base64.b64encode(archivo.read()).decode("utf-8")
 
-            nuevo = pd.DataFrame([{
-                "FECHA_REGISTRO": datetime.now().strftime("%d/%m/%Y"),
-                "CODIGO INTERNO": cod,
-                "CLIENTE": cli,
-                "ESTADO": est,
-                "SUB_ESTADO": "REGISTRADO",
-                "NOMBRE": nom,
-                "DISTRITO": "LIMA",
-                "TIPO_SERVICIO": "SAME-DAY",
-                "DIRECCION": direccion,
-                "DEPARTAMENTO": departamento,
-                "PROVINCIA": provincia,
-                "DOCUMENTO": documento,
-                "TELEFONO": telefono,
-                "DESCRIPCION": descripcion,
-                "PESO": peso,
-                "PLACA": placa,
-                "EVIDENCIA_1": evidencias_b64[0],
-                "EVIDENCIA_2": evidencias_b64[1],
-                "EVIDENCIA_3": evidencias_b64[2],
-                "EVIDENCIA_4": evidencias_b64[3],
-            }])
-            st.session_state.df_pedidos = pd.concat([st.session_state.df_pedidos, nuevo], ignore_index=True)
-            registrar_log(f"Añadió pedido {cod}")
-            st.rerun()
+                nuevo = pd.DataFrame([{
+                    "FECHA_REGISTRO": datetime.now().strftime("%d/%m/%Y"),
+                    "CODIGO INTERNO": cod,
+                    "CLIENTE": cli,
+                    "ESTADO": est,
+                    "SUB_ESTADO": "REGISTRADO",
+                    "NOMBRE": nom,
+                    "DISTRITO": "LIMA",
+                    "TIPO_SERVICIO": "SAME-DAY",
+                    "DIRECCION": direccion,
+                    "DEPARTAMENTO": departamento,
+                    "PROVINCIA": provincia,
+                    "DOCUMENTO": documento,
+                    "TELEFONO": telefono,
+                    "DESCRIPCION": descripcion,
+                    "PESO": peso,
+                    "PLACA": placa,
+                    "EVIDENCIA_1": evidencias_b64[0],
+                    "EVIDENCIA_2": evidencias_b64[1],
+                    "EVIDENCIA_3": evidencias_b64[2],
+                    "EVIDENCIA_4": evidencias_b64[3],
+                }])
+                st.session_state.df_pedidos = pd.concat([st.session_state.df_pedidos, nuevo], ignore_index=True)
+                registrar_log(f"Añadió pedido {cod}")
+                st.rerun()
 
 @st.dialog("✏️ Editar Pedido")
 def modal_editar_pedido(idx_pedido, es_cliente):
@@ -768,40 +771,43 @@ def modal_editar_pedido(idx_pedido, es_cliente):
             departamento = c9.text_input("Departamento", value=str(fila.get("DEPARTAMENTO", "")))
             provincia = c10.text_input("Provincia", value=str(fila.get("PROVINCIA", "")))
             c11, c12 = st.columns(2)
-            telefono = c11.text_input("Teléfono", value=str(fila.get("TELEFONO", "")))
+            telefono = c11.text_input("Teléfono", value=str(fila.get("TELEFONO", "")), max_chars=9, placeholder="999999999")
             placa = c12.text_input("Placa del vehículo", value=str(fila.get("PLACA", "")), disabled=es_cliente)
             c13, c14 = st.columns(2)
             descripcion = c13.text_input("Descripción de la carga", value=str(fila.get("DESCRIPCION", "")))
             peso = c14.text_input("Peso (kg)", value=str(fila.get("PESO", "")))
 
         if st.form_submit_button("Guardar Cambios", use_container_width=True):
-            cambios = {
-                "NOMBRE": nom,
-                "DISTRITO": distrito,
-                "DIRECCION": direccion,
-                "DOCUMENTO": documento,
-                "DEPARTAMENTO": departamento,
-                "PROVINCIA": provincia,
-                "TELEFONO": telefono,
-                "DESCRIPCION": descripcion,
-                "PESO": peso,
-            }
-            if not es_cliente:
-                cambios.update({
-                    "CODIGO INTERNO": cod,
-                    "CLIENTE": cli,
-                    "ESTADO": est,
-                    "SUB_ESTADO": sub_est,
-                    "TIPO_SERVICIO": tipo_serv,
-                    "PLACA": placa,
-                })
+            if not (telefono.strip().isdigit() and len(telefono.strip()) == 9):
+                st.error("El teléfono debe tener exactamente 9 dígitos (ni uno más, ni uno menos).")
+            else:
+                cambios = {
+                    "NOMBRE": nom,
+                    "DISTRITO": distrito,
+                    "DIRECCION": direccion,
+                    "DOCUMENTO": documento,
+                    "DEPARTAMENTO": departamento,
+                    "PROVINCIA": provincia,
+                    "TELEFONO": telefono,
+                    "DESCRIPCION": descripcion,
+                    "PESO": peso,
+                }
+                if not es_cliente:
+                    cambios.update({
+                        "CODIGO INTERNO": cod,
+                        "CLIENTE": cli,
+                        "ESTADO": est,
+                        "SUB_ESTADO": sub_est,
+                        "TIPO_SERVICIO": tipo_serv,
+                        "PLACA": placa,
+                    })
 
-            for campo, valor in cambios.items():
-                st.session_state.df_pedidos.loc[idx_pedido, campo] = valor
+                for campo, valor in cambios.items():
+                    st.session_state.df_pedidos.loc[idx_pedido, campo] = valor
 
-            registrar_log(f"Editó el pedido {fila.get('CODIGO INTERNO', idx_pedido)}")
-            st.success("¡Pedido actualizado correctamente!")
-            st.rerun()
+                registrar_log(f"Editó el pedido {fila.get('CODIGO INTERNO', idx_pedido)}")
+                st.success("¡Pedido actualizado correctamente!")
+                st.rerun()
 
 def mostrar_detalle_pedido(es_cliente=False):
     df = st.session_state.df_pedidos
@@ -864,9 +870,25 @@ def mostrar_detalle_pedido(es_cliente=False):
         evidencias = [fila.get(f"EVIDENCIA_{n}", "") for n in range(1, 5)]
         evidencias_con_foto = [e for e in evidencias if isinstance(e, str) and e.strip()]
         if evidencias_con_foto:
+            codigo_pedido = str(fila.get("CODIGO INTERNO", idx_actual)).replace(" ", "_")
             col_ev1, col_ev2 = st.columns(2)
             for i, foto in enumerate(evidencias_con_foto):
-                (col_ev1 if i % 2 == 0 else col_ev2).image(foto, use_container_width=True)
+                col_actual = col_ev1 if i % 2 == 0 else col_ev2
+                col_actual.image(foto, use_container_width=True)
+                try:
+                    cabecera, datos_b64 = foto.split(",", 1)
+                    bytes_foto = base64.b64decode(datos_b64)
+                    extension = "png" if "png" in cabecera else "jpg"
+                    col_actual.download_button(
+                        "⬇️ Descargar",
+                        data=bytes_foto,
+                        file_name=f"evidencia_{codigo_pedido}_{i + 1}.{extension}",
+                        mime=f"image/{extension}",
+                        use_container_width=True,
+                        key=f"descargar_evidencia_{idx_actual}_{i}",
+                    )
+                except Exception:
+                    pass
         else:
             st.markdown(
                 "<p style='color:#94A3B8; font-size:13px;'>Aún no hay evidencia subida por el repartidor desde su celular para este pedido.</p>",
