@@ -809,6 +809,35 @@ def modal_editar_pedido(idx_pedido, es_cliente):
                 st.success("¡Pedido actualizado correctamente!")
                 st.rerun()
 
+@st.dialog("🗑️ Eliminar Pedido")
+def modal_eliminar_pedido(idx_pedido):
+    df = st.session_state.df_pedidos
+    if idx_pedido not in df.index:
+        st.error("Este pedido ya no existe.")
+        return
+    fila = df.loc[idx_pedido]
+
+    st.markdown(
+        f"<p style='font-size:15px;'>¿Seguro que deseas eliminar el pedido "
+        f"<b>{fila.get('CODIGO INTERNO', '')}</b> de <b>{fila.get('NOMBRE', '')}</b>? "
+        f"Esta acción no se puede deshacer.</p>",
+        unsafe_allow_html=True,
+    )
+
+    c_cancel, c_confirm = st.columns(2)
+    with c_cancel:
+        if st.button("Cancelar", use_container_width=True):
+            st.rerun()
+    with c_confirm:
+        st.markdown('<div id="btn_eliminar">', unsafe_allow_html=True)
+        if st.button("Sí, eliminar", use_container_width=True, key="confirmar_eliminar_pedido"):
+            codigo_pedido = fila.get("CODIGO INTERNO", idx_pedido)
+            st.session_state.df_pedidos = st.session_state.df_pedidos.drop(index=idx_pedido)
+            st.session_state.detalle_pedido_idx = None
+            registrar_log(f"Eliminó el pedido {codigo_pedido}")
+            st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
+
 def mostrar_detalle_pedido(es_cliente=False):
     df = st.session_state.df_pedidos
     indices = st.session_state.get("detalle_pedido_lista_indices") or df.index.tolist()
@@ -826,12 +855,19 @@ def mostrar_detalle_pedido(es_cliente=False):
 
     with st.container(key="detalle_pedido_panel"):
         with st.container(key="detalle_pedido_nav"):
-            c_title, c_edit, c_prev, c_next, c_expand, c_close = st.columns([2.6, 0.7, 0.6, 0.6, 0.6, 0.6])
+            if es_cliente:
+                c_title, c_edit, c_prev, c_next, c_expand, c_close = st.columns([2.6, 0.7, 0.6, 0.6, 0.6, 0.6])
+            else:
+                c_title, c_edit, c_delete, c_prev, c_next, c_expand, c_close = st.columns([2.0, 0.7, 0.7, 0.6, 0.6, 0.6, 0.6])
             with c_title:
                 st.markdown("<div class='detalle-pedido-titulo'>Pedidos filtro</div>", unsafe_allow_html=True)
             with c_edit:
                 if st.button("✏️", key="detalle_editar"):
                     modal_editar_pedido(idx_actual, es_cliente)
+            if not es_cliente:
+                with c_delete:
+                    if st.button("🗑️", key="detalle_eliminar"):
+                        modal_eliminar_pedido(idx_actual)
             with c_prev:
                 if st.button("‹", key="detalle_prev", disabled=(pos <= 0)):
                     st.session_state.detalle_pedido_idx = indices[pos - 1]
